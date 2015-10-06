@@ -1,0 +1,20 @@
+{
+    "name": "halaxa/json-iterator",
+    "description": "Json parser consuming a stream of json data with easy, iterable api.",
+    "require": {
+        "php": ">=5.6",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "authors": [
+        {
+            "name": "Filip Halaxa",
+            "email": "filip@halaxa.cz"
+        }
+    ],
+    "autoload" : {
+        "psr-4": {"JsonIterator\\": "src/"}
+    }
+}
