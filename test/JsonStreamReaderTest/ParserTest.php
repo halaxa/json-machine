@@ -15,8 +15,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testSyntax($pathSpec, $json, $expectedResult)
     {
-        $result = iterator_to_array($this->createParser($json, $pathSpec));
-        $this->assertEquals($expectedResult, $result);
+        $resultWithKeys = iterator_to_array($this->createParser($json, $pathSpec));
+        $resultNoKeys = iterator_to_array($this->createParser($json, $pathSpec), false);
+
+        $this->assertEquals($expectedResult, $resultWithKeys);
+        $this->assertEquals(array_values($expectedResult), $resultNoKeys);
     }
 
     public function dataSyntax()

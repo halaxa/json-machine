@@ -120,6 +120,7 @@ class Parser implements \IteratorAggregate
                         $previousToken = null;
                         if ($currentLevel === $iteratorLevel) {
                             $key = $token;
+                            $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
                             $currentPath[$currentLevel] = json_decode($token);
                         }
