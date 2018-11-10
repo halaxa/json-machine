@@ -70,13 +70,17 @@ class Parser implements \IteratorAggregate
     public function __construct(\Traversable $lexer, $jsonPointer = '')
     {
         if (0 === preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointer, $matches)) {
-            throw new InvalidArgumentException("Given value '$jsonPointer' of \$jsonPointer is not valid JSON Pointer");
+            throw new InvalidArgumentException(
+                "Given value '$jsonPointer' of \$jsonPointer is not valid JSON Pointer"
+            );
         }
 
         $this->lexer = $lexer;
         $this->jsonPointer = $jsonPointer;
         $this->jsonPointerPath = array_slice(array_map(function ($jsonPointerPart){
-            $jsonPointerPart = str_replace('~0', '~', str_replace('~1', '/', $jsonPointerPart));
+            $jsonPointerPart = str_replace(
+                '~0', '~', str_replace('~1', '/', $jsonPointerPart)
+            );
             return is_numeric($jsonPointerPart) ? (int) $jsonPointerPart : $jsonPointerPart;
         }, explode('/', $jsonPointer)), 1);
     }

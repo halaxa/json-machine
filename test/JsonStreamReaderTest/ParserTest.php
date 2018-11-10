@@ -148,7 +148,19 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
         $time = microtime(true) - $start;
         $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
-        var_dump(round($filesizeMb/$time, 2));
+        var_dump("JsonIterator: ". round($filesizeMb/$time, 2) . 'Mb/s');
+        @unlink($tmpJsonFileName);
+    }
+
+    public function testPerformance2()
+    {
+        $tmpJsonFileName = $this->createBigJsonFile();
+        $tmpJson = file_get_contents($tmpJsonFileName);
+        $start = microtime(true);
+        json_decode($tmpJson);
+        $time = microtime(true) - $start;
+        $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
+        var_dump("json_decode: ". round($filesizeMb/$time, 2) . 'Mb/s');
         @unlink($tmpJsonFileName);
     }
 
