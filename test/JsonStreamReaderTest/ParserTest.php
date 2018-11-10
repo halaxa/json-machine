@@ -159,47 +159,4 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         return new Parser(new Lexer(fopen("data://text/plain,$json", 'r')), $jsonPointer);
     }
-
-    public function testPerformanceJsonIterator()
-    {
-        $tmpJsonFileName = $this->createBigJsonFile();
-        $tmpJson = fopen($tmpJsonFileName, 'r');
-        $parser = new Parser(new Lexer($tmpJson));
-        $start = microtime(true);
-        foreach ($parser as $item) {
-
-        }
-        $time = microtime(true) - $start;
-        $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
-        var_dump("JsonIterator: ". round($filesizeMb/$time, 2) . 'Mb/s');
-        @unlink($tmpJsonFileName);
-    }
-
-    public function testPerformanceJsonDecode()
-    {
-        $tmpJsonFileName = $this->createBigJsonFile();
-        $start = microtime(true);
-        $tmpJson = file_get_contents($tmpJsonFileName);
-        json_decode($tmpJson);
-        $time = microtime(true) - $start;
-        $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
-        var_dump("json_decode: ". round($filesizeMb/$time, 2) . 'Mb/s');
-        @unlink($tmpJsonFileName);
-    }
-
-    private function createBigJsonFile()
-    {
-        $tmpJson = tempnam(sys_get_temp_dir(), 'json_');
-        $f = fopen($tmpJson, 'w');
-        $separator = '';
-        fputs($f, '[');
-        for ($i=0; $i<1000; $i++) {
-            fputs($f, $separator);
-            fputs($f, file_get_contents(__DIR__.'/twitter_example_'. ($i%2) .'.json'));
-            $separator = ",\n\n";
-        }
-        fputs($f, ']');
-        fclose($f);
-        return $tmpJson;
-    }
 }
