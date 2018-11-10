@@ -160,7 +160,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return new Parser(new Lexer(fopen("data://text/plain,$json", 'r')), $jsonPointer);
     }
 
-    public function testPerformance()
+    public function testPerformanceJsonIterator()
     {
         $tmpJsonFileName = $this->createBigJsonFile();
         $tmpJson = fopen($tmpJsonFileName, 'r');
@@ -175,11 +175,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         @unlink($tmpJsonFileName);
     }
 
-    public function testPerformance2()
+    public function testPerformanceJsonDecode()
     {
         $tmpJsonFileName = $this->createBigJsonFile();
-        $tmpJson = file_get_contents($tmpJsonFileName);
         $start = microtime(true);
+        $tmpJson = file_get_contents($tmpJsonFileName);
         json_decode($tmpJson);
         $time = microtime(true) - $start;
         $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
