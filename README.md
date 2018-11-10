@@ -12,6 +12,7 @@ and uses native `json_decode` to decode document chunks.
 ### Parsing simple JSON document
 Let's say that `big.json` contains this really big JSON document:
 ```json
+// big.json
 {
     "apple": {
         "color": "red"
@@ -25,7 +26,6 @@ It can be parsed this way:
 ```php
 <?php
 
-
 foreach (\JsonIterator\JsonIterator::fromFile('big.json') as $name => $data) {
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
     // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
@@ -38,6 +38,7 @@ The key in a foreach will be a numeric index of an item.
 ### Parsing JSON document subtree
 If you want to iterate only `fruits-key` subtree in this `fruits.json`
 ```json
+// fruits.json
 {
     "fruits-key": {
         "apple": {
@@ -53,10 +54,12 @@ If you want to iterate only `fruits-key` subtree in this `fruits.json`
 <?php
 
 foreach (\JsonIterator\JsonIterator::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */) as $name => $data) {
-    var_dump([$name, $data]);
+    // The same as above, which means:
+    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
+    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
 }
 ```
-will produce the same result as above.
+
 > Implementation detail:
 >
 > Value of `fruits` key is not loaded into memory at once, but only one item in
