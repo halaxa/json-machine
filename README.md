@@ -1,7 +1,7 @@
 # JSON Iterator
 
-Json Iterator is a simple **JSON stream parser for PHP** based on coroutines, developed for extremely large datasets.
-Main features are:
+Json Iterator is a simple **JSON stream parser for PHP** based on coroutines,
+developed for extremely large JSON datasets. Main features are:
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode document chunks.
 - Ease of use. Just iterate it with `foreach`. No events and callbacks.
@@ -26,7 +26,9 @@ It can be parsed this way:
 ```php
 <?php
 
-foreach (\JsonIterator\JsonIterator::fromFile('big.json') as $name => $data) {
+$jsonStream = \JsonIterator\JsonIterator::fromFile('big.json');
+
+foreach ($jsonStream as $name => $data) {
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
     // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
 }
@@ -36,7 +38,7 @@ Parsing an array instead of a dictionary follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
 ### Parsing JSON document subtree
-If you want to iterate only `fruits-key` subtree in this `fruits.json`
+If you want to iterate only `fruits-key` subtree in this `fruits.json`:
 ```json
 // fruits.json
 {
@@ -50,10 +52,12 @@ If you want to iterate only `fruits-key` subtree in this `fruits.json`
     }
 }
 ```
+do it like this:
 ```php
 <?php
 
-foreach (\JsonIterator\JsonIterator::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */) as $name => $data) {
+$jsonStream = \JsonIterator\JsonIterator::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */);
+foreach ($jsonStream as $name => $data) {
     // The same as above, which means:
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
     // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
