@@ -66,8 +66,8 @@ foreach ($jsonStream as $name => $data) {
 
 > Implementation detail:
 >
-> Value of `fruits` key is not loaded into memory at once, but only one item in
-> `fruits` key at a time. It is always one item in memory at a time at the level/subtree
+> Value of `fruits-key` is not loaded into memory at once, but only one item in
+> `fruits-key` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus the memory consumption is constant.  
 ## Parsing API responses
 If you use this library to parse large API responses, all you need to do is passing the stream resource
