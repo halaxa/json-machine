@@ -73,7 +73,8 @@ foreach ($jsonStream as $name => $data) {
 If you use this library to parse large API responses, all you need to do is passing the stream resource
 of your api response to `JsonIterator::fromStream($streamResource)`.
 ### GuzzleHttp example
-
+Guzzle uses its own streams, but they can be converted back to PHP streams by calling
+`\GuzzleHttp\Psr7\StreamWrapper::getResource()`. See [GuzzleHttp example](src/examples/guzzleHttp.php)
  
 
 ## Error handling
