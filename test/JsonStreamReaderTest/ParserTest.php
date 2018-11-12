@@ -129,6 +129,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['[,"string","string"]'],
             ['["string",,"string"]'],
             ['["string","string",]'],
+            ['["string",1eeee1]'],
         ];
     }
 

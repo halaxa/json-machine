@@ -180,6 +180,9 @@ class Parser implements \IteratorAggregate
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
                 if ($currentPath == $this->jsonPointerPath) {
                     $value = json_decode($jsonBuffer, true);
+                    if ($value === null && json_last_error()) {
+                        $this->error(json_last_error_msg());
+                    }
                     if ($iteratorStruct === '[') {
                         yield $value;
                     } else {
