@@ -84,4 +84,9 @@ class Lexer implements \IteratorAggregate
     {
         return $this->position;
     }
+
+    public function __destruct()
+    {
+        fclose($this->stream);
+    }
 }

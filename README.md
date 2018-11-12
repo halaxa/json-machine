@@ -70,5 +70,11 @@ foreach ($jsonStream as $name => $data) {
 > `fruits` key at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus the memory consumption is constant.  
 ## Parsing API responses
+If you use this library to parse large API responses, all you need to do is passing the stream resource
+of your api response to `JsonIterator::fromStream($streamResource)`.
+### GuzzleHttp example
+
+ 
 
 ## Error handling
+When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
