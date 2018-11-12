@@ -2,7 +2,6 @@
 
 namespace JsonIteratorTest;
 
-use JsonIterator\DecoderError;
 use JsonIterator\Exception\InvalidArgumentException;
 use JsonIterator\Exception\PathNotFoundException;
 use JsonIterator\Exception\SyntaxError;
@@ -130,28 +129,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['[,"string","string"]'],
             ['["string",,"string"]'],
             ['["string","string",]'],
-        ];
-    }
-
-    /**
-     * @dataProvider dataDecoderError
-     */
-    public function testDecoderError($malformedJson, $expectedKey, $expectedMalformedJson)
-    {
-        $parser = $this->createParser($malformedJson);
-        $result = iterator_to_array($parser);
-
-        $this->assertEquals(
-            [$expectedKey => new DecoderError('Syntax error', $expectedMalformedJson)],
-            $result
-        );
-    }
-
-    public function dataDecoderError()
-    {
-        return [
-            ['{"key": 1eee1}', 'key', '1eee1'],
-            ['[1eee1]', 0, '1eee1'],
         ];
     }
 
