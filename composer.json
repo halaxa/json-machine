@@ -6,8 +6,7 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "guzzlehttp/guzzle": "^6.3"
+        "phpunit/phpunit": "*"
     },
     "authors": [
         {
@@ -17,5 +16,9 @@
     ],
     "autoload" : {
         "psr-4": {"JsonIterator\\": "src/"}
+    },
+    "suggest": {
+        "ext-curl": "To run scripts in src/examples.",
+        "guzzlehttp/guzzle": "To run scripts in src/examples."
     }
 }
