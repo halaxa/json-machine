@@ -1,5 +1,5 @@
 {
-    "name": "halaxa/json-iterator",
+    "name": "jsonator/jsonator",
     "description": "Json parser consuming a stream of json data with easy, iterable api.",
     "require": {
         "php": ">=5.6",
