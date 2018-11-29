@@ -1,7 +1,7 @@
 ![](img/logo.png)
 # JSON Machine
 
-Json Machine is a Fast, efficient and easy-to-use JSON stream parser based on coroutines
+Json Machine is a fast, efficient and easy-to-use JSON stream parser based on coroutines
 developed for unpredictably long JSON streams or documents. Main features are:
 
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
