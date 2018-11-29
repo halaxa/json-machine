@@ -1,6 +1,7 @@
 {
     "name": "halaxa/json-machine",
     "description": "Fast, efficient and easy-to-use JSON stream parser developed for unpredictably long JSON streams or documents.",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Filip Halaxa",
