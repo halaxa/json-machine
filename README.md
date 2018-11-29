@@ -73,10 +73,17 @@ foreach ($jsonStream as $name => $data) {
 ## Parsing API responses
 If you use this library to parse large API responses, all you need to do is passing the stream resource
 of your api response to `JsonMachine::fromStream($streamResource)`.
+
 ### GuzzleHttp example
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. See [GuzzleHttp example](src/examples/guzzleHttp.php)
- 
 
 ## Error handling
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
+
+## Running tests
+```bash
+composer install
+vendor/bin/phpunit
+```
+To run tests on all supported PHP platforms install docker to your machine and run `tests/docker-run-all-platforms.sh`
