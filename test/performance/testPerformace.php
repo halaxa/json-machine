@@ -1,7 +1,7 @@
 <?php
 
-use JsonIterator\Lexer;
-use JsonIterator\Parser;
+use JsonMachine\Lexer;
+use JsonMachine\Parser;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 

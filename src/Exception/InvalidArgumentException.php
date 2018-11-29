@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonIterator\Exception;
+namespace JsonMachine\Exception;
 
 class InvalidArgumentException extends \InvalidArgumentException
 {

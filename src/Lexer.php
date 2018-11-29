@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonIterator;
+namespace JsonMachine;
 
 class Lexer implements \IteratorAggregate
 {

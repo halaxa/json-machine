@@ -1,6 +1,6 @@
 {
-    "name": "jsonator/jsonator",
-    "description": "Json parser consuming a stream of json data with easy, iterable api.",
+    "name": "halaxa/json-machine",
+    "description": "Fast, efficient and easy-to-use JSON stream parser developed for unpredictably long JSON streams or documents.",
     "require": {
         "php": ">=5.6",
         "ext-json": "*"
@@ -15,10 +15,9 @@
         }
     ],
     "autoload" : {
-        "psr-4": {"JsonIterator\\": "src/"}
+        "psr-4": {"JsonMachine\\": "src/"}
     },
     "suggest": {
-        "ext-curl": "To run scripts in src/examples.",
         "guzzlehttp/guzzle": "To run scripts in src/examples."
     }
 }

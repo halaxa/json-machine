@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonIterator\Exception;
+namespace JsonMachine\Exception;
 
 class SyntaxError extends \RuntimeException
 {

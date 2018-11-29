@@ -1,10 +1,10 @@
 <?php
 
-namespace JsonIterator;
+namespace JsonMachine;
 
-use JsonIterator\Exception\InvalidArgumentException;
-use JsonIterator\Exception\PathNotFoundException;
-use JsonIterator\Exception\SyntaxError;
+use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Exception\PathNotFoundException;
+use JsonMachine\Exception\SyntaxError;
 
 class Parser implements \IteratorAggregate
 {

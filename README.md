@@ -1,12 +1,13 @@
-# JSON Iterator
+# JSON Machine
 
-Json Iterator is a simple **JSON stream parser for PHP** based on coroutines,
-developed for extremely large JSON datasets. Main features are:
-- Speed. Performace critical code contains no unnecessary function calls, no regular expressions
-and uses native `json_decode` to decode document chunks.
-- Ease of use. Just iterate it with `foreach`. No events and callbacks.
-- Supports iteration on any subtree of the document, specified by [Json Pointer](https://tools.ietf.org/html/rfc6901)
+Json Machine is a Fast, efficient and easy-to-use JSON stream parser based on coroutines
+developed for unpredictably long JSON streams or documents. Main features are:
+
+- Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Constant memory footprint for unpredictably large JSON documents.
+- Speed. Performace critical code contains no unnecessary function calls, no regular expressions
+and uses native `json_decode` to decode JSON document chunks.
+- Supports efficient iteration on any subtree of the document, specified by [Json Pointer](https://tools.ietf.org/html/rfc6901)
 
 ## Examples
 ### Parsing simple JSON document
@@ -26,7 +27,7 @@ It can be parsed this way:
 ```php
 <?php
 
-$jsonStream = \JsonIterator\JsonIterator::fromFile('big.json');
+$jsonStream = \JsonMachine\JsonMachine::fromFile('big.json');
 
 foreach ($jsonStream as $name => $data) {
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
@@ -56,7 +57,7 @@ do it like this:
 ```php
 <?php
 
-$jsonStream = \JsonIterator\JsonIterator::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */);
+$jsonStream = \JsonMachine\JsonMachine::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */);
 foreach ($jsonStream as $name => $data) {
     // The same as above, which means:
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
@@ -64,14 +65,14 @@ foreach ($jsonStream as $name => $data) {
 }
 ```
 
-> Implementation detail:
+> Note:
 >
 > Value of `fruits-key` is not loaded into memory at once, but only one item in
 > `fruits-key` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus the memory consumption is constant.  
 ## Parsing API responses
 If you use this library to parse large API responses, all you need to do is passing the stream resource
-of your api response to `JsonIterator::fromStream($streamResource)`.
+of your api response to `JsonMachine::fromStream($streamResource)`.
 ### GuzzleHttp example
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. See [GuzzleHttp example](src/examples/guzzleHttp.php)

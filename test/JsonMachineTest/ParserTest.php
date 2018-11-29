@@ -1,12 +1,12 @@
 <?php
 
-namespace JsonIteratorTest;
+namespace JsonMachineTest;
 
-use JsonIterator\Exception\InvalidArgumentException;
-use JsonIterator\Exception\PathNotFoundException;
-use JsonIterator\Exception\SyntaxError;
-use JsonIterator\Lexer;
-use JsonIterator\Parser;
+use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Exception\PathNotFoundException;
+use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Lexer;
+use JsonMachine\Parser;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {

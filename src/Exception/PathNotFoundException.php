@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonIterator\Exception;
+namespace JsonMachine\Exception;
 
 class PathNotFoundException extends \RuntimeException
 {

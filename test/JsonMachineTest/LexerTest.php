@@ -1,9 +1,9 @@
 <?php
 
-namespace JsonIteratorTest;
+namespace JsonMachineTest;
 
-use JsonIterator\Lexer;
-use JsonIterator\Exception;
+use JsonMachine\Lexer;
+use JsonMachine\Exception;
 
 class LexerTest extends \PHPUnit_Framework_TestCase
 {

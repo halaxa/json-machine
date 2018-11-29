@@ -1,17 +1,17 @@
 <?php
 
-namespace JsonIteratorTest;
+namespace JsonMachineTest;
 
-use JsonIterator\JsonIterator;
+use JsonMachine\JsonMachine;
 
-class JsonIteratorTest extends \PHPUnit_Framework_TestCase
+class JsonMachineTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataFactories
      */
     public function testFactories($methodName, ...$args)
     {
-        $iterator = call_user_func_array(JsonIterator::class."::$methodName", $args);
+        $iterator = call_user_func_array(JsonMachine::class."::$methodName", $args);
         $this->assertSame(["key" => "value"], iterator_to_array($iterator));
     }
 
@@ -20,7 +20,7 @@ class JsonIteratorTest extends \PHPUnit_Framework_TestCase
         return [
             ['fromStream', fopen('data://text/plain,{"args": {"key":"value"}}', 'r'), '/args'],
             ['fromString', '{"args": {"key":"value"}}', '/args'],
-            ['fromFile', __DIR__ . '/JsonIteratorTest.json', '/args'],
+            ['fromFile', __DIR__ . '/JsonMachineTest.json', '/args'],
         ];
     }
 }

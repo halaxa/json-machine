@@ -1,11 +1,11 @@
 <?php
 
-namespace JsonIterator;
+namespace JsonMachine;
 
 use IteratorAggregate;
-use JsonIterator\Exception\InvalidArgumentException;
+use JsonMachine\Exception\InvalidArgumentException;
 
-class JsonIterator implements IteratorAggregate
+class JsonMachine implements IteratorAggregate
 {
     /**
      * @var resource
