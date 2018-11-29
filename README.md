@@ -1,3 +1,4 @@
+![](img/logo.png)
 # JSON Machine
 
 Json Machine is a Fast, efficient and easy-to-use JSON stream parser based on coroutines
@@ -87,3 +88,8 @@ composer install
 vendor/bin/phpunit
 ```
 To run tests on all supported PHP platforms install docker to your machine and run `tests/docker-run-all-platforms.sh`
+
+## License
+Cogweel element: Icons made by [TutsPlus](https://www.flaticon.com/authors/tutsplus)
+from [www.flaticon.com](https://www.flaticon.com/)
+is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
