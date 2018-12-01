@@ -31,7 +31,7 @@ foreach ($users as $id => $user) {
 }
 ```
 
-Random access like `$users[42]` **is not possible**. However you can scan the array in `foreach` and find the item.
+Random access like `$users[42]` **is not possible**. However you can scan the collection in `foreach` and find the item.
 
 ## Parsing JSON documents
 
