@@ -8,7 +8,30 @@ developed for unpredictably long JSON streams or documents. Main features are:
 - Constant memory footprint for unpredictably large JSON documents.
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document chunks.
-- Supports efficient iteration on any subtree of the document, specified by [Json Pointer](https://tools.ietf.org/html/rfc6901)
+- Supports efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
+
+## TL;DR;
+JSON Machine enables you to drop-in replace non efficient way of iterating big JSONs:
+
+```php
+<?php
+$users = json_decode(file_get_contents('500MB-users.json'));
+foreach ($users as $id => $user) {
+    // the script will probably die before getting here
+}
+```
+
+... by the efficient way:
+
+```php
+<?php
+$users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
+foreach ($users as $id => $user) {
+    // process $user with minimal memory footprint
+}
+```
+
+Random access like `$users[42]` **is not possible**. However you can scan the array in `foreach` and find the item.
 
 ## Parsing JSON documents
 
@@ -72,6 +95,25 @@ foreach ($jsonStream as $name => $data) {
 > Value of `fruits-key` is not loaded into memory at once, but only one item in
 > `fruits-key` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus the memory consumption is constant.
+
+<a name="json-pointer"></a>
+#### Few words about Json Pointer
+It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
+It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
+not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
+When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
+`JsonMachine::from*` functions. If you specify pointer to scalar value (which logically cannot be iterated)
+or non existent position in the document, an exception is thrown.
+
+Some examples:
+
+| Json Pointer value | Will iterate through                                                                              |
+|--------------------|---------------------------------------------------------------------------------------------------|
+| empty string       | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
+| `/result/items`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
+| `/0/items`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
+| `/` (gotcha!)      | `{"":{"items":["this","array","will","be","iterated"]}}` (no kidding, see the spec)               |
+
   
 ## Parsing API responses
 API response or any other JSON stream is parsed exactly the same way as file is. The only difference
@@ -127,7 +169,15 @@ vendor/bin/phpunit
 ```
 To run tests on all supported PHP platforms install docker to your machine and run `tests/docker-run-all-platforms.sh`
 
+## Installation
+```bash
+composer require halaxa/json-machine
+```
+or clone or download this repository (not recommended).
+
 ## License
+Apache 2.0
+
 Cogwheel element: Icons made by [TutsPlus](https://www.flaticon.com/authors/tutsplus)
 from [www.flaticon.com](https://www.flaticon.com/)
 is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
