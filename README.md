@@ -11,9 +11,9 @@ and uses native `json_decode` to decode JSON document chunks.
 - Supports efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 
 ## TL;DR;
-JSON Machine is drop-in replacement for non efficient:
+JSON Machine is drop-in replacement for non efficient iteration of big JSONs:
 
-```php
+```diff
 <?php
 
 - $users = json_decode(file_get_contents('500MB-users.json'));
