@@ -20,7 +20,7 @@ JSON Machine is drop-in replacement for non efficient iteration of big JSONs:
 + $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
-    // the script will probably die before getting here
+    // just process $user as usual
 }
 ```
 
