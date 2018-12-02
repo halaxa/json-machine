@@ -11,23 +11,16 @@ and uses native `json_decode` to decode JSON document chunks.
 - Supports efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 
 ## TL;DR;
-JSON Machine enables you to drop-in replace non efficient way of iterating big JSONs:
+JSON Machine is drop-in replacement for non efficient:
 
 ```php
 <?php
-$users = json_decode(file_get_contents('500MB-users.json'));
+
+- $users = json_decode(file_get_contents('500MB-users.json'));
++ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
+
 foreach ($users as $id => $user) {
     // the script will probably die before getting here
-}
-```
-
-... by the efficient way:
-
-```php
-<?php
-$users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
-foreach ($users as $id => $user) {
-    // process $user with minimal memory footprint
 }
 ```
 
@@ -109,10 +102,10 @@ Some examples:
 
 | Json Pointer value | Will iterate through                                                                              |
 |--------------------|---------------------------------------------------------------------------------------------------|
-| empty string       | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
+| (empty string)       | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
 | `/result/items`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
 | `/0/items`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
-| `/` (gotcha!)      | `{"":{"items":["this","array","will","be","iterated"]}}` (no kidding, see the spec)               |
+| `/` (gotcha! - a slash followed by an empty string)      | `{"":["this","array","will","be","iterated"]}`              |
 
   
 ## Parsing API responses
