@@ -25,11 +25,11 @@ class Parser implements \IteratorAggregate
 
     private $type = [
         'n' => self::SCALAR_CONST,
-        'N' => self::SCALAR_CONST,
+        'N' => self::SCALAR_CONST, // todo remove, be case sensitive
         't' => self::SCALAR_CONST,
-        'T' => self::SCALAR_CONST,
+        'T' => self::SCALAR_CONST, // todo remove, be case sensitive
         'f' => self::SCALAR_CONST,
-        'F' => self::SCALAR_CONST,
+        'F' => self::SCALAR_CONST, // todo remove, be case sensitive
         '+' => self::SCALAR_CONST,
         '-' => self::SCALAR_CONST,
         '0' => self::SCALAR_CONST,
@@ -101,11 +101,11 @@ class Parser implements \IteratorAggregate
         $jsonBuffer = '';
         $key = null;
         $previousToken = null;
-        $inArray = false;
+        $inArray = false; // todo remove one of inArray, inObject
         $inObject = false;
         $expectedType = self::OBJECT_START | self::ARRAY_START;
 
-        foreach ($this->lexer as $token) {
+        foreach ($this->lexer as $token) { // todo replace $token with $this->token
             $this->token = $token;
             $firstChar = $token[0];
             if ( ! isset($this->type[$firstChar]) || ! ($this->type[$firstChar] & $expectedType)) {
@@ -146,7 +146,7 @@ class Parser implements \IteratorAggregate
                 case '{':
                     ++$currentLevel;
                     if ($currentLevel === $iteratorLevel) {
-                        $iteratorStruct = $token;
+                        $iteratorStruct = $token; // todo constant '{' here and at all other places down from here
                     }
                     $stack[$currentLevel] = $token;
                     $inArray = !$inObject = true;
@@ -180,7 +180,7 @@ class Parser implements \IteratorAggregate
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
                 if ($currentPath == $this->jsonPointerPath) {
                     $value = json_decode($jsonBuffer, true);
-                    if ($value === null && json_last_error()) {
+                    if ($value === null && json_last_error()) { // todo if ($value === NULL && $jsonBuffer !== 'null')
                         $this->error(json_last_error_msg());
                     }
                     if ($iteratorStruct === '[') {
