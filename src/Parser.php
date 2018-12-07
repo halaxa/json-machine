@@ -105,14 +105,13 @@ class Parser implements \IteratorAggregate
         $inObject = false;
         $expectedType = self::OBJECT_START | self::ARRAY_START;
 
-        foreach ($this->lexer as $token) { // todo replace $token with $this->token
-            $this->token = $token;
-            $firstChar = $token[0];
+        foreach ($this->lexer as $this->token) {
+            $firstChar = $this->token[0];
             if ( ! isset($this->type[$firstChar]) || ! ($this->type[$firstChar] & $expectedType)) {
                 $this->error("Unexpected symbol");
             }
             if ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $expectedType & self::ANY_VALUE)) {
-                $jsonBuffer .= $token;
+                $jsonBuffer .= $this->token;
             }
             if ($currentLevel < $iteratorLevel && $inArray && $expectedType & self::ANY_VALUE) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (1+$currentPath[$currentLevel]) : 0;
@@ -123,10 +122,10 @@ class Parser implements \IteratorAggregate
                         $expectedType = self::COLON;
                         $previousToken = null;
                         if ($currentLevel === $iteratorLevel) {
-                            $key = $token;
+                            $key = $this->token;
                             $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
-                            $currentPath[$currentLevel] = json_decode($token);
+                            $currentPath[$currentLevel] = json_decode($this->token);
                         }
                         break;
                     } else {
@@ -146,9 +145,9 @@ class Parser implements \IteratorAggregate
                 case '{':
                     ++$currentLevel;
                     if ($currentLevel === $iteratorLevel) {
-                        $iteratorStruct = $token; // todo constant '{' here and at all other places down from here
+                        $iteratorStruct = '{';
                     }
-                    $stack[$currentLevel] = $token;
+                    $stack[$currentLevel] = '{';
                     $inArray = !$inObject = true;
                     $expectedType = self::AFTER_OBJECT_START;
                     $previousToken = '{';
@@ -156,9 +155,9 @@ class Parser implements \IteratorAggregate
                 case '[':
                     ++$currentLevel;
                     if ($currentLevel === $iteratorLevel) {
-                        $iteratorStruct = $token;
+                        $iteratorStruct = '[';
                     }
-                    $stack[$currentLevel] = $token;
+                    $stack[$currentLevel] = '[';
                     $inArray = !$inObject = false;
                     $expectedType = self::AFTER_ARRAY_START;
                     break;
@@ -180,7 +179,7 @@ class Parser implements \IteratorAggregate
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
                 if ($currentPath == $this->jsonPointerPath) {
                     $value = json_decode($jsonBuffer, true);
-                    if ($value === null && json_last_error()) { // todo if ($value === NULL && $jsonBuffer !== 'null')
+                    if ($value === null && $jsonBuffer !== 'null') {
                         $this->error(json_last_error_msg());
                     }
                     if ($iteratorStruct === '[') {
