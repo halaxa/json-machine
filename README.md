@@ -4,11 +4,11 @@
 JSON Machine is a fast, efficient and easy-to-use JSON stream parser based on coroutines
 developed for unpredictably long JSON streams or documents. Main features are:
 
-- Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Constant memory footprint for unpredictably large JSON documents.
+- Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
+- Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document chunks.
-- Supports efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 
 ## TL;DR;
 JSON Machine is drop-in replacement for non efficient iteration of big JSONs:
@@ -102,7 +102,7 @@ Some examples:
 
 | Json Pointer value | Will iterate through                                                                              |
 |--------------------|---------------------------------------------------------------------------------------------------|
-| (empty string)       | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
+| (empty string)     | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
 | `/result/items`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
 | `/0/items`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
 | `/` (gotcha! - a slash followed by an empty string)      | `{"":["this","array","will","be","iterated"]}`              |
