@@ -2,13 +2,10 @@
 
 namespace JsonMachine;
 
-use IteratorAggregate;
-use JsonMachine\Exception\InvalidArgumentException;
-
-class JsonMachine implements IteratorAggregate
+class JsonMachine implements \IteratorAggregate
 {
     /**
-     * @var \Iterator|\IteratorAggregate
+     * @var \Traversable
      */
     private $bytesIterator;
 
@@ -19,10 +16,10 @@ class JsonMachine implements IteratorAggregate
 
     /**
      * JsonMachine constructor.
-     * @param \Iterator|\IteratorAggregate $bytesIterator
+     * @param \Traversable
      * @param string $jsonPointer
      */
-    public function __construct($bytesIterator, $jsonPointer = '')
+    public function __construct(\Traversable $bytesIterator, $jsonPointer = '')
     {
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
@@ -35,11 +32,11 @@ class JsonMachine implements IteratorAggregate
      */
     public static function fromString($string, $jsonPointer = '')
     {
-        return new static(new StreamBytes(fopen("data://text/plain,$string", 'r')), $jsonPointer);
+        return new static(new StringBytes($string), $jsonPointer);
     }
 
     /**
-     * @param $string
+     * @param string $file
      * @param string $jsonPointer
      * @return self
      */
@@ -49,7 +46,7 @@ class JsonMachine implements IteratorAggregate
     }
 
     /**
-     * @param $string
+     * @param resource $stream
      * @param string $jsonPointer
      * @return self
      */

@@ -1,15 +1,17 @@
 <?php
 
+use JsonMachine\JsonMachine;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StreamBytes;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-testPerformanceJsonIterator();
+testPerformanceJsonMachineInMemory();
 testPerformanceJsonDecode();
+testPerformanceJsonMachine();
 
-function testPerformanceJsonIterator()
+function testPerformanceJsonMachine()
 {
     $tmpJsonFileName = createBigJsonFile();
     $tmpJson = fopen($tmpJsonFileName, 'r');
@@ -20,15 +22,29 @@ function testPerformanceJsonIterator()
     }
     $time = microtime(true) - $start;
     $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
-    echo "JsonIterator: ". round($filesizeMb/$time, 2) . 'Mb/s'.PHP_EOL;
+    echo "JsonMachine::fromStream: ". round($filesizeMb/$time, 2) . 'Mb/s'.PHP_EOL;
+    @unlink($tmpJsonFileName);
+}
+
+function testPerformanceJsonMachineInMemory()
+{
+    $tmpJsonFileName = createBigJsonFile();
+    $tmpJson = file_get_contents($tmpJsonFileName);
+    $start = microtime(true);
+    foreach (JsonMachine::fromString($tmpJson) as $item) {
+
+    }
+    $time = microtime(true) - $start;
+    $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);
+    echo "JsonMachine::fromString: ". round($filesizeMb/$time, 2) . 'Mb/s'.PHP_EOL;
     @unlink($tmpJsonFileName);
 }
 
 function testPerformanceJsonDecode()
 {
     $tmpJsonFileName = createBigJsonFile();
-    $start = microtime(true);
     $tmpJson = file_get_contents($tmpJsonFileName);
+    $start = microtime(true);
     json_decode($tmpJson);
     $time = microtime(true) - $start;
     $filesizeMb = (filesize($tmpJsonFileName)/1024/1024);

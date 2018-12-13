@@ -11,9 +11,9 @@ class Lexer implements \IteratorAggregate
 
     /**
      * Lexer constructor.
-     * @param \Iterator|\IteratorAggregate $bytesIterator
+     * @param \Traversable $bytesIterator
      */
-    public function __construct($bytesIterator)
+    public function __construct(\Traversable $bytesIterator)
     {
         $this->bytesIterator = $bytesIterator;
     }
