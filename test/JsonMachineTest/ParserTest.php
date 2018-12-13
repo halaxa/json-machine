@@ -135,6 +135,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new Parser(new Lexer(fopen("data://text/plain,$json", 'r')), $jsonPointer);
+        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer);
     }
 }

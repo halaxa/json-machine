@@ -5,19 +5,17 @@ namespace JsonMachine;
 class Lexer implements \IteratorAggregate
 {
     /** @var resource */
-    private $stream;
+    private $bytesIterator;
 
     private $position = 0;
 
     /**
-     * @param resource $stream
+     * Lexer constructor.
+     * @param \Iterator|\IteratorAggregate $bytesIterator
      */
-    public function __construct($stream)
+    public function __construct($bytesIterator)
     {
-        if ( ! is_resource($stream)) {
-            throw new Exception\InvalidArgumentException('Parameter $stream must be valid resource.');
-        }
-        $this->stream = $stream;
+        $this->bytesIterator = $bytesIterator;
     }
     
     /**
@@ -40,7 +38,7 @@ class Lexer implements \IteratorAggregate
         ${':'} = 1;
         ${','} = 1;
 
-        while ('' !== ($bytes = fread($this->stream, 1024 * 8))) {
+        foreach ($this->bytesIterator as $bytes) {
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
@@ -83,10 +81,5 @@ class Lexer implements \IteratorAggregate
     public function getPosition()
     {
         return $this->position;
-    }
-
-    public function __destruct()
-    {
-        fclose($this->stream);
     }
 }

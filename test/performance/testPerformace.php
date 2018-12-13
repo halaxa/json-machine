@@ -2,6 +2,7 @@
 
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
+use JsonMachine\StreamBytes;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -12,7 +13,7 @@ function testPerformanceJsonIterator()
 {
     $tmpJsonFileName = createBigJsonFile();
     $tmpJson = fopen($tmpJsonFileName, 'r');
-    $parser = new Parser(new Lexer($tmpJson));
+    $parser = new Parser(new Lexer(new StreamBytes($tmpJson)));
     $start = microtime(true);
     foreach ($parser as $item) {
 

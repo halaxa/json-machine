@@ -8,21 +8,23 @@ use JsonMachine\Exception\InvalidArgumentException;
 class JsonMachine implements IteratorAggregate
 {
     /**
-     * @var resource
+     * @var \Iterator|\IteratorAggregate
      */
-    private $stream;
+    private $bytesIterator;
 
     /**
      * @var string
      */
     private $jsonPointer;
 
-    public function __construct($stream, $jsonPointer = '')
+    /**
+     * JsonMachine constructor.
+     * @param \Iterator|\IteratorAggregate $bytesIterator
+     * @param string $jsonPointer
+     */
+    public function __construct($bytesIterator, $jsonPointer = '')
     {
-        if ( ! is_resource($stream) || get_resource_type($stream) !== 'stream') {
-            throw new InvalidArgumentException("Argument \$stream must be a valid stream resource.");
-        }
-        $this->stream = $stream;
+        $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
     }
 
@@ -33,7 +35,7 @@ class JsonMachine implements IteratorAggregate
      */
     public static function fromString($string, $jsonPointer = '')
     {
-        return new static(fopen("data://text/plain,$string", 'r'), $jsonPointer);
+        return new static(new StreamBytes(fopen("data://text/plain,$string", 'r')), $jsonPointer);
     }
 
     /**
@@ -43,7 +45,7 @@ class JsonMachine implements IteratorAggregate
      */
     public static function fromFile($file, $jsonPointer = '')
     {
-        return new static(fopen($file, 'r'), $jsonPointer);
+        return new static(new StreamBytes(fopen($file, 'r')), $jsonPointer);
     }
 
     /**
@@ -53,11 +55,11 @@ class JsonMachine implements IteratorAggregate
      */
     public static function fromStream($stream, $jsonPointer = '')
     {
-        return new static($stream, $jsonPointer);
+        return new static(new StreamBytes($stream), $jsonPointer);
     }
 
     public function getIterator()
     {
-        return new Parser(new Lexer($this->stream), $this->jsonPointer);
+        return new Parser(new Lexer($this->bytesIterator), $this->jsonPointer);
     }
 }
