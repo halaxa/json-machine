@@ -150,7 +150,7 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 | `json_decode`              |                            10000 |                                 10000 | 20000 |
 | `JsonMachine::fromString`  |                            10000 |                                     1 | 10001 |
 
-This is still about twice as efficient than `json_decode`.
+The reality is even brighter. `JsonMachine::fromString` consumes about **5 times less memory** than `json_decode`.
 
 ## Error handling
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
