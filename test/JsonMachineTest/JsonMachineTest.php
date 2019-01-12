@@ -20,7 +20,7 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         return [
             ['fromStream', fopen('data://text/plain, {"args": {"key": "value"}}', 'r'), '/args'],
             ['fromString', '{"args": {"key": "value"}}', '/args'],
-            ['fromString', '{"args": {"foo": [], "bar": []}}', '/args/bar'],
+            ['fromString', '{"args": {"foo": [], "bar": {"key": "value"}}}', '/args/bar'],
             ['fromFile', __DIR__ . '/JsonMachineTest.json', '/args'],
         ];
     }
