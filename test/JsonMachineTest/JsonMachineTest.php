@@ -18,8 +18,9 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     public function dataFactories()
     {
         return [
-            ['fromStream', fopen('data://text/plain,{"args": {"key":"value"}}', 'r'), '/args'],
-            ['fromString', '{"args": {"key":"value"}}', '/args'],
+            ['fromStream', fopen('data://text/plain, {"args": {"key": "value"}}', 'r'), '/args'],
+            ['fromString', '{"args": {"key": "value"}}', '/args'],
+            ['fromString', '{"args": {"foo": [], "bar": []}}', '/args/bar'],
             ['fromFile', __DIR__ . '/JsonMachineTest.json', '/args'],
         ];
     }
