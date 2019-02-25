@@ -4,7 +4,7 @@ for VERSION in \
   7.0 \
   7.1 \
   7.2 \
-  7.3-rc
+  7.3
 do
     set -e
     CONTAINER_NAME="json-machine-php-$VERSION";
