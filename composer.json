@@ -18,7 +18,8 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "guzzlehttp/guzzle": "^6"
     },
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"}
