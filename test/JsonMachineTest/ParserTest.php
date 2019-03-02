@@ -45,7 +45,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['/path/0', '{"path":[{"c":1,"d":2}, [null]]}', ['c'=>1,'d'=>2]],
             ['/path/1', '{"path":[null,{"c":1,"d":2}, [null]]}', ['c'=>1,'d'=>2]],
             ['/path/to', '{"path":{"to":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/path/after-array', '{"path":{"array":[],"after-array":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
+            ['/path/after-vector', '{"path":{"array":[],"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
+            ['/path/after-vector', '{"path":{"array":["item"],"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
+            ['/path/after-vector', '{"path":{"object":{"item":null},"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
+            ['/path/after-vectors', '{"path":{"array":[],"object":{},"after-vectors":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
             ['/0/0', '[{"0":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
             ['/1/1', '[0,{"1":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
         ];
