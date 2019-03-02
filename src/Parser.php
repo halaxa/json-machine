@@ -110,7 +110,7 @@ class Parser implements \IteratorAggregate
             if ( ! isset($this->type[$firstChar]) || ! ($this->type[$firstChar] & $expectedType)) {
                 $this->error("Unexpected symbol");
             }
-            if ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $expectedType & self::ANY_VALUE)) {
+            if ($currentPath == $this->jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $expectedType & self::ANY_VALUE))) {
                 $jsonBuffer .= $this->token;
             }
             if ($currentLevel < $iteratorLevel && $inArray && $expectedType & self::ANY_VALUE) {
