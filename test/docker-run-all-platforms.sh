@@ -1,21 +1,37 @@
 #!/usr/bin/env sh
+IFS=:
 for VERSION in \
-  5.6 \
-  7.0 \
-  7.1 \
-  7.2 \
-  7.3
+  5.6:2.5.5 \
+  7.0:2.6.1 \
+  7.1:2.6.1 \
+  7.2:2.6.1 \
+  7.3:2.6.1
 do
     set -e
-    CONTAINER_NAME="json-machine-php-$VERSION";
+    set -- $VERSION
+    PHP_VERSION=$1
+    XDEBUG_VERSION=$2
+
+
+    CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
     docker ps -a | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
+    printf  "
+        FROM php:$PHP_VERSION-cli-alpine
+        RUN apk add --update \
+            autoconf \
+            g++ \
+            libtool \
+            make \
+            && pecl install xdebug-$XDEBUG_VERSION \
+            && docker-php-ext-enable xdebug
+    " | docker build --tag "$CONTAINER_NAME" -
     docker run -it --rm \
         --name "$CONTAINER_NAME" \
         --volume "$PWD:/usr/src/json-machine" \
         --workdir "/usr/src/json-machine" \
         --user "$(id -u):$(id -g)" \
         --env COMPOSER_CACHE_DIR=/dev/null \
-        "php:$VERSION-cli-alpine" \
-        test/run.sh
+        "$CONTAINER_NAME" \
+        test/run.sh "$@"
 done;
