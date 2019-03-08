@@ -5,19 +5,19 @@ for VERSION in \
   7.0:2.6.1 \
   7.1:2.6.1 \
   7.2:2.6.1 \
-  7.3:2.6.1
+  7.3:beta
 do
     set -e
     set -- $VERSION
     PHP_VERSION=$1
     XDEBUG_VERSION=$2
-
-
+    PHP_IMAGE="php:$PHP_VERSION-cli-alpine"
     CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
     docker ps -a | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
+    docker pull "$PHP_IMAGE"
     printf  "
-        FROM php:$PHP_VERSION-cli-alpine
+        FROM $PHP_IMAGE
         RUN apk add --update \
             autoconf \
             g++ \
