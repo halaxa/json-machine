@@ -105,7 +105,7 @@ Some examples:
 | (empty string)     | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
 | `/result/items`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
 | `/0/items`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
-| `/` (gotcha! - a slash followed by an empty string)      | `{"":["this","array","will","be","iterated"]}`              |
+| `/` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
   
 ## Parsing API responses
