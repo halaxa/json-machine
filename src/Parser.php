@@ -25,12 +25,8 @@ class Parser implements \IteratorAggregate
 
     private $type = [
         'n' => self::SCALAR_CONST,
-        'N' => self::SCALAR_CONST, // todo remove, be case sensitive
         't' => self::SCALAR_CONST,
-        'T' => self::SCALAR_CONST, // todo remove, be case sensitive
         'f' => self::SCALAR_CONST,
-        'F' => self::SCALAR_CONST, // todo remove, be case sensitive
-        '+' => self::SCALAR_CONST,
         '-' => self::SCALAR_CONST,
         '0' => self::SCALAR_CONST,
         '1' => self::SCALAR_CONST,
