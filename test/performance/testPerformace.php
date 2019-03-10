@@ -12,7 +12,7 @@ $decoders = [
         return JsonMachine::fromString(stream_get_contents(fopen($file, 'r')));
     },
     'json_decode()' => function($file) {
-        return json_decode(stream_get_contents(fopen($file, 'r')));
+        return json_decode(stream_get_contents(fopen($file, 'r')), true);
     },
 ];
 
