@@ -157,10 +157,16 @@ When any part of the JSON stream is malformed, `SyntaxError` exception is thrown
 
 ## Running tests
 ```bash
-composer install
-vendor/bin/phpunit
+tests/run.sh
 ```
-To run tests on all supported PHP platforms install docker to your machine and run `tests/docker-run-all-platforms.sh`
+This uses php and composer installation already present in your machine.
+
+### Running tests on all supported PHP platforms
+Install docker to your machine and run
+```bash
+tests/docker-run-all-platforms.sh
+```
+This needs no php nor composer installation on your machine. Only Docker.
 
 ## Installation
 ```bash
