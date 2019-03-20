@@ -25,7 +25,7 @@ class Lexer implements \IteratorAggregate
     {
         $inString = false;
         $tokenBuffer = '';
-        $escaped = false;
+        $isEscaping = false;
 
         ${' '} = 0;
         ${"\n"} = 0;
@@ -45,10 +45,10 @@ class Lexer implements \IteratorAggregate
                 ++$this->position;
 
                 if ($inString) {
-                    if ($byte === '"' && !$escaped) {
+                    if ($byte === '"' && !$isEscaping) {
                         $inString = false;
                     }
-                    $escaped = ($byte =='\\' && !$escaped);
+                    $isEscaping = ($byte =='\\' && !$isEscaping);
                     $tokenBuffer .= $byte;
                     continue;
                 }
