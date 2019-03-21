@@ -19,10 +19,16 @@ do
     CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
     docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
-    echo "Checking for new version of PHP $PHP_VERSION docker image..."
-    docker pull "$PHP_IMAGE" > /dev/null
-    echo "Building a dev image on top of it..."
-    printf  "
+
+    IS_RECENT_IMAGE="$([ ! -z "$TMPDIR"] && echo "$TMPDIR" || echo "/tmp")/json-machine-php-$PHP_VERSION-$(date +"%Y-%m-%d")"
+    if [ ! -f "$IS_RECENT_IMAGE" ]; then
+        echo "Checking for new version of PHP $PHP_VERSION docker image..."
+        docker pull "$PHP_IMAGE" > /dev/null
+        touch $IS_RECENT_IMAGE
+    fi
+
+    echo "Building a dev docker image ..."
+    printf "
         FROM $PHP_IMAGE
         RUN apk add --update \
             autoconf \
