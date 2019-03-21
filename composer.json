@@ -23,8 +23,5 @@
     },
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"}
-    },
-    "suggest": {
-        "guzzlehttp/guzzle": "To run scripts in src/examples."
     }
 }
