@@ -3,17 +3,19 @@ set -e
 IFS=:
 for VERSION in \
   5.6:2.5.5 \
-  7.0:2.6.1 \
-  7.1:2.6.1 \
-  7.2:2.6.1 \
-  7.3:beta
+  7.0:2.7.0 \
+  7.1:2.7.0 \
+  7.2:2.7.0 \
+  7.3:2.7.0
 do
     set -- $VERSION
     PHP_VERSION=$1
     XDEBUG_VERSION=$2
 
-    printf "$SEPARATOR"
-    SEPARATOR="\n\n"
+    printf "\n\n"
+
+    echo "PHP $PHP_VERSION"
+    echo "==============================="
 
     PHP_IMAGE="php:$PHP_VERSION-cli-alpine"
     CONTAINER_NAME="json-machine-php-$PHP_VERSION"
