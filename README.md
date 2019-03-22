@@ -162,7 +162,7 @@ tests/run.sh
 This uses php and composer installation already present in your machine.
 
 ### Running tests on all supported PHP platforms
-Install docker to your machine and run
+[Install docker](https://docs.docker.com/install/) to your machine and run
 ```bash
 tests/docker-run-all-platforms.sh
 ```
