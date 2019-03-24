@@ -11,7 +11,6 @@ class StringBytes implements \IteratorAggregate
     private $chunkSize;
 
     /**
-     * StringBytes constructor.
      * @param string $string
      * @param int $chunkSize
      */

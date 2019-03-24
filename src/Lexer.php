@@ -10,7 +10,6 @@ class Lexer implements \IteratorAggregate
     private $position = 0;
 
     /**
-     * Lexer constructor.
      * @param \Traversable $bytesIterator
      */
     public function __construct(\Traversable $bytesIterator)

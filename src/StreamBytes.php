@@ -9,7 +9,6 @@ class StreamBytes implements \IteratorAggregate
     private $stream;
 
     /**
-     * StreamBytes constructor.
      * @param $stream
      */
     public function __construct($stream)

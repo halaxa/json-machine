@@ -82,7 +82,6 @@ class Parser implements \IteratorAggregate
     }
 
     /**
-     * @param \Generator $lexer
      * @return \Generator
      */
     public function getIterator()

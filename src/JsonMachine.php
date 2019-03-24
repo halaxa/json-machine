@@ -15,7 +15,6 @@ class JsonMachine implements \IteratorAggregate
     private $jsonPointer;
 
     /**
-     * JsonMachine constructor.
      * @param \Traversable
      * @param string $jsonPointer
      */
