@@ -14,22 +14,22 @@ do
 
     printf "\n\n"
 
-    echo "PHP $PHP_VERSION"
-    echo "==============================="
+    printf "PHP $PHP_VERSION\n"
+    printf "===============================\n"
 
     PHP_IMAGE="php:$PHP_VERSION-cli-alpine"
     CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
     docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
 
-    IS_RECENT_IMAGE="$([ ! -z "$TMPDIR"] && echo "$TMPDIR" || echo "/tmp")/json-machine-php-$PHP_VERSION-$(date +"%Y-%m-%d")"
+    IS_RECENT_IMAGE="$([ ! -z "$TMPDIR"] && printf "$TMPDIR" || printf "/tmp")/json-machine-php-$PHP_VERSION-$(date +"%Y-%m-%d")"
     if [ ! -f "$IS_RECENT_IMAGE" ]; then
-        echo "Checking for new version of PHP $PHP_VERSION docker image..."
+        printf "Checking for new version of PHP $PHP_VERSION docker image...\n"
         docker pull "$PHP_IMAGE" > /dev/null
         touch $IS_RECENT_IMAGE
     fi
 
-    echo "Building a dev docker image ..."
+    printf "Building a dev docker image ...\n"
     printf "
         FROM $PHP_IMAGE
         RUN apk add --update \
@@ -42,7 +42,7 @@ do
             && wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
               && chmod +x /usr/local/bin/composer
     " | docker build --tag "$CONTAINER_NAME" - > /dev/null
-    echo "Running tests..."
+    printf 'Running tests...'
     docker run -it --rm \
         --name "$CONTAINER_NAME" \
         --volume "$PWD:/usr/src/json-machine" \
