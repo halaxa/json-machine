@@ -42,7 +42,7 @@ do
             && wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
               && chmod +x /usr/local/bin/composer
     " | docker build --tag "$CONTAINER_NAME" - > /dev/null
-    printf 'Running tests...'
+    printf "Running tests...\n"
     docker run -it --rm \
         --name "$CONTAINER_NAME" \
         --volume "$PWD:/usr/src/json-machine" \
