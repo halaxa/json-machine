@@ -1,6 +1,8 @@
 ![](img/logo.png)
 # JSON Machine
 
+[![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
+---
 JSON Machine is a fast, efficient and easy-to-use JSON stream parser based on coroutines
 developed for unpredictably long JSON streams or documents. Main features are:
 
