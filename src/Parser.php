@@ -5,46 +5,38 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Token;
 
 class Parser implements \IteratorAggregate
 {
-    const SCALAR_CONST = 1;
-    const SCALAR_STRING = 2;
-    const OBJECT_START = 4;
-    const OBJECT_END = 8;
-    const ARRAY_START = 16;
-    const ARRAY_END = 32;
-    const COMMA = 64;
-    const COLON = 128;
-
-    const AFTER_ARRAY_START = self::ANY_VALUE | self::ARRAY_END;
-    const AFTER_OBJECT_START = self::SCALAR_STRING | self::OBJECT_END;
-    const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
-    const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
-    const ANY_VALUE = self::OBJECT_START | self::ARRAY_START | self::SCALAR_CONST | self::SCALAR_STRING;
+    const AFTER_ARRAY_START = self::ANY_VALUE | Token::ARRAY_END;
+    const AFTER_OBJECT_START = Token::SCALAR_STRING | Token::OBJECT_END;
+    const AFTER_ARRAY_VALUE = Token::COMMA | Token::ARRAY_END;
+    const AFTER_OBJECT_VALUE = Token::COMMA | Token::OBJECT_END;
+    const ANY_VALUE = Token::OBJECT_START | Token::ARRAY_START | Token::SCALAR_CONST | Token::SCALAR_STRING;
 
     private $type = [
-        'n' => self::SCALAR_CONST,
-        't' => self::SCALAR_CONST,
-        'f' => self::SCALAR_CONST,
-        '-' => self::SCALAR_CONST,
-        '0' => self::SCALAR_CONST,
-        '1' => self::SCALAR_CONST,
-        '2' => self::SCALAR_CONST,
-        '3' => self::SCALAR_CONST,
-        '4' => self::SCALAR_CONST,
-        '5' => self::SCALAR_CONST,
-        '6' => self::SCALAR_CONST,
-        '7' => self::SCALAR_CONST,
-        '8' => self::SCALAR_CONST,
-        '9' => self::SCALAR_CONST,
-        '"' => self::SCALAR_STRING,
-        '{' => self::OBJECT_START,
-        '}' => self::OBJECT_END,
-        '[' => self::ARRAY_START,
-        ']' => self::ARRAY_END,
-        ',' => self::COMMA,
-        ':' => self::COLON,
+        'n' => Token::SCALAR_CONST,
+        't' => Token::SCALAR_CONST,
+        'f' => Token::SCALAR_CONST,
+        '-' => Token::SCALAR_CONST,
+        '0' => Token::SCALAR_CONST,
+        '1' => Token::SCALAR_CONST,
+        '2' => Token::SCALAR_CONST,
+        '3' => Token::SCALAR_CONST,
+        '4' => Token::SCALAR_CONST,
+        '5' => Token::SCALAR_CONST,
+        '6' => Token::SCALAR_CONST,
+        '7' => Token::SCALAR_CONST,
+        '8' => Token::SCALAR_CONST,
+        '9' => Token::SCALAR_CONST,
+        '"' => Token::SCALAR_STRING,
+        '{' => Token::OBJECT_START,
+        '}' => Token::OBJECT_END,
+        '[' => Token::ARRAY_START,
+        ']' => Token::ARRAY_END,
+        ',' => Token::COMMA,
+        ':' => Token::COLON,
     ];
 
     /** @var Lexer */
@@ -98,15 +90,15 @@ class Parser implements \IteratorAggregate
         $previousToken = null;
         $inArray = false; // todo remove one of inArray, inObject
         $inObject = false;
-        $expectedType = self::OBJECT_START | self::ARRAY_START;
+        $expectedType = Token::OBJECT_START | Token::ARRAY_START;
 
         foreach ($this->lexer as $this->token) {
-            $firstChar = $this->token[0];
+            $firstChar = $this->token->getValue()[0];
             if ( ! isset($this->type[$firstChar]) || ! ($this->type[$firstChar] & $expectedType)) {
                 $this->error("Unexpected symbol");
             }
             if ($currentPath == $this->jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $expectedType & self::ANY_VALUE))) {
-                $jsonBuffer .= $this->token;
+                $jsonBuffer .= $this->token->getValue();
             }
             if ($currentLevel < $iteratorLevel && $inArray && $expectedType & self::ANY_VALUE) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (1+$currentPath[$currentLevel]) : 0;
@@ -114,13 +106,13 @@ class Parser implements \IteratorAggregate
             switch ($firstChar) {
                 case '"':
                     if ($inObject && ($previousToken === ',' || $previousToken === '{')) {
-                        $expectedType = self::COLON;
+                        $expectedType = Token::COLON;
                         $previousToken = null;
                         if ($currentLevel === $iteratorLevel) {
-                            $key = $this->token;
+                            $key = $this->token->getValue();
                             $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
-                            $currentPath[$currentLevel] = json_decode($this->token);
+                            $currentPath[$currentLevel] = json_decode($this->token->getValue());
                         }
                         break;
                     } else {
@@ -128,7 +120,7 @@ class Parser implements \IteratorAggregate
                     }
                 case ',':
                     if ($inObject) {
-                        $expectedType = self::SCALAR_STRING;
+                        $expectedType = Token::SCALAR_STRING;
                     } else {
                         $expectedType = self::ANY_VALUE;
                     }
@@ -188,7 +180,7 @@ class Parser implements \IteratorAggregate
         }
 
         if ($this->token === null) {
-            $this->error('Cannot iterate empty JSON');
+            throw new SyntaxError("Cannot iterate empty JSON ''", $this->lexer->getPosition());
         }
 
         if ( ! $pathFound) {
@@ -214,6 +206,6 @@ class Parser implements \IteratorAggregate
 
     private function error($msg)
     {
-        throw new SyntaxError($msg." '".$this->token."'", $this->lexer->getPosition());
+        throw new SyntaxError($msg." '".$this->token->getValue()."'", $this->lexer->getPosition());
     }
 }
