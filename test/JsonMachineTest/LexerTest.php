@@ -20,9 +20,13 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']))));
     }
 
-    public function testProvidesLocationalData()
+    /**
+     * @param string $formattedJsonFilePath
+     * @dataProvider dataProvidesLocationalData
+     */
+    public function testProvidesLocationalData($formattedJsonFilePath)
     {
-        $json = file_get_contents(__DIR__ . "/formatted.json");
+        $json = file_get_contents($formattedJsonFilePath);
         $lexer = new Lexer(new StringBytes($json));
         $tokens = $this->tokensWithLocationalInformation();
         $i = 0;
@@ -36,6 +40,15 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($token[2], $lexer->getLine(), 'line failed with data set #' . $i);
             $this->assertEquals($token[3], $lexer->getColumn(), 'column failed with data set #' . $i);
         }
+    }
+
+    public function dataProvidesLocationalData()
+    {
+        return [
+            [__DIR__ . '/formatted-cr.json'],
+            [__DIR__ . '/formatted-lf.json'],
+            [__DIR__ . '/formatted-crlf.json'],
+        ];
     }
 
     private function tokensWithLocationalInformation()
