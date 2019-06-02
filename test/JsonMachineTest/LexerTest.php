@@ -45,9 +45,9 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function dataProvidesLocationalData()
     {
         return [
-            [__DIR__ . '/formatted-cr.json'],
-            [__DIR__ . '/formatted-lf.json'],
-            [__DIR__ . '/formatted-crlf.json'],
+            'cr new lines' => [__DIR__ . '/formatted-cr.json'],
+            'lf new lines' => [__DIR__ . '/formatted-lf.json'],
+            'crlf new lines' => [__DIR__ . '/formatted-crlf.json'],
         ];
     }
 
