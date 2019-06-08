@@ -28,6 +28,7 @@ class Lexer implements \IteratorAggregate
         $tokenBuffer = '';
         $isEscaping = false;
         $width = 0;
+        $trackingLineBreak = false;
 
         ${' '} = 0;
         ${"\n"} = 0;
@@ -55,6 +56,12 @@ class Lexer implements \IteratorAggregate
                     continue;
                 }
 
+                // handle CRLF newlines
+                if ($trackingLineBreak && $byte === "\n") {
+                    $trackingLineBreak = false;
+                    continue;
+                }
+
                 if (isset($$byte)) {
                     $this->column++;
                     if ($tokenBuffer !== '') {
@@ -67,6 +74,7 @@ class Lexer implements \IteratorAggregate
                         yield $byte;
                     // track line number and reset column for each newline
                     } elseif ($byte === "\r" || $byte === "\n") {
+                        $trackingLineBreak = ($byte === "\r");
                         $this->line++;
                         $this->column = 0;
                     }
