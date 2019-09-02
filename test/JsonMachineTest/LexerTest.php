@@ -15,6 +15,13 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
     }
 
+    public function testWithBOM()
+    {
+        $data = ["\xEF\xBB\xBF" . '{}'];
+        $expected = ['{','}'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
+    }
+
     public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString()
     {
         $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']))));
