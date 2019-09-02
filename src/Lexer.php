@@ -5,10 +5,6 @@ namespace JsonMachine;
 class Lexer implements \IteratorAggregate
 {
     const BOM_UTF8 = "\xEF\xBB\xBF";
-    const BOM_UTF16_BE = "\xFE\xFF";
-    const BOM_UTF16_LE = "\xFF\xFE";
-    const BOM_UTF32_BE = "\x00\x00\xFE\xFF";
-    const BOM_UTF32_LE = "\xFF\xFE\x00\x00";
 
     /** @var resource */
     private $bytesIterator;
@@ -90,18 +86,6 @@ class Lexer implements \IteratorAggregate
                     }
                     $tokenBuffer .= $byte;
                     if($this->position === 3 && $tokenBuffer === self::BOM_UTF8) {
-                        $tokenBuffer = '';
-                    }
-                    if($this->position === 2 && $tokenBuffer === self::BOM_UTF16_BE) {
-                        $tokenBuffer = '';
-                    }
-                    if($this->position === 2 && $tokenBuffer === self::BOM_UTF16_LE) {
-                        $tokenBuffer = '';
-                    }
-                    if($this->position === 4 && $tokenBuffer === self::BOM_UTF32_BE) {
-                        $tokenBuffer = '';
-                    }
-                    if($this->position === 4 && $tokenBuffer === self::BOM_UTF32_LE) {
                         $tokenBuffer = '';
                     }
                     $width++;
