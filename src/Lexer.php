@@ -4,8 +4,6 @@ namespace JsonMachine;
 
 class Lexer implements \IteratorAggregate
 {
-    const BOM_UTF8 = "\xEF\xBB\xBF";
-
     /** @var resource */
     private $bytesIterator;
 
@@ -31,6 +29,9 @@ class Lexer implements \IteratorAggregate
         $isEscaping = false;
         $width = 0;
         $trackingLineBreak = false;
+
+        // Treat UTF-8 BOM bytes as whitespace
+        ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
 
         ${' '} = 0;
         ${"\n"} = 0;
@@ -85,9 +86,6 @@ class Lexer implements \IteratorAggregate
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
-                    if($this->position === 3 && $tokenBuffer === self::BOM_UTF8) {
-                        $tokenBuffer = '';
-                    }
                     $width++;
                 }
             }
