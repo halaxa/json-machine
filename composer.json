@@ -22,6 +22,7 @@
         "guzzlehttp/guzzle": "^6"
     },
     "autoload" : {
-        "psr-4": {"JsonMachine\\": "src/"}
+        "psr-4": {"JsonMachine\\": "src/"},
+        "files": ["src/functions.php"]
     }
 }
