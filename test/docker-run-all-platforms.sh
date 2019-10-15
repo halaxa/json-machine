@@ -6,7 +6,8 @@ for VERSION in \
   7.0:2.7.0 \
   7.1:2.7.0 \
   7.2:2.7.0 \
-  7.3:2.7.0
+  7.3:2.7.0 \
+  7.4-rc:2.8.0beta2
 do
     set -- $VERSION
     PHP_VERSION=$1
