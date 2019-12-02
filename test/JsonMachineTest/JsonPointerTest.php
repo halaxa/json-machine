@@ -21,10 +21,7 @@ class JsonPointerTest extends \PHPUnit_Framework_TestCase
     {
         $jsonPointer = '/datafeed/programs/0';
         echo getcwd();
-        $products = JsonMachine::fromFile(getcwd().'/test/JsonMachineTest/JsonPointerTest.json', $jsonPointer);
-        $this->assertCount(2, $products);
-        foreach ($products as $product) {
-            $this->assertEquals('Title', $product->product_info->title);
-        }
+        $firstProgram = JsonMachine::fromFile(getcwd().'/test/JsonMachineTest/JsonPointerTest.json', $jsonPointer);
+        $this->assertCount(2, $firstProgram);
     }
 }
