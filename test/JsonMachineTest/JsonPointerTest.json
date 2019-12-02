@@ -1,0 +1,494 @@
+{
+  "datafeed": {
+    "info": {
+      "category": "Category name",
+      "sub_category": "Sub category",
+      "product_count": 2,
+      "last_modified": "2019-11-30 23:00:23",
+      "date_created": "2019-12-01 19:53:33",
+      "previous_download": "0000-00-00 00:00:00"
+    },
+    "programs": [
+      {
+        "program_info": {
+          "id": "729",
+          "name": "Feed name",
+          "currency": "EUR",
+          "product_count": 2,
+          "last_modified": null,
+          "feed_unique_id_since": "2018-02-14 09:23:25",
+          "feed_unique_id_modified": "true"
+        },
+        "products": [
+          {
+            "update_info": {
+              "feed_unique_id": "09876",
+              "previous_feed_unique_id": null,
+              "data_hash": "54321",
+              "status": "active",
+              "insert_date": "2019-11-30 23:00:23",
+              "update_date": null,
+              "delete_date": null
+            },
+            "product_info": {
+              "additional_costs": "",
+              "brand_logo": "",
+              "category": "",
+              "category_path": "",
+              "condition": "",
+              "description": "Description",
+              "description_short": "",
+              "sku": "123",
+              "in_stock": "",
+              "in_stock_amount": "",
+              "keywords": "",
+              "link": "https:\/\/example.com",
+              "price": "639",
+              "price_old": "",
+              "priority": "2",
+              "terms_conditions": "",
+              "title": "Title",
+              "price_shipping": "",
+              "delivery_time": "",
+              "delivery_description": "",
+              "size": "",
+              "size_description": "",
+              "trip_holiday_type": "",
+              "trip_lastminute": "true",
+              "destination_country_link": "https:\/\/example.com",
+              "destination_region_link": "https:\/\/example.com",
+              "material_description": "",
+              "available": "",
+              "accommodation_bathrooms": "",
+              "accommodation_bedrooms": "",
+              "accommodation_floors": "",
+              "accommodation_rooms": "",
+              "accommodation_toilets": "",
+              "max_nr_people": "2",
+              "accommodation_name": "Title",
+              "accommodation_type": "Diversen",
+              "accommodation_address": "",
+              "accommodation_child_friendly": "false",
+              "has_livingroom": "",
+              "accommodation_on_holiday_park": "",
+              "accommodation_pets_allowed": "",
+              "accommodation_smoking_allowed": "",
+              "available_from": "",
+              "distance_to_bakery": "",
+              "distance_to_beach": "",
+              "distance_to_citycenter": "",
+              "distance_to_golfcourse": "",
+              "distance_to_restaurant": "",
+              "distance_to_shopping": "",
+              "distance_to_swimwater": "",
+              "duration_days": "9",
+              "duration_nights": "7",
+              "has_electricity": "",
+              "has_barbecue": "",
+              "has_child_chair": "",
+              "has_dishwasher": "",
+              "model": "",
+              "has_garage": "",
+              "has_garden": "",
+              "has_heating": "",
+              "has_internet": "",
+              "gender_target": "",
+              "has_microwave": "",
+              "has_playground": "",
+              "has_sauna": "",
+              "has_swimmingpool": "",
+              "has_telephone": "",
+              "has_television": "",
+              "has_washingmachine": "",
+              "accommodation_lowest_price": "",
+              "accommodation_lowest_date": "",
+              "accommodation_sqm_floors": "",
+              "destination_city_link": "https:\/\/example.com",
+              "destination_zipcode": "",
+              "airport_departure": "AMS",
+              "airport_destination": "",
+              "airportcode_departure": "AMS",
+              "airportcode_destination": "",
+              "departure_city": "",
+              "destination_city": "City",
+              "departure_continent": "",
+              "departure_country": "",
+              "departure_date": "2019-12-01",
+              "departure_date_price": "",
+              "departure_port": "",
+              "departure_time": "",
+              "departure_times": "",
+              "destination_region": "Region",
+              "destination_continent": "",
+              "destination_country": "Country",
+              "destination_country_description": "",
+              "destination_language": "",
+              "destination_latitude": "0.000000",
+              "destination_location_description": "",
+              "destination_longitude": "0.000000",
+              "destination_port": "",
+              "travel_tour_operator": "",
+              "travel_transportation_type": "",
+              "travel_trip_type": "AI",
+              "departure_region": "",
+              "departure_latitude": "",
+              "has_airco": "",
+              "star_rating": "4",
+              "arrival_date": "",
+              "brand": "",
+              "airline_code": "",
+              "ean": "",
+              "color_primary": "",
+              "airport_departure_return": "",
+              "airport_destination_return": "AMS",
+              "airportcode_departure_return": "",
+              "airportcode_destination_return": "AMS",
+              "airline_code_return": "",
+              "airline": "",
+              "airline_return": "",
+              "google_category_id": "",
+              "departure_longitude": "",
+              "departure_date_return": "2019-12-08",
+              "currency": "EUR",
+              "images": [{
+                "size": "large",
+                "tag": "default",
+                "type": "Default image for the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }
+              ]
+            }
+          }, {
+            "update_info": {
+              "feed_unique_id": "1234",
+              "previous_feed_unique_id": null,
+              "data_hash": "1234",
+              "status": "active",
+              "insert_date": "2019-11-29 23:01:22",
+              "update_date": "2019-11-30 23:00:23",
+              "delete_date": null
+            },
+            "product_info": {
+              "additional_costs": "",
+              "brand_logo": "",
+              "category": "",
+              "category_path": "",
+              "condition": "",
+              "description": "Description",
+              "description_short": "",
+              "sku": "8431",
+              "in_stock": "",
+              "in_stock_amount": "",
+              "keywords": "",
+              "link": "https:\/\/example.com",
+              "price": "849",
+              "price_old": "",
+              "priority": "2",
+              "terms_conditions": "",
+              "title": "Title",
+              "price_shipping": "",
+              "delivery_time": "",
+              "delivery_description": "",
+              "size": "",
+              "size_description": "",
+              "trip_holiday_type": "",
+              "trip_lastminute": "true",
+              "destination_country_link": "https:\/\/example.com",
+              "destination_region_link": "https:\/\/example.com",
+              "material_description": "",
+              "available": "",
+              "accommodation_bathrooms": "",
+              "accommodation_bedrooms": "",
+              "accommodation_floors": "",
+              "accommodation_rooms": "",
+              "accommodation_toilets": "",
+              "max_nr_people": "2",
+              "accommodation_name": "Accomodation Name",
+              "accommodation_type": "Hotel",
+              "accommodation_address": "",
+              "accommodation_child_friendly": "false",
+              "has_livingroom": "",
+              "accommodation_on_holiday_park": "",
+              "accommodation_pets_allowed": "",
+              "accommodation_smoking_allowed": "",
+              "available_from": "",
+              "distance_to_bakery": "",
+              "distance_to_beach": "",
+              "distance_to_citycenter": "",
+              "distance_to_golfcourse": "",
+              "distance_to_restaurant": "",
+              "distance_to_shopping": "",
+              "distance_to_swimwater": "",
+              "duration_days": "10",
+              "duration_nights": "7",
+              "has_electricity": "",
+              "has_barbecue": "",
+              "has_child_chair": "",
+              "has_dishwasher": "",
+              "model": "",
+              "has_garage": "",
+              "has_garden": "",
+              "has_heating": "",
+              "has_internet": "",
+              "gender_target": "",
+              "has_microwave": "",
+              "has_playground": "",
+              "has_sauna": "",
+              "has_swimmingpool": "",
+              "has_telephone": "",
+              "has_television": "",
+              "has_washingmachine": "",
+              "accommodation_lowest_price": "",
+              "accommodation_lowest_date": "",
+              "accommodation_sqm_floors": "",
+              "destination_city_link": "https:\/\/example.com",
+              "destination_zipcode": "",
+              "airport_departure": "AMS",
+              "airport_destination": "",
+              "airportcode_departure": "AMS",
+              "airportcode_destination": "",
+              "departure_city": "",
+              "destination_city": "City",
+              "departure_continent": "",
+              "departure_country": "",
+              "departure_date": "2019-12-06",
+              "departure_date_price": "",
+              "departure_port": "",
+              "departure_time": "",
+              "departure_times": "",
+              "destination_region": "Region",
+              "destination_continent": "",
+              "destination_country": "ID",
+              "destination_country_description": "",
+              "destination_language": "",
+              "destination_latitude": "-1.234567",
+              "destination_location_description": "",
+              "destination_longitude": "1.234567",
+              "destination_port": "",
+              "travel_tour_operator": "",
+              "travel_transportation_type": "",
+              "travel_trip_type": "LO",
+              "departure_region": "",
+              "departure_latitude": "",
+              "has_airco": "",
+              "star_rating": "4",
+              "arrival_date": "",
+              "brand": "",
+              "airline_code": "",
+              "ean": "",
+              "color_primary": "",
+              "airport_departure_return": "",
+              "airport_destination_return": "AMS",
+              "airportcode_departure_return": "",
+              "airportcode_destination_return": "AMS",
+              "airline_code_return": "",
+              "airline": "",
+              "airline_return": "",
+              "google_category_id": "",
+              "departure_longitude": "",
+              "departure_date_return": "2019-12-13",
+              "currency": "EUR",
+              "images": [{
+                "size": "large",
+                "tag": "default",
+                "type": "Default image for the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "large",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }, {
+                "size": "small",
+                "tag": "detail",
+                "type": "Detailed view of the product",
+                "location": "https:\/\/images.example.com\/image.jpg"
+              }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
