@@ -1,0 +1,19 @@
+{
+  "datafeed": {
+    "info": {
+      "category": "Category name"
+    },
+    "programs": [
+      {
+        "program_info": {
+          "id": "X0"
+        }
+      },
+      {
+        "program_info": {
+          "id": "X1"
+        }
+      }
+    ]
+  }
+}
