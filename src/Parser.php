@@ -110,7 +110,7 @@ class Parser implements \IteratorAggregate
             }
             if ($currentLevel < $iteratorLevel && $inArray && $expectedType & self::ANY_VALUE) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (1+$currentPath[$currentLevel]) : 0;
-                $currentPath = array_slice($currentPath, 0, $currentLevel+1);
+                unset($currentPath[$currentLevel+1]);
             }
             switch ($firstChar) {
                 case '"':
@@ -122,7 +122,7 @@ class Parser implements \IteratorAggregate
                             $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
                             $currentPath[$currentLevel] = json_decode($this->token);
-                            $currentPath = array_slice($currentPath, 0, $currentLevel+1);
+                            unset($currentPath[$currentLevel+1]);
                         }
                         break;
                     } else {
