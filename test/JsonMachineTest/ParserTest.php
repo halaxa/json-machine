@@ -54,12 +54,25 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testThrowsOnNotFoundPathSpec()
+    /**
+     * @dataProvider dataThrowsOnNotFoundJsonPointer
+     */
+    public function testThrowsOnNotFoundJsonPointer($json, $jsonPointer)
     {
-        $parser = $this->createParser('{}', '/not/found');
+        $parser = $this->createParser($json, $jsonPointer);
         $this->expectException(PathNotFoundException::class);
-        $this->expectExceptionMessage("Path '/not/found' was not found in json stream.");
+        $this->expectExceptionMessage("Path '$jsonPointer' was not found in json stream.");
         iterator_to_array($parser);
+    }
+
+    public function dataThrowsOnNotFoundJsonPointer()
+    {
+        return [
+            "non existing pointer" => ['{}', '/not/found'],
+            "empty string should not match '0'" => ['{"0":[]}', '/'],
+            "empty string should not match 0" => ['[[]]', '/'],
+            "0 should not match empty string" => ['{"":[]}', '/0'],
+        ];
     }
 
     /**
