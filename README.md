@@ -4,13 +4,13 @@
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 ---
 ## TL;DR;
-JSON Machine is drop-in replacement for non efficient iteration of big JSONs:
+JSON Machine is efficient drop-in replacement for non efficient iteration of big JSONs:
 
 ```diff
 <?php
 
-- $users = json_decode(file_get_contents('500MB-users.json'));
-+ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
+- $users = json_decode(file_get_contents('500MB-users.json')); // often causes Allowed Memory Size Exhausted
++ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json'); // takes few kB of memory
 
 foreach ($users as $id => $user) {
     // just process $user as usual
