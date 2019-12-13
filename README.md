@@ -3,15 +3,6 @@
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 ---
-JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
-developed for unpredictably long JSON streams or documents. Main features are:
-
-- Constant memory footprint for unpredictably large JSON documents.
-- Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
-- Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
-- Speed. Performace critical code contains no unnecessary function calls, no regular expressions
-and uses native `json_decode` to decode JSON document chunks.
-
 ## TL;DR;
 JSON Machine is drop-in replacement for non efficient iteration of big JSONs:
 
@@ -26,7 +17,18 @@ foreach ($users as $id => $user) {
 }
 ```
 
-Random access like `$users[42]` **is not possible**. However you can scan the collection in `foreach` and find the item.
+Random access like `$users[42]` or counting results like `count($users)` **is not possible**.
+Use above-mentioned `foreach` and find the item or count the collection there.
+
+## Introduction
+JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
+developed for unpredictably long JSON streams or documents. Main features are:
+
+- Constant memory footprint for unpredictably large JSON documents.
+- Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
+- Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
+- Speed. Performace critical code contains no unnecessary function calls, no regular expressions
+and uses native `json_decode` to decode JSON document chunks.
 
 ## Parsing JSON documents
 
