@@ -17,7 +17,7 @@ foreach ($users as $id => $user) {
 }
 ```
 
-Random access like `$users[42]` or counting results like `count($users)` **is not possible**.
+Random access like `$users[42]` or counting results like `count($users)` **is not possible** by design.
 Use above-mentioned `foreach` and find the item or count the collection there.
 
 ## Introduction
