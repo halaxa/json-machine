@@ -9,8 +9,10 @@ JSON Machine is efficient drop-in replacement for non efficient iteration of big
 ```diff
 <?php
 
-- $users = json_decode(file_get_contents('500MB-users.json')); // often causes Allowed Memory Size Exhausted
-+ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json'); // takes few kB of memory
+// this often causes Allowed Memory Size Exhausted
+- $users = json_decode(file_get_contents('500MB-users.json'));
+// this takes few kB of memory no matter the file size
++ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
     // just process $user as usual
@@ -60,6 +62,15 @@ foreach ($jsonStream as $name => $data) {
 Parsing an array instead of a dictionary follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
+If you prefered JSON Machine to return objects instead of arrays, wrap `JsonMachine` call into
+`JsonMachine\objects()` helper function. This works with any `from*` function with any json pointer.
+
+```php
+foreach (objects(JsonMachine::fromFile('some.json')) as $object) {
+    echo $object->example;
+}
+```
+
 ### Parsing a subtree
 If you want to iterate only `fruits-key` subtree in this `fruits.json`:
 ```json
@@ -106,16 +117,17 @@ Some examples:
 
 | Json Pointer value | Will iterate through                                                                              |
 |--------------------|---------------------------------------------------------------------------------------------------|
-| (empty string)     | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
-| `/result/items`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
-| `/0/items`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
-| `/` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
+| `""` (empty string)     | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
+| `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
+| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
+| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
   
-## Parsing API responses
-API response or any other JSON stream is parsed exactly the same way as file is. The only difference
+## Parsing stream API responses
+Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
 is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
-resource with the JSON document. The rest is the same as with parsing files.
+resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
+popular http clients which support streaming responses:
 
 ### GuzzleHttp
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
@@ -123,16 +135,21 @@ Guzzle uses its own streams, but they can be converted back to PHP streams by ca
 `JsonMachine::fromStream` function and you're set up. See working
 [GuzzleHttp example](src/examples/guzzleHttp.php).
 
+### Symfony HttpClient
+A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
+based on iterators, the integration with Symfony HttpClient is very simple. See working
+[HttpClient example](src/examples/symfonyHttpClient.php).
+
 ## Efficiency of parsing streams/files
 JSON Machine reads the stream or file 1 JSON item at a time and generates corresponding 1 PHP array at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
 PHP structures. Following table demonstrates a concept of the difference:
 
-|                            | String items in memory at a time | Decoded PHP items in memory at a time | Total |
-|----------------------------|---------------------------------:|--------------------------------------:|------:|
-| `json_decode`              |                            10000 |                                 10000 | 20000 |
-| `JsonMachine::fromStream`  |                                1 |                                     1 |     2 |
+|                                                                 | String items in memory at a time | Decoded PHP items in memory at a time | Total |
+|-----------------------------------------------------------------|---------------------------------:|--------------------------------------:|------:|
+| `json_decode()`                                                 |                            10000 |                                 10000 | 20000 |
+| `JsonMachine::fromStream()`, `::fromFile()`, `::fromIterable()` |                                1 |                                     1 |     2 |
 
 This means, that `JsonMachine::fromStream` is constantly efficient for any size of processed JSON. 100 GB no problem.
 
@@ -149,10 +166,10 @@ is returned. JSON Machine on the other hand creates single array for found item 
 to you. When you process this item and iterate to the next one, another single array is created. This is the same
 behaviour as with streams/files. Following table puts the concept into perspective:
 
-|                            | String items in memory at a time | Decoded PHP items in memory at a time | Total |
-|----------------------------|---------------------------------:|--------------------------------------:|------:|
-| `json_decode`              |                            10000 |                                 10000 | 20000 |
-| `JsonMachine::fromString`  |                            10000 |                                     1 | 10001 |
+|                             | String items in memory at a time | Decoded PHP items in memory at a time | Total |
+|-----------------------------|---------------------------------:|--------------------------------------:|------:|
+| `json_decode()`             |                            10000 |                                 10000 | 20000 |
+| `JsonMachine::fromString()` |                            10000 |                                     1 | 10001 |
 
 The reality is even brighter. `JsonMachine::fromString` consumes about **5 times less memory** than `json_decode`.
 
