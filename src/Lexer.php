@@ -12,11 +12,11 @@ class Lexer implements \IteratorAggregate
     private $column = 0;
 
     /**
-     * @param \Traversable $bytesIterator
+     * @param \Traversable|array $byteChunks
      */
-    public function __construct(\Traversable $bytesIterator)
+    public function __construct($byteChunks)
     {
-        $this->bytesIterator = $bytesIterator;
+        $this->bytesIterator = $byteChunks;
     }
 
     /**

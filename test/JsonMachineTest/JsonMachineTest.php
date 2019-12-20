@@ -18,9 +18,11 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     public function dataFactories()
     {
         return [
-            ['fromStream', fopen('data://text/plain,{"args": {"key":"value"}}', 'r'), '/args'],
-            ['fromString', '{"args": {"key":"value"}}', '/args'],
-            ['fromFile', __DIR__ . '/JsonMachineTest.json', '/args'],
+            ['fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path'],
+            ['fromString', '{"path": {"key":"value"}}', '/path'],
+            ['fromFile', __DIR__ . '/JsonMachineTest.json', '/path'],
+            ['fromIterable', ['{"path": {"key', '":"value"}}'], '/path'],
+            ['fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path'],
         ];
     }
 }

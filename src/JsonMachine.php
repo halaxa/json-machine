@@ -15,10 +15,10 @@ class JsonMachine implements \IteratorAggregate
     private $jsonPointer;
 
     /**
-     * @param \Traversable
+     * @param \Traversable|array
      * @param string $jsonPointer
      */
-    public function __construct(\Traversable $bytesIterator, $jsonPointer = '')
+    public function __construct($bytesIterator, $jsonPointer = '')
     {
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
@@ -52,6 +52,16 @@ class JsonMachine implements \IteratorAggregate
     public static function fromStream($stream, $jsonPointer = '')
     {
         return new static(new StreamBytes($stream), $jsonPointer);
+    }
+
+    /**
+     * @param \Traversable|array $iterable
+     * @param string $jsonPointer
+     * @return self
+     */
+    public static function fromIterable($iterable, $jsonPointer = '')
+    {
+        return new static($iterable, $jsonPointer);
     }
 
     public function getIterator()

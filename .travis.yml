@@ -9,4 +9,4 @@ php:
   - 7.4
 
 install:
-  - composer update
+  - composer update --ignore-platform-reqs

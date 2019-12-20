@@ -1,6 +1,6 @@
 {
     "name": "halaxa/json-machine",
-    "description": "Fast, efficient and easy-to-use JSON stream parser developed for unpredictably long JSON streams or documents.",
+    "description": "Efficient, easy-to-use and fast JSON pull parser",
     "license": "Apache-2.0",
     "authors": [
         {
@@ -8,18 +8,14 @@
             "email": "filip@halaxa.cz"
         }
     ],
-    "config": {
-        "platform": {
-            "php": "5.6"
-        }
-    },
     "require": {
         "php": ">=5.6",
         "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "*",
-        "guzzlehttp/guzzle": "^6"
+        "phpunit/phpunit": "^5.7",
+        "guzzlehttp/guzzle": "^6",
+        "symfony/http-client": "^5"
     },
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"},
