@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 ---
 ## TL;DR;
-JSON Machine is efficient drop-in replacement for non efficient iteration of big JSONs for PHP 5.6+:
+JSON Machine is efficient drop-in replacement for inefficient iteration of big JSONs for PHP 5.6+:
 
 ```diff
 <?php
