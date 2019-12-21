@@ -59,7 +59,7 @@ foreach ($jsonStream as $name => $data) {
 }
 ```
 
-Parsing an array instead of a dictionary follows the same logic.
+Parsing a json array instead of a json object follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
 If you prefered JSON Machine to return objects instead of arrays, wrap `JsonMachine` call into
@@ -117,7 +117,7 @@ Some examples:
 
 | Json Pointer value | Will iterate through                                                                              |
 |--------------------|---------------------------------------------------------------------------------------------------|
-| `""` (empty string)     | `["this", "array"]` or `{"a": "this", "b": "dictionary"}` will be iterated (main level - default) |
+| `""` (empty string)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level - default) |
 | `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
 | `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
