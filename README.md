@@ -195,8 +195,8 @@ composer require halaxa/json-machine
 ```
 or clone or download this repository (not recommended).
 
-## Was it helpful?
-Star it, share it, spread the word.
+## Do you like it?
+Star it, share it, show it :)
 
 ## License
 Apache 2.0
