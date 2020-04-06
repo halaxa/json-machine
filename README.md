@@ -2,6 +2,8 @@
 # JSON Machine
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
+[![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable)](https://packagist.org/packages/halaxa/json-machine)
+[![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 ---
 ## TL;DR;
 JSON Machine is efficient drop-in replacement for inefficient iteration of big JSONs files or streams for PHP 5.6+:
