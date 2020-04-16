@@ -24,6 +24,8 @@ foreach ($users as $id => $user) {
 Random access like `$users[42]` or counting results like `count($users)` **is not possible** by design.
 Use above-mentioned `foreach` and find the item or count the collection there.
 
+Requires `ext-json` if used out of the box. See [custom decoder](#custom-decoder).
+
 ## Introduction
 JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
 developed for unpredictably long JSON streams or documents. Main features are:
@@ -32,7 +34,7 @@ developed for unpredictably long JSON streams or documents. Main features are:
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
-and uses native `json_decode` to decode JSON document chunks.
+and uses native `json_decode` to decode JSON document chunks by default. See [custom decoder](#custom-decoder).
 
 ## Parsing JSON documents
 
@@ -124,6 +126,17 @@ Some examples:
 | `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
+<a name="custom-decoder"></a>
+## Using custom decoder
+As a third parameter of all `JsonMachine::from*` functions is optional instance of
+`JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
+default. It requires `ext-json` PHP extension to be present, because it uses
+`json_decode`. When `json_decode` doesn't do what you want, you can make or use your
+own decoder which must implement `JsonMachine\JsonDecoder\Decoder`.
+
+### Available decoders
+- `ExtJsonDecoder` - **Default.** Uses `json_decode` to decode keys and values.
+- `PassThruDecoder` - uses `json_decode` to decode keys but returns values as pure JSON strings.
   
 ## Parsing stream API responses
 Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
