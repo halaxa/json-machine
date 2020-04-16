@@ -44,4 +44,11 @@ class DecodersTest extends PHPUnit_Framework_TestCase
             [ExtJsonDecoder::class, 'decodeValue'],
         ];
     }
+
+    public function testPassThruDecodeValue()
+    {
+        $passThruDecoder = new PassThruDecoder();
+        $passThruResult = $passThruDecoder->decodeValue('["json"]');
+        $this->assertSame('["json"]', $passThruResult->getValue());
+    }
 }
