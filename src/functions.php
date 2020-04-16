@@ -17,6 +17,7 @@ function objects($iterable)
 
 function httpClientChunks(ResponseStreamInterface $responseStream)
 {
+    @trigger_error("Function 'httpClientChunks' is deprecated and will be removed. Please make your own.", E_USER_DEPRECATED);
     foreach ($responseStream as $chunk) {
         yield $chunk->getContent();
     }
