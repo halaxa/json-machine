@@ -119,11 +119,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataSyntaxError
      */
-    public function testSyntaxError($notIterableJson, $exception = SyntaxError::class)
+    public function testSyntaxError($malformedJson, $exception = SyntaxError::class)
     {
         $this->expectException($exception);
 
-        iterator_to_array($this->createParser($notIterableJson));
+        iterator_to_array($this->createParser($malformedJson));
     }
 
     public function dataSyntaxError()
@@ -148,6 +148,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['["string",,"string"]'],
             ['["string","string",]'],
             ['["string",1eeee1]'],
+            ['{"key\u000Z": "non hex key"}']
         ];
     }
 
