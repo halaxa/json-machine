@@ -5,6 +5,8 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
+use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
 class Parser implements \IteratorAggregate
 {
@@ -59,11 +61,15 @@ class Parser implements \IteratorAggregate
     /** @var string */
     private $jsonPointer;
 
+    /** @var Decoder */
+    private $jsonDecoder;
+
     /**
      * @param \Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
+     * @param Decoder $jsonDecoder
      */
-    public function __construct(\Traversable $lexer, $jsonPointer = '')
+    public function __construct(\Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
     {
         if (0 === preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointer, $matches)) {
             throw new InvalidArgumentException(
@@ -78,6 +84,7 @@ class Parser implements \IteratorAggregate
                 '~0', '~', str_replace('~1', '/', $jsonPointerPart)
             );
         }, explode('/', $jsonPointer)), 1);
+        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
     }
 
     /**
@@ -120,7 +127,13 @@ class Parser implements \IteratorAggregate
                             $key = $this->token;
                             $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
-                            $currentPath[$currentLevel] = json_decode($this->token);
+                            // inlined
+                            $keyResult = $this->jsonDecoder->decodeKey($this->token);
+                            if ( ! $keyResult->isOk()) {
+                                $this->error($keyResult->getErrorMessage());
+                            }
+                            // endinlined
+                            $currentPath[$currentLevel] = $keyResult->getValue();
                             unset($currentPath[$currentLevel+1]);
                         }
                         break;
@@ -174,14 +187,22 @@ class Parser implements \IteratorAggregate
             }
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
                 if ($currentPath == $this->jsonPointerPath) {
-                    $value = json_decode($jsonBuffer, true);
-                    if ($value === null && $jsonBuffer !== 'null') {
-                        $this->error(json_last_error_msg());
+                    $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
+                    // inlined
+                    if ( ! $valueResult->isOk()) {
+                        $this->error($valueResult->getErrorMessage());
                     }
+                    // endinlined
                     if ($iteratorStruct === '[') {
-                        yield $value;
+                        yield $valueResult->getValue();
                     } else {
-                        yield json_decode($key) => $value;
+                        // inlined
+                        $keyResult = $this->jsonDecoder->decodeKey($key);
+                        if ( ! $keyResult->isOk()) {
+                            $this->error($keyResult->getErrorMessage());
+                        }
+                        // endinlined
+                        yield $keyResult->getValue() => $valueResult->getValue();
                     }
                 }
                 $jsonBuffer = '';
