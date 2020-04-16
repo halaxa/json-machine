@@ -139,7 +139,7 @@ Guzzle uses its own streams, but they can be converted back to PHP streams by ca
 
 ### Symfony HttpClient
 A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
-based on iterators, the integration with Symfony HttpClient is very simple. See working
+based on iterators, the integration with Symfony HttpClient is very simple. See
 [HttpClient example](src/examples/symfonyHttpClient.php).
 
 ## Efficiency of parsing streams/files

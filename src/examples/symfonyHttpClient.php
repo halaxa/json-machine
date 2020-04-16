@@ -2,9 +2,16 @@
 
 use JsonMachine\JsonMachine;
 use Symfony\Component\HttpClient\HttpClient;
-use function JsonMachine\httpClientChunks;
+use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
+
+function httpClientChunks(ResponseStreamInterface $responseStream)
+{
+    foreach ($responseStream as $chunk) {
+        yield $chunk->getContent();
+    }
+}
 
 $client = HttpClient::create();
 $response = $client->request('GET', 'https://httpbin.org/anything?key=value');
