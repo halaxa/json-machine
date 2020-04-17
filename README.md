@@ -69,13 +69,15 @@ foreach ($jsonStream as $name => $data) {
 Parsing a json array instead of a json object follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
-If you prefered JSON Machine to return objects instead of arrays, wrap `JsonMachine` call into
-`JsonMachine\objects()` helper function. This works with any `from*` function with any json pointer.
-
+If you prefered JSON Machine to return objects instead of arrays, use `new ExtJsonDecoder()` as decoder
+which by default decodes objects - same as `json_decode`
 ```php
-foreach (objects(JsonMachine::fromFile('some.json')) as $object) {
-    echo $object->example;
-}
+<?php
+
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\JsonMachine;
+
+$objects = new JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
 ### Parsing a subtree
@@ -139,7 +141,19 @@ own decoder which must implement `JsonMachine\JsonDecoder\Decoder`.
 
 ### Available decoders
 - `ExtJsonDecoder` - **Default.** Uses `json_decode` to decode keys and values.
+Constructor takes the same params as `json_decode`.
 - `PassThruDecoder` - uses `json_decode` to decode keys but returns values as pure JSON strings.
+Constructor takes the same params as `json_decode`.
+
+Example:
+```php
+<?php
+
+use JsonMachine\JsonDecoder\PassThruDecoder;
+use JsonMachine\JsonMachine;
+
+$jsonMachine = new JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
+```
   
 ## Parsing stream API responses
 Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference

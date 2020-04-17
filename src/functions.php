@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\ResponseStreamInterface;
  */
 function objects($iterable)
 {
+    @trigger_error("Function 'objects' is deprecated in favor of custom decoders.", E_USER_DEPRECATED);
     foreach ($iterable as $item) {
         yield (object) $item;
     }
