@@ -2,8 +2,6 @@
 
 namespace JsonMachineTest;
 
-use Symfony\Component\HttpClient\HttpClient;
-use function JsonMachine\httpClientChunks;
 use function JsonMachine\objects;
 
 class FunctionsTest extends \PHPUnit_Framework_TestCase
@@ -15,6 +13,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testObjectsOnEmptyInput($expected, $data)
     {
+        error_reporting(~E_USER_DEPRECATED);
         $this->assertEquals($expected, iterator_to_array(objects($data)));
     }
 
