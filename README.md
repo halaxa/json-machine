@@ -16,7 +16,7 @@ JSON Machine is efficient drop-in replacement for inefficient iteration of big J
 
 // this often causes Allowed Memory Size Exhausted
 - $users = json_decode(file_get_contents('500MB-users.json'));
-// this takes few kB of memory no matter the file size
+// this usually takes few kB of memory no matter the file size
 + $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
