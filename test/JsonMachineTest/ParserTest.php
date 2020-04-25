@@ -5,6 +5,7 @@ namespace JsonMachineTest;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\UnexpectedEndOfJsonInputException;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 
@@ -149,6 +150,38 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['["string","string",]'],
             ['["string",1eeee1]'],
             ['{"key\u000Z": "non hex key"}']
+        ];
+    }
+
+    /**
+     * @dataProvider dataUnexpectedEndError
+     */
+    public function testUnexpectedEndError($malformedJson, $exception = UnexpectedEndOfJsonInputException::class)
+    {
+        $this->expectException($exception);
+
+        iterator_to_array($this->createParser($malformedJson));
+    }
+
+    public function dataUnexpectedEndError()
+    {
+        return [
+            ['['],
+            ['{'],
+            ['["string"'],
+            ['["string",'],
+            ['[{"string":"string"}'],
+            ['[{"string":"string"},'],
+            ['[{"string":"string"},{'],
+            ['[{"string":"string"},{"str'],
+            ['[{"string":"string"},{"string"'],
+            ['{"string"'],
+            ['{"string":'],
+            ['{"string":"string"'],
+            ['{"string":["string","string"]'],
+            ['{"string":["string","string"'],
+            ['{"string":["string","string",'],
+            ['{"string":["string","string","str']
         ];
     }
 

@@ -5,6 +5,7 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\UnexpectedEndOfJsonInputException;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
@@ -215,6 +216,10 @@ class Parser implements \IteratorAggregate
 
         if ( ! $pathFound) {
             throw new PathNotFoundException("Path '{$this->jsonPointer}' was not found in json stream.");
+        }
+
+        if ($currentLevel > -1){
+            throw new UnexpectedEndOfJsonInputException('JSON format ended unexpectedly');
         }
     }
 
