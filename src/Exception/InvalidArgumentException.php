@@ -2,7 +2,7 @@
 
 namespace JsonMachine\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException
+class InvalidArgumentException extends JsonMachineException
 {
 
 }

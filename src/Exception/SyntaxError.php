@@ -2,7 +2,7 @@
 
 namespace JsonMachine\Exception;
 
-class SyntaxError extends \RuntimeException
+class SyntaxError extends JsonMachineException
 {
     public function __construct($message, $position)
     {

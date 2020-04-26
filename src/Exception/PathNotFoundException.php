@@ -2,7 +2,7 @@
 
 namespace JsonMachine\Exception;
 
-class PathNotFoundException extends \RuntimeException
+class PathNotFoundException extends JsonMachineException
 {
 
 }

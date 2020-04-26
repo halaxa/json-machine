@@ -5,7 +5,7 @@ namespace JsonMachineTest;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
-use JsonMachine\Exception\UnexpectedEndOfJsonInputException;
+use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 
@@ -13,6 +13,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataSyntax
+     * @param $pathSpec
+     * @param $json
+     * @param $expectedResult
      */
     public function testSyntax($pathSpec, $json, $expectedResult)
     {
@@ -58,6 +61,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnNotFoundJsonPointer
+     * @param $json
+     * @param $jsonPointer
      */
     public function testThrowsOnNotFoundJsonPointer($json, $jsonPointer)
     {
@@ -79,6 +84,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataGetJsonPointer
+     * @param $jsonPointer
+     * @param array $expectedJsonPointer
      */
     public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
     {
@@ -119,10 +126,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataSyntaxError
+     * @param $malformedJson
      */
-    public function testSyntaxError($malformedJson, $exception = SyntaxError::class)
+    public function testSyntaxError($malformedJson)
     {
-        $this->expectException($exception);
+        $this->expectException(SyntaxError::class);
 
         iterator_to_array($this->createParser($malformedJson));
     }
@@ -155,10 +163,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataUnexpectedEndError
+     * @param $malformedJson
      */
-    public function testUnexpectedEndError($malformedJson, $exception = UnexpectedEndOfJsonInputException::class)
+    public function testUnexpectedEndError($malformedJson)
     {
-        $this->expectException($exception);
+        $this->expectException(UnexpectedEndSyntaxErrorException::class);
 
         iterator_to_array($this->createParser($malformedJson));
     }

@@ -5,7 +5,7 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
-use JsonMachine\Exception\UnexpectedEndOfJsonInputException;
+use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
@@ -219,7 +219,7 @@ class Parser implements \IteratorAggregate
         }
 
         if ($currentLevel > -1){
-            throw new UnexpectedEndOfJsonInputException('JSON format ended unexpectedly');
+            $this->error('JSON string ended unexpectedly', UnexpectedEndSyntaxErrorException::class);
         }
     }
 
@@ -239,8 +239,8 @@ class Parser implements \IteratorAggregate
         return $this->jsonPointer;
     }
 
-    private function error($msg)
+    private function error($msg, $exception = SyntaxError::class)
     {
-        throw new SyntaxError($msg." '".$this->token."'", $this->lexer->getPosition());
+        throw new $exception($msg." '".$this->token."'", $this->lexer->getPosition());
     }
 }
