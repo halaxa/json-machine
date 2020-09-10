@@ -24,6 +24,7 @@ class StreamBytes implements \IteratorAggregate
      */
     public function getIterator()
     {
+        rewind($this->stream);
         while ('' !== ($bytes = fread($this->stream, 1024 * 8))) {
             yield $bytes;
         }

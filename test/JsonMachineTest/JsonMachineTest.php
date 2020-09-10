@@ -15,6 +15,8 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     {
         $iterator = call_user_func_array(JsonMachine::class."::$methodName", $args);
         $this->assertSame($expected, iterator_to_array($iterator));
+        // Assert it can be iterated more than once
+        $this->assertSame($expected, iterator_to_array($iterator));
     }
 
     public function dataFactories()
