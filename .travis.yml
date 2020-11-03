@@ -10,5 +10,5 @@ php:
   - nightly
 
 install:
-  - composer self-updateg
+  - composer self-update
   - composer update --ignore-platform-req=php
