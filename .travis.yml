@@ -10,4 +10,4 @@ php:
   - nightly
 
 install:
-  - composer update
+  - composer update --ignore-platform-req=php
