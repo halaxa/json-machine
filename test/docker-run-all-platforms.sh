@@ -3,11 +3,11 @@ set -e
 IFS=:
 for VERSION in \
   5.6:2.5.5 \
-  7.0:2.6.1 \
-  7.1:2.9.0 \
-  7.2:2.9.0 \
-  7.3:2.9.0 \
-  7.4:2.9.0 \
+  7.0:2.7.2 \
+  7.1:2.9.8 \
+  7.2:2.9.8 \
+  7.3:2.9.8 \
+  7.4:2.9.8 \
   8.0-rc:3.0.0beta1
 do
     set -- $VERSION
@@ -16,8 +16,8 @@ do
 
     printf "\n\n"
 
-    printf "PHP $PHP_VERSION\n"
-    printf "===============================\n"
+    printf "PHP $PHP_VERSION (XDEBUG $XDEBUG_VERSION)\n"
+    printf "================================================================================\n"
 
     PHP_IMAGE="php:$PHP_VERSION-cli-alpine"
     CONTAINER_NAME="json-machine-php-$PHP_VERSION"
