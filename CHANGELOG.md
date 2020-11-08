@@ -3,20 +3,21 @@
 - [Custom decoder](README.md#custom-decoder)
 - `ext-json` is not required in `composer.json` anymore, because custom decoder might not need it.
 However **built-in decoders depend on it** so it must be present if you use them.
+- PHP 8 support (thanks @snapshotpl)
 ## BC breaks
 - Function `httpClientChunks()` is **deprecated** so that compatibility with Symfony HttpClient
-is not on the maintainer of JSON Machine. The code is simple and everyone can make their own
+is not on the shoulders of JSON Machine maintainer. The code is simple and everyone can make their own
 function and maintain it. The code was moved to [examples](src/examples/symfonyHttpClient.php).
 - Function `objects()` is **deprecated**. The way `objects()` works is that it casts decoded arrays
 to objects. It brings some unnecessary overhead and risks on huge datasets.
-Alternative is to configure `ExtJsonDecoder` to decode items as objects.
+Alternative is to use `ExtJsonDecoder` which decodes items as objects by default (same as `json_decode`).
 ```php
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonMachine;
 
-$jsonMachine = new JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$jsonMachine = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 Therefore no additional casting is required.
 - Invalid json object keys will now throw and won't be ignored anymore.
