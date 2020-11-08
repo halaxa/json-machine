@@ -7,7 +7,8 @@ for VERSION in \
   7.1:2.9.0 \
   7.2:2.9.0 \
   7.3:2.9.0 \
-  7.4:2.9.0
+  7.4:2.9.0 \
+  8.0-rc:3.0.0beta1
 do
     set -- $VERSION
     PHP_VERSION=$1
@@ -37,10 +38,10 @@ do
             autoconf \
             g++ \
             libtool \
-            make \
-            && pecl install xdebug-$XDEBUG_VERSION \
-              && docker-php-ext-enable xdebug \
-            && wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
+            make
+        RUN wget http://pear.php.net/go-pear.phar && php go-pear.phar
+        RUN pecl install xdebug-$XDEBUG_VERSION
+        RUN wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
               && chmod +x /usr/local/bin/composer
     " | docker build --tag "$CONTAINER_NAME" - > /dev/null
     printf "Running tests...\n"

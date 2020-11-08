@@ -7,6 +7,8 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - nightly
 
 install:
-  - composer update
+  - composer self-update --2
+  - composer update --ignore-platform-req=php
