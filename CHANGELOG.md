@@ -1,10 +1,16 @@
 # master
+
+## New features
+## BC breaks
+## Fixed bugs
+
+# 0.4.0
 ## New features
 - [Custom decoder](README.md#custom-decoder)
-- `ext-json` is not required in `composer.json` anymore, because custom decoder might not need it.
-However **built-in decoders depend on it** so it must be present if you use them.
 - PHP 8 support (thanks @snapshotpl)
 ## BC breaks
+- `ext-json` is not required in `composer.json` anymore, because custom decoder might not need it.
+However **built-in decoders depend on it** so it must be present if you use them.
 - All exceptions now extend `JsonMachineException` (thanks @gabimem)
 - Throws `UnexpectedEndSyntaxErrorException` on an unexpected end of JSON structure (thanks @gabimem)
 - Function `httpClientChunks()` is **deprecated** so that compatibility with Symfony HttpClient
