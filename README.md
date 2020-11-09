@@ -40,6 +40,7 @@ developed for unpredictably long JSON streams or documents. Main features are:
 - Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document chunks by default. See [custom decoder](#custom-decoder).
+- Thoroughly tested. More than 100 tests and 700 assertions.
 
 ## Parsing JSON documents
 
