@@ -13,14 +13,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataSyntax
-     * @param $pathSpec
-     * @param $json
-     * @param $expectedResult
+     * @param string $jsonPointer
+     * @param string $json
+     * @param array $expectedResult
      */
-    public function testSyntax($pathSpec, $json, $expectedResult)
+    public function testSyntax($jsonPointer, $json, $expectedResult)
     {
-        $resultWithKeys = iterator_to_array($this->createParser($json, $pathSpec));
-        $resultNoKeys = iterator_to_array($this->createParser($json, $pathSpec), false);
+        $resultWithKeys = iterator_to_array($this->createParser($json, $jsonPointer));
+        $resultNoKeys = iterator_to_array($this->createParser($json, $jsonPointer), false);
 
         $this->assertEquals($expectedResult, $resultWithKeys);
         $this->assertEquals(array_values($expectedResult), $resultNoKeys);
@@ -61,8 +61,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnNotFoundJsonPointer
-     * @param $json
-     * @param $jsonPointer
+     * @param string $json
+     * @param string $jsonPointer
      */
     public function testThrowsOnNotFoundJsonPointer($json, $jsonPointer)
     {
@@ -84,7 +84,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataGetJsonPointer
-     * @param $jsonPointer
+     * @param string $jsonPointer
      * @param array $expectedJsonPointer
      */
     public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
@@ -106,6 +106,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnMalformedJsonPointer
+     * @param string $jsonPointer
      */
     public function testThrowsOnMalformedJsonPointer($jsonPointer)
     {
@@ -126,7 +127,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataSyntaxError
-     * @param $malformedJson
+     * @param string $malformedJson
      */
     public function testSyntaxError($malformedJson)
     {
@@ -163,7 +164,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataUnexpectedEndError
-     * @param $malformedJson
+     * @param string $malformedJson
      */
     public function testUnexpectedEndError($malformedJson)
     {

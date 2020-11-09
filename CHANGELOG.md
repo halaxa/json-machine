@@ -5,6 +5,8 @@
 However **built-in decoders depend on it** so it must be present if you use them.
 - PHP 8 support (thanks @snapshotpl)
 ## BC breaks
+- All exceptions now extend `JsonMachineException` (thanks @gabimem)
+- Throws `UnexpectedEndSyntaxErrorException` on an unexpected end of JSON structure (thanks @gabimem)
 - Function `httpClientChunks()` is **deprecated** so that compatibility with Symfony HttpClient
 is not on the shoulders of JSON Machine maintainer. The code is simple and everyone can make their own
 function and maintain it. The code was moved to [examples](src/examples/symfonyHttpClient.php).
