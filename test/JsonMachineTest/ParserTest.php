@@ -5,6 +5,7 @@ namespace JsonMachineTest;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 
@@ -12,11 +13,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataSyntax
+     * @param string $jsonPointer
+     * @param string $json
+     * @param array $expectedResult
      */
-    public function testSyntax($pathSpec, $json, $expectedResult)
+    public function testSyntax($jsonPointer, $json, $expectedResult)
     {
-        $resultWithKeys = iterator_to_array($this->createParser($json, $pathSpec));
-        $resultNoKeys = iterator_to_array($this->createParser($json, $pathSpec), false);
+        $resultWithKeys = iterator_to_array($this->createParser($json, $jsonPointer));
+        $resultNoKeys = iterator_to_array($this->createParser($json, $jsonPointer), false);
 
         $this->assertEquals($expectedResult, $resultWithKeys);
         $this->assertEquals(array_values($expectedResult), $resultNoKeys);
@@ -57,6 +61,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnNotFoundJsonPointer
+     * @param string $json
+     * @param string $jsonPointer
      */
     public function testThrowsOnNotFoundJsonPointer($json, $jsonPointer)
     {
@@ -78,6 +84,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataGetJsonPointer
+     * @param string $jsonPointer
+     * @param array $expectedJsonPointer
      */
     public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
     {
@@ -98,6 +106,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnMalformedJsonPointer
+     * @param string $jsonPointer
      */
     public function testThrowsOnMalformedJsonPointer($jsonPointer)
     {
@@ -118,10 +127,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataSyntaxError
+     * @param string $malformedJson
      */
-    public function testSyntaxError($malformedJson, $exception = SyntaxError::class)
+    public function testSyntaxError($malformedJson)
     {
-        $this->expectException($exception);
+        $this->expectException(SyntaxError::class);
 
         iterator_to_array($this->createParser($malformedJson));
     }
@@ -149,6 +159,39 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['["string","string",]'],
             ['["string",1eeee1]'],
             ['{"key\u000Z": "non hex key"}']
+        ];
+    }
+
+    /**
+     * @dataProvider dataUnexpectedEndError
+     * @param string $malformedJson
+     */
+    public function testUnexpectedEndError($malformedJson)
+    {
+        $this->expectException(UnexpectedEndSyntaxErrorException::class);
+
+        iterator_to_array($this->createParser($malformedJson));
+    }
+
+    public function dataUnexpectedEndError()
+    {
+        return [
+            ['['],
+            ['{'],
+            ['["string"'],
+            ['["string",'],
+            ['[{"string":"string"}'],
+            ['[{"string":"string"},'],
+            ['[{"string":"string"},{'],
+            ['[{"string":"string"},{"str'],
+            ['[{"string":"string"},{"string"'],
+            ['{"string"'],
+            ['{"string":'],
+            ['{"string":"string"'],
+            ['{"string":["string","string"]'],
+            ['{"string":["string","string"'],
+            ['{"string":["string","string",'],
+            ['{"string":["string","string","str']
         ];
     }
 
