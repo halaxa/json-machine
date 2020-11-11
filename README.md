@@ -31,6 +31,8 @@ Use above-mentioned `foreach` and find the item or count the collection there.
 
 Requires `ext-json` if used out of the box. See [custom decoder](#custom-decoder).
 
+0.4.0 is the last version to support PHP 5.6. Since 0.5.0 PHP 7.0+ will be required.
+
 ## Introduction
 JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
 developed for unpredictably long JSON streams or documents. Main features are:

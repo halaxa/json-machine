@@ -3,8 +3,9 @@
 namespace JsonMachineTest;
 
 use JsonMachine\StringBytes;
+use PHPUnit\Framework\TestCase;
 
-class StringBytesTest extends \PHPUnit_Framework_TestCase
+class StringBytesTest extends TestCase
 {
     /**
      * @dataProvider data_testGeneratorYieldsStringChunks

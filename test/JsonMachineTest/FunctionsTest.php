@@ -2,9 +2,10 @@
 
 namespace JsonMachineTest;
 
+use PHPUnit\Framework\TestCase;
 use function JsonMachine\objects;
 
-class FunctionsTest extends \PHPUnit_Framework_TestCase
+class FunctionsTest extends TestCase
 {
     /**
      * @dataProvider dataObjectsOnEmptyInput

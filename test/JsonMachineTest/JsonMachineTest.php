@@ -4,9 +4,9 @@ namespace JsonMachineTest;
 
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\JsonMachine;
-use phpDocumentor\Reflection\DocBlock\Tags\Formatter\PassthroughFormatter;
+use PHPUnit\Framework\TestCase;
 
-class JsonMachineTest extends \PHPUnit_Framework_TestCase
+class JsonMachineTest extends TestCase
 {
     /**
      * @dataProvider dataFactories

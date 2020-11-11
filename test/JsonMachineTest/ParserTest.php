@@ -8,8 +8,9 @@ use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
+use PHPUnit\Framework\TestCase;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
     /**
      * @dataProvider dataSyntax
