@@ -2,8 +2,9 @@
 
 ## New features
 - Dropped support for PHP 5.6
-## BC breaks
-## Fixed bugs
+
+<br>
+<br>
 
 # 0.4.0
 ## New features
