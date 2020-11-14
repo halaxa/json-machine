@@ -53,7 +53,7 @@ class Lexer implements \IteratorAggregate
                     if ($byte === '"' && !$isEscaping) {
                         $inString = false;
                     }
-                    $isEscaping = ($byte =='\\' && !$isEscaping);
+                    $isEscaping = ($byte === '\\' && !$isEscaping);
                     $tokenBuffer .= $byte;
                     $width++;
                     continue;
