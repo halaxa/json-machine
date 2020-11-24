@@ -156,7 +156,7 @@ Example:
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\JsonMachine;
 
-$jsonMachine = new JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
+$jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
   
 ## Parsing stream API responses
