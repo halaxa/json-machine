@@ -16,10 +16,13 @@ JSON Machine is an efficient drop-in replacement of inefficient iteration of big
 ```diff
 <?php
 
+use \JsonMachine\JsonMachine;
+
 // this often causes Allowed Memory Size Exhausted
 - $users = json_decode(file_get_contents('500MB-users.json'));
+
 // this usually takes few kB of memory no matter the file size
-+ $users = \JsonMachine\JsonMachine::fromFile('500MB-users.json');
++ $users = JsonMachine::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
     // just process $user as usual
@@ -46,9 +49,9 @@ and uses native `json_decode` to decode JSON document chunks by default. See [cu
 ## Parsing JSON documents
 
 ### Simple document
-Let's say that `big.json` contains this really big JSON document:
+Let's say that `fruits.json` contains this really big JSON document:
 ```json
-// big.json
+// fruits.json
 {
     "apple": {
         "color": "red"
@@ -62,9 +65,11 @@ It can be parsed this way:
 ```php
 <?php
 
-$jsonStream = \JsonMachine\JsonMachine::fromFile('big.json');
+use \JsonMachine\JsonMachine;
 
-foreach ($jsonStream as $name => $data) {
+$fruits = JsonMachine::fromFile('fruits.json');
+
+foreach ($fruits as $name => $data) {
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
     // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
 }
@@ -81,15 +86,15 @@ which by default decodes objects - same as `json_decode`
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonMachine;
 
-$objects = new JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
 ### Parsing a subtree
-If you want to iterate only `fruits-key` subtree in this `fruits.json`:
+If you want to iterate only `results` subtree in this `fruits.json`:
 ```json
 // fruits.json
 {
-    "fruits-key": {
+    "results": {
         "apple": {
             "color": "red"
         },
@@ -103,8 +108,10 @@ do it like this:
 ```php
 <?php
 
-$jsonStream = \JsonMachine\JsonMachine::fromFile("fruits.json", "/fruits-key" /* <- Json Pointer */);
-foreach ($jsonStream as $name => $data) {
+use \JsonMachine\JsonMachine;
+
+$fruits = JsonMachine::fromFile("fruits.json", "/results" /* <- Json Pointer */);
+foreach ($fruits as $name => $data) {
     // The same as above, which means:
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
     // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
