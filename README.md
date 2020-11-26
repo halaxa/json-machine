@@ -120,8 +120,8 @@ foreach ($fruits as $name => $data) {
 
 > Note:
 >
-> Value of `fruits-key` is not loaded into memory at once, but only one item in
-> `fruits-key` at a time. It is always one item in memory at a time at the level/subtree
+> Value of `results` is not loaded into memory at once, but only one item in
+> `results` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus the memory consumption is constant.
 
 <a name="json-pointer"></a>
