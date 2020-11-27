@@ -144,11 +144,11 @@ Some examples:
 
 <a name="custom-decoder"></a>
 ## Using custom decoder
-As a third parameter of all `JsonMachine::from*` functions is optional instance of
+As a third parameter of all `JsonMachine::from*` functions is an optional instance of
 `JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
-`json_decode`. When `json_decode` doesn't do what you want, you can make or use your
-own decoder which must implement `JsonMachine\JsonDecoder\Decoder`.
+`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
+and make your own.
 
 ### Available decoders
 - `ExtJsonDecoder` - **Default.** Uses `json_decode` to decode keys and values.
@@ -167,19 +167,19 @@ $jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
   
 ## Parsing stream API responses
-Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
-is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
+A stream API response or any other JSON stream is parsed exactly the same way as a file. The only difference
+is that you use `JsonMachine::fromStream($streamResource)`, where `$streamResource` is the stream
 resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
 popular http clients which support streaming responses:
 
 ### GuzzleHttp
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
-`JsonMachine::fromStream` function and you're set up. See working
+`JsonMachine::fromStream()` and you're set up. See working
 [GuzzleHttp example](src/examples/guzzleHttp.php).
 
 ### Symfony HttpClient
-A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
+A stream response of Symfony HttpClient works as an iterator. And because JSON Machine is
 based on iterators, the integration with Symfony HttpClient is very simple. See
 [HttpClient example](src/examples/symfonyHttpClient.php).
 
@@ -187,14 +187,14 @@ based on iterators, the integration with Symfony HttpClient is very simple. See
 JSON Machine reads the stream or file 1 JSON item at a time and generates corresponding 1 PHP array at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
-PHP structures. Following table demonstrates a concept of the difference:
+PHP structures. Following table shows the difference:
 
-|                                                                 | String items in memory at a time | Decoded PHP items in memory at a time | Total |
-|-----------------------------------------------------------------|---------------------------------:|--------------------------------------:|------:|
-| `json_decode()`                                                 |                            10000 |                                 10000 | 20000 |
-| `JsonMachine::fromStream()`, `::fromFile()`, `::fromIterable()` |                                1 |                                     1 |     2 |
+|                        | String items in memory at a time | Decoded PHP items in memory at a time | Total |
+|------------------------|---------------------------------:|--------------------------------------:|------:|
+| `json_decode()`        |                            10000 |                                 10000 | 20000 |
+| `JsonMachine::from*()` |                                1 |                                     1 |     2 |
 
-This means, that `JsonMachine::fromStream` is constantly efficient for any size of processed JSON. 100 GB no problem.
+This means, that `JsonMachine` is constantly efficient for any size of processed JSON. 100 GB no problem.
 
 ## Efficiency of parsing in-memory JSON strings
 There is also a method `JsonMachine::fromString()`. You may wonder, why is it there. Why just not use
@@ -214,9 +214,10 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 | `json_decode()`             |                            10000 |                                 10000 | 20000 |
 | `JsonMachine::fromString()` |                            10000 |                                     1 | 10001 |
 
-The reality is even brighter. `JsonMachine::fromString` consumes about **5 times less memory** than `json_decode`.
+The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`.
 
 ## Error handling
+Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
 
 ## Running tests
