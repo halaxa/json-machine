@@ -3,13 +3,14 @@
 namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
-class Parser implements \IteratorAggregate
+class Parser implements \IteratorAggregate, PositionAware
 {
     const SCALAR_CONST = 1;
     const SCALAR_STRING = 2;
@@ -242,5 +243,14 @@ class Parser implements \IteratorAggregate
     private function error($msg, $exception = SyntaxError::class)
     {
         throw new $exception($msg." '".$this->token."'", $this->lexer->getPosition());
+    }
+
+    public function getPosition()
+    {
+        if ($this->lexer instanceof PositionAware) {
+            return $this->lexer->getPosition();
+        } else {
+            throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
+        }
     }
 }

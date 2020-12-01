@@ -2,7 +2,7 @@
 
 namespace JsonMachine;
 
-class Lexer implements \IteratorAggregate
+class Lexer implements \IteratorAggregate, PositionAware
 {
     /** @var resource */
     private $bytesIterator;

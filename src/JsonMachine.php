@@ -4,7 +4,7 @@ namespace JsonMachine;
 
 use JsonMachine\JsonDecoder\Decoder;
 
-class JsonMachine implements \IteratorAggregate
+class JsonMachine implements \IteratorAggregate, PositionAware
 {
     /**
      * @var \Traversable
@@ -22,6 +22,11 @@ class JsonMachine implements \IteratorAggregate
     private $jsonDecoder;
 
     /**
+     * @var iterable
+     */
+    private $parser;
+
+    /**
      * @param $bytesIterator
      * @param string $jsonPointer
      * @param Decoder $jsonDecoder
@@ -31,6 +36,8 @@ class JsonMachine implements \IteratorAggregate
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
         $this->jsonDecoder = $jsonDecoder;
+
+        $this->parser = new Parser(new Lexer($this->bytesIterator), $this->jsonPointer, $this->jsonDecoder);
     }
 
     /**
@@ -79,6 +86,11 @@ class JsonMachine implements \IteratorAggregate
 
     public function getIterator()
     {
-        return new Parser(new Lexer($this->bytesIterator), $this->jsonPointer, $this->jsonDecoder);
+        return $this->parser;
+    }
+
+    public function getPosition()
+    {
+        return $this->parser->getPosition();
     }
 }
