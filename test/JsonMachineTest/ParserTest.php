@@ -196,6 +196,11 @@ class ParserTest extends TestCase
         ];
     }
 
+    public function testScalarResult()
+    {
+        $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
+    }
+
     private function createParser($json, $jsonPointer = '')
     {
         return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer);

@@ -37,4 +37,13 @@ class JsonMachineTest extends TestCase
             [$passThruResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', $ptDecoder],
         ];
     }
+
+    public function testGetPosition()
+    {
+        $expectedPosition = ['key1' => 10, 'key2' => 20];
+        $items = JsonMachine::fromString('{"key1":1, "key2":2}    ');
+        foreach ($items as $key => $val) {
+            $this->assertSame($expectedPosition[$key], $items->getPosition());
+        }
+    }
 }
