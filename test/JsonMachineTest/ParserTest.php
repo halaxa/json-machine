@@ -198,6 +198,7 @@ class ParserTest extends TestCase
 
     public function testScalarResult()
     {
+        $this->markTestSkipped('To be implemented');
         $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
     }
 
