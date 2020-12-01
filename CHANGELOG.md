@@ -4,6 +4,10 @@
 ## BC breaks
 ## Fixed bugs
 
+# 0.4.1
+## New features
+- Tracking of parsing progress
+
 # 0.4.0
 ## New features
 - [Custom decoder](README.md#custom-decoder)
