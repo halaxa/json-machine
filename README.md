@@ -80,7 +80,45 @@ which by default decodes objects - same as `json_decode`
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonMachine;
 
-$objects = new JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+```
+
+## Parsing JSON stream API responses
+Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
+is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
+resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
+popular http clients which support streaming responses:
+
+### GuzzleHttp
+Guzzle uses its own streams, but they can be converted back to PHP streams by calling
+`\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
+`JsonMachine::fromStream` function and you're set up. See working
+[GuzzleHttp example](src/examples/guzzleHttp.php).
+
+### Symfony HttpClient
+A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
+based on iterators, the integration with Symfony HttpClient is very simple. See
+[HttpClient example](src/examples/symfonyHttpClient.php).
+
+## Tracking parsing progress
+Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
+count of processed bytes from the beginning. Percentage is then easy to calculate as `position/total`. To get
+total size of your document in bytes you may want to check:
+- `strlen($document)` if you're parsing string
+- `filesize($file)` if you're parsing a file
+- `Content-Length` http header if you're parsing http stream response
+- ... you get the point
+
+```php
+<?php
+
+use JsonMachine\JsonMachine;
+
+$fileSize = filesize('fruits.json');
+$fruits = JsonMachine::fromFile('fruits.json');
+foreach ($fruits as $name => $data) {
+    echo 'Progress: ' . intval($fruits->getPosition() / $fileSize) . ' %'; 
+}
 ```
 
 ### Parsing a subtree
@@ -157,23 +195,6 @@ use JsonMachine\JsonMachine;
 
 $jsonMachine = new JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
-  
-## Parsing stream API responses
-Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
-is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
-resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
-popular http clients which support streaming responses:
-
-### GuzzleHttp
-Guzzle uses its own streams, but they can be converted back to PHP streams by calling
-`\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
-`JsonMachine::fromStream` function and you're set up. See working
-[GuzzleHttp example](src/examples/guzzleHttp.php).
-
-### Symfony HttpClient
-A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
-based on iterators, the integration with Symfony HttpClient is very simple. See
-[HttpClient example](src/examples/symfonyHttpClient.php).
 
 ## Efficiency of parsing streams/files
 JSON Machine reads the stream or file 1 JSON item at a time and generates corresponding 1 PHP array at a time.
