@@ -4,40 +4,39 @@
 Very easy to use and memory efficient drop-in replacement of inefficient iteration of big JSON files or streams
 for PHP 5.6+. See [TL;DR;](#tl-dr). **Does not depend on any other library.**
 
----
-
-*This README is in sync with code. For README of a specific version see its commited README.md.*\
-See [CHANGELOG.md](CHANGELOG.md) to keep up with changes in new versions and master.\
-~~**0.4 is the last version to support PHP 5.6**. Since 0.5 PHP 7.0+ will be required.~~ _PHP 5.6 may be supported longer._
-
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 [![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable?v0.4.1)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
 
-  * [TL;DR;](#tl-dr)
-  * [Introduction](#introduction)
-  * [Parsing JSON documents](#parsing-json-documents)
-    + [Simple document](#simple-document)
-  * [Parsing JSON stream API responses](#parsing-json-stream-api-responses)
-    + [GuzzleHttp](#guzzlehttp)
-    + [Symfony HttpClient](#symfony-httpclient)
-  * [Tracking parsing progress](#tracking-parsing-progress)
-  * [Parsing a subtree](#parsing-a-subtree)
-    + [Few words about Json Pointer](#json-pointer)
-  * [Custom decoders](#custom-decoder)
-    + [Available decoders](#available-decoders)
-  * [On parser efficiency](#on-parser-efficiency)
-    + [Streams / files](#streams-files)
-    + [In-memory JSON strings](#in-memory-json-strings)
-  * [Error handling](#error-handling)
-  * [Running tests](#running-tests)
-    + [Running tests on all supported PHP platforms](#running-tests-on-all-supported-php-platforms)
-  * [Installation](#installation)
-  * [Support](#support)
-  * [License](#license)
+* [TL;DR;](#tl-dr)
+* [Introduction](#introduction)
+* [Parsing JSON documents](#parsing-json-documents)
+  + [Simple document](#simple-document)
+* [Parsing JSON stream API responses](#parsing-json-stream-api-responses)
+  + [GuzzleHttp](#guzzlehttp)
+  + [Symfony HttpClient](#symfony-httpclient)
+* [Tracking parsing progress](#tracking-parsing-progress)
+* [Parsing a subtree](#parsing-a-subtree)
+  + [Few words about Json Pointer](#json-pointer)
+* [Custom decoders](#custom-decoder)
+  + [Available decoders](#available-decoders)
+* [On parser efficiency](#on-parser-efficiency)
+  + [Streams / files](#streams-files)
+  + [In-memory JSON strings](#in-memory-json-strings)
+* [Error handling](#error-handling)
+* [Troubleshooting](#troubleshooting)
+    + ["I'm still getting Allowed memory size ... exhausted"](#step1)
+    + ["That didn't help"](#step2)
+    + ["I am still out of luck"](#step3)
+* [Running tests](#running-tests)
+  + [Running tests on all supported PHP platforms](#running-tests-on-all-supported-php-platforms)
+* [Installation](#installation)
+* [Support](#support)
+* [License](#license)
 
+---
 
 <a name="tl-dr"></a>
 ## TL;DR;
@@ -288,6 +287,44 @@ The reality is even brighter. `JsonMachine::fromString` consumes about **5x less
 ## Error handling
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
+
+
+<a name="troubleshooting"></a>
+## Troubleshooting
+
+<a name="step1"></a>
+### "I'm still getting Allowed memory size ... exhausted"
+One of the reasons may be that the items you want to iterate over are in some subkey such as `"results"`
+but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-subtree).
+
+<a name="step2"></a>
+### "That didn't help"
+The other reason may be, that one of the items you iterate itself is so huge it cannot be decoded at once.
+For example, you're iterating over users and one user has thousands of "friends".
+Use `PassThruDecoder` which does not decode item, get the json string of the user
+and parse it iteratively yourself using `JsonMachine::fromString()`.
+
+```php
+<?php
+
+use JsonMachine\JsonMachine;
+use JsonMachine\JsonDecoder\PassThruDecoder;
+
+$users = JsonMachine::fromFile('users.json', '', new PassThruDecoder);
+foreach ($users as $user) {
+    foreach (JsonMachine::fromString($user, "/friends") as $friend) {
+        // process friends one by one
+    }
+}
+```
+
+<a name="step3"></a>
+### "I am still out of luck"
+It probably means that the JSON string `$user` itself or one of the friends are too big and do not fit in memory.
+However, you can try this approach recursively. Parse `"/friends"` with `PassThruDecoder` getting one `$friend`
+json string at a time and then parse that using `JsonMachine::fromString()`... If even that does not help,
+there's probably no solution yet via JSON Machine. A feature is planned which will enable you to iterate
+any structure fully recursively and strings will be served as streams.
 
 
 <a name="running-tests"></a>
