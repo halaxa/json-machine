@@ -3,13 +3,15 @@
 
 *This README is in sync with code. For README of a specific version see its commited README.md.*\
 See [CHANGELOG.md](CHANGELOG.md) to keep up with changes in new versions and master.\
-**0.4 is the last version to support PHP 5.6**. Since 0.5 PHP 7.0+ will be required.
+~~**0.4 is the last version to support PHP 5.6**. Since 0.5 PHP 7.0+ will be required.~~ _PHP 5.6 may be supported longer._
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 [![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
+
+
 ## TL;DR;
 JSON Machine is an efficient drop-in replacement of inefficient iteration of big JSON files or streams for PHP 5.6+:
 
@@ -45,6 +47,7 @@ developed for unpredictably long JSON streams or documents. Main features are:
 - Speed. Performace critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document chunks by default. See [custom decoder](#custom-decoder).
 - Thoroughly tested. More than 100 tests and 700 assertions.
+
 
 ## Parsing JSON documents
 
@@ -89,6 +92,7 @@ use JsonMachine\JsonMachine;
 $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
+
 ## Parsing JSON stream API responses
 Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
 is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
@@ -105,6 +109,7 @@ Guzzle uses its own streams, but they can be converted back to PHP streams by ca
 A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
 based on iterators, the integration with Symfony HttpClient is very simple. See
 [HttpClient example](src/examples/symfonyHttpClient.php).
+
 
 ## Tracking parsing progress
 Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
@@ -127,7 +132,8 @@ foreach ($fruits as $name => $data) {
 }
 ```
 
-### Parsing a subtree
+
+## Parsing a subtree
 If you want to iterate only `results` subtree in this `fruits.json`:
 ```json
 // fruits.json
@@ -163,7 +169,7 @@ foreach ($fruits as $name => $data) {
 > you are currently iterating. Thus the memory consumption is constant.
 
 <a name="json-pointer"></a>
-#### Few words about Json Pointer
+### Few words about Json Pointer
 It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
@@ -180,8 +186,9 @@ Some examples:
 | `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
+
 <a name="custom-decoder"></a>
-## Using custom decoder
+## Custom decoders
 As a third parameter of all `JsonMachine::from*` functions is an optional instance of
 `JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
@@ -203,25 +210,11 @@ use JsonMachine\JsonMachine;
 
 $jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
-  
-## Parsing stream API responses
-A stream API response or any other JSON stream is parsed exactly the same way as a file. The only difference
-is that you use `JsonMachine::fromStream($streamResource)`, where `$streamResource` is the stream
-resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
-popular http clients which support streaming responses:
 
-### GuzzleHttp
-Guzzle uses its own streams, but they can be converted back to PHP streams by calling
-`\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
-`JsonMachine::fromStream()` and you're set up. See working
-[GuzzleHttp example](src/examples/guzzleHttp.php).
 
-### Symfony HttpClient
-A stream response of Symfony HttpClient works as an iterator. And because JSON Machine is
-based on iterators, the integration with Symfony HttpClient is very simple. See
-[HttpClient example](src/examples/symfonyHttpClient.php).
+## On parser efficiency
 
-## Efficiency of parsing streams/files
+### Streams / files
 JSON Machine reads the stream or file 1 JSON item at a time and generates corresponding 1 PHP array at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
@@ -234,7 +227,7 @@ PHP structures. Following table shows the difference:
 
 This means, that `JsonMachine` is constantly efficient for any size of processed JSON. 100 GB no problem.
 
-## Efficiency of parsing in-memory JSON strings
+### In-memory JSON strings
 There is also a method `JsonMachine::fromString()`. You may wonder, why is it there. Why just not use
 `json_decode`? True, when parsing short strings, JSON Machine may be overhead. But if you are
 forced to parse a big string and the stream is not available, JSON Machine may be better than `json_decode`.
@@ -254,9 +247,11 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 
 The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`.
 
+
 ## Error handling
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
+
 
 ## Running tests
 ```bash
@@ -271,11 +266,13 @@ tests/docker-run-all-platforms.sh
 ```
 This needs no php nor composer installation on your machine. Only Docker.
 
+
 ## Installation
 ```bash
 composer require halaxa/json-machine
 ```
 or clone or download this repository (not recommended).
+
 
 ## Do you like it?
 Star it, share it, show it :)
