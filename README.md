@@ -299,7 +299,7 @@ but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-sub
 
 <a name="step2"></a>
 ### "That didn't help"
-The other reason may be, that one of the items you iterate itself is so huge it cannot be decoded at once.
+The other reason may be, that one of the items you iterate is itself so huge it cannot be decoded at once.
 For example, you're iterating over users and one user has thousands of "friends".
 Use `PassThruDecoder` which does not decode item, get the json string of the user
 and parse it iteratively yourself using `JsonMachine::fromString()`.
