@@ -11,7 +11,7 @@ See [CHANGELOG.md](CHANGELOG.md) to keep up with changes in new versions and mas
 ~~**0.4 is the last version to support PHP 5.6**. Since 0.5 PHP 7.0+ will be required.~~ _PHP 5.6 may be supported longer._
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
-[![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable)](https://packagist.org/packages/halaxa/json-machine)
+[![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable?v0.4.1)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
