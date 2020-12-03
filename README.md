@@ -1,7 +1,9 @@
 ![](img/logo.png)
 # JSON Machine
+
 Very easy to use and memory efficient drop-in replacement of inefficient iteration of big JSON files or streams
-for PHP 5.6+. See [TL;DR;](#tl-dr). Does not depend on any other library.
+for PHP 5.6+. See [TL;DR;](#tl-dr). **Does not depend on any other library.**
+
 ---
 
 *This README is in sync with code. For README of a specific version see its commited README.md.*\
