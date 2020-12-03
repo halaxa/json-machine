@@ -11,7 +11,30 @@ See [CHANGELOG.md](CHANGELOG.md) to keep up with changes in new versions and mas
 
 ---
 
+  * [TL;DR;](#tl-dr)
+  * [Introduction](#introduction)
+  * [Parsing JSON documents](#parsing-json-documents)
+    + [Simple document](#simple-document)
+  * [Parsing JSON stream API responses](#parsing-json-stream-api-responses)
+    + [GuzzleHttp](#guzzlehttp)
+    + [Symfony HttpClient](#symfony-httpclient)
+  * [Tracking parsing progress](#tracking-parsing-progress)
+  * [Parsing a subtree](#parsing-a-subtree)
+    + [Few words about Json Pointer](#json-pointer)
+  * [Custom decoders](#custom-decoder)
+    + [Available decoders](#available-decoders)
+  * [On parser efficiency](#on-parser-efficiency)
+    + [Streams / files](#streams-files)
+    + [In-memory JSON strings](#in-memory-json-strings)
+  * [Error handling](#error-handling)
+  * [Running tests](#running-tests)
+    + [Running tests on all supported PHP platforms](#running-tests-on-all-supported-php-platforms)
+  * [Installation](#installation)
+  * [Support](#support)
+  * [License](#license)
 
+
+<a name="tl-dr"></a>
 ## TL;DR;
 JSON Machine is an efficient drop-in replacement of inefficient iteration of big JSON files or streams for PHP 5.6+:
 
@@ -37,6 +60,7 @@ Use above-mentioned `foreach` and find the item or count the collection there.
 Requires `ext-json` if used out of the box. See [custom decoder](#custom-decoder).
 
 
+<a name="introduction"></a>
 ## Introduction
 JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
 developed for unpredictably long JSON streams or documents. Main features are:
@@ -48,9 +72,10 @@ developed for unpredictably long JSON streams or documents. Main features are:
 and uses native `json_decode` to decode JSON document chunks by default. See [custom decoder](#custom-decoder).
 - Thoroughly tested. More than 100 tests and 700 assertions.
 
-
+<a name="parsing-json-documents"></a>
 ## Parsing JSON documents
 
+<a name="simple-document"></a>
 ### Simple document
 Let's say that `fruits.json` contains this really big JSON document:
 ```json
@@ -81,7 +106,7 @@ foreach ($fruits as $name => $data) {
 Parsing a json array instead of a json object follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
-If you prefered JSON Machine to return objects instead of arrays, use `new ExtJsonDecoder()` as decoder
+If you prefer JSON Machine to return objects instead of arrays, use `new ExtJsonDecoder()` as decoder
 which by default decodes objects - same as `json_decode`
 ```php
 <?php
@@ -93,24 +118,28 @@ $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
 
+<a name="parsing-json-stream-api-responses"></a>
 ## Parsing JSON stream API responses
-Stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
+A stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
 is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
 resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
 popular http clients which support streaming responses:
 
+<a name="guzzlehttp"></a>
 ### GuzzleHttp
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
-`JsonMachine::fromStream` function and you're set up. See working
+`JsonMachine::fromStream` function, and you're set up. See working
 [GuzzleHttp example](src/examples/guzzleHttp.php).
 
+<a name="symfony-httpclient"></a>
 ### Symfony HttpClient
 A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
 based on iterators, the integration with Symfony HttpClient is very simple. See
 [HttpClient example](src/examples/symfonyHttpClient.php).
 
 
+<a name="tracking-parsing-progress"></a>
 ## Tracking parsing progress
 Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
 count of processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`. To get
@@ -132,7 +161,7 @@ foreach ($fruits as $name => $data) {
 }
 ```
 
-
+<a name="parsing-a-subtree"></a>
 ## Parsing a subtree
 If you want to iterate only `results` subtree in this `fruits.json`:
 ```json
@@ -174,8 +203,8 @@ It's a way of addressing one item in JSON document. See the [Json Pointer RFC 69
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
 When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
-`JsonMachine::from*` functions. If you specify pointer to scalar value (which logically cannot be iterated)
-or non existent position in the document, an exception is thrown.
+`JsonMachine::from*` functions. If you specify a pointer to a scalar value (which logically cannot be iterated)
+or a non-existent position in the document, an exception is thrown.
 
 Some examples:
 
@@ -195,6 +224,7 @@ default. It requires `ext-json` PHP extension to be present, because it uses
 `json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
 and make your own.
 
+<a name="available-decoders"></a>
 ### Available decoders
 - `ExtJsonDecoder` - **Default.** Uses `json_decode` to decode keys and values.
 Constructor takes the same params as `json_decode`.
@@ -212,10 +242,12 @@ $jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
 
 
+<a name="on-parser-efficiency"></a>
 ## On parser efficiency
 
+<a name="streams-files"></a>
 ### Streams / files
-JSON Machine reads the stream or file 1 JSON item at a time and generates corresponding 1 PHP array at a time.
+JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP array at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
 PHP structures. Following table shows the difference:
@@ -227,6 +259,7 @@ PHP structures. Following table shows the difference:
 
 This means, that `JsonMachine` is constantly efficient for any size of processed JSON. 100 GB no problem.
 
+<a name="in-memory-json-strings"></a>
 ### In-memory JSON strings
 There is also a method `JsonMachine::fromString()`. You may wonder, why is it there. Why just not use
 `json_decode`? True, when parsing short strings, JSON Machine may be overhead. But if you are
@@ -248,17 +281,20 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`.
 
 
+<a name="error-handling"></a>
 ## Error handling
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
 
 
+<a name="running-tests"></a>
 ## Running tests
 ```bash
 tests/run.sh
 ```
 This uses php and composer installation already present in your machine.
 
+<a name="running-tests-on-all-supported-php-platforms"></a>
 ### Running tests on all supported PHP platforms
 [Install docker](https://docs.docker.com/install/) to your machine and run
 ```bash
@@ -267,6 +303,7 @@ tests/docker-run-all-platforms.sh
 This needs no php nor composer installation on your machine. Only Docker.
 
 
+<a name="installation"></a>
 ## Installation
 ```bash
 composer require halaxa/json-machine
@@ -274,13 +311,18 @@ composer require halaxa/json-machine
 or clone or download this repository (not recommended).
 
 
-## Do you like it?
-Star it, share it, show it :)
+<a name="support"></a>
+## Support
+Do you like this library? Star it, share it, show it  :)
+Issues and pull requests are very welcome.
 
+<a name="license"></a>
 ## License
 Apache 2.0
 
 Cogwheel element: Icons made by [TutsPlus](https://www.flaticon.com/authors/tutsplus)
 from [www.flaticon.com](https://www.flaticon.com/)
 is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+
+<i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i>
 
