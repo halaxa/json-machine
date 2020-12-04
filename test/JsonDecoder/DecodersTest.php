@@ -1,12 +1,9 @@
 <?php
 
-namespace JsonMachineTest\JsonDecoder;
-
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
-use PHPUnit\Framework\TestCase;
 
-class DecodersTest extends TestCase
+class DecodersTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataPassesOptionsToJsonDecode

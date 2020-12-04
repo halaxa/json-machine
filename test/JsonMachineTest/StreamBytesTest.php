@@ -4,13 +4,12 @@ namespace JsonMachineTest;
 
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\StreamBytes;
-use PHPUnit\Framework\TestCase;
 
-class StreamBytesTest extends TestCase
+class StreamBytesTest extends \PHPUnit_Framework_TestCase
 {
     public function testThrowsIfNoResource()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->setExpectedException(InvalidArgumentException::class);
         new StreamBytes(false);
     }
 

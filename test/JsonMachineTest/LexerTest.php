@@ -5,9 +5,8 @@ namespace JsonMachineTest;
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
 use JsonMachine\StringBytes;
-use PHPUnit\Framework\TestCase;
 
-class LexerTest extends TestCase
+class LexerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGeneratesTokens()
     {
