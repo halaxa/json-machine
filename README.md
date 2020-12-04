@@ -1,7 +1,7 @@
 ![](img/logo.png)
 # JSON Machine
 
-Very easy to use and memory efficient drop-in replacement of inefficient iteration of big JSON files or streams
+Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
 for PHP 5.6+. See [TL;DR;](#tl-dr). **Does not depend on any other library.**
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
