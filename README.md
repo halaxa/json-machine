@@ -2,7 +2,7 @@
 # JSON Machine
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
-for PHP 5.6+. See [TL;DR;](#tl-dr). No dependencies in production except optional `ext-json`.
+for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
 [![Latest Stable Version](https://poser.pugx.org/halaxa/json-machine/v/stable?v0.4.1)](https://packagist.org/packages/halaxa/json-machine)
@@ -10,7 +10,7 @@ for PHP 5.6+. See [TL;DR;](#tl-dr). No dependencies in production except optiona
 
 ---
 
-* [TL;DR;](#tl-dr)
+* [TL;DR](#tl-dr)
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
   + [Simple document](#simple-document)
@@ -39,7 +39,7 @@ for PHP 5.6+. See [TL;DR;](#tl-dr). No dependencies in production except optiona
 ---
 
 <a name="tl-dr"></a>
-## TL;DR;
+## TL;DR
 ```diff
 <?php
 
