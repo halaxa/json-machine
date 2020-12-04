@@ -14,15 +14,15 @@ for PHP 5.6+. See [TL;DR;](#tl-dr). **Does not depend on any other library.**
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
   + [Simple document](#simple-document)
-* [Parsing JSON stream API responses](#parsing-json-stream-api-responses)
+* [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
-* [Tracking parsing progress](#tracking-parsing-progress)
+* [Tracking the progress](#tracking-parsing-progress)
 * [Parsing a subtree](#parsing-a-subtree)
-  + [Few words about Json Pointer](#json-pointer)
+  + [What is Json Pointer?](#json-pointer)
 * [Custom decoders](#custom-decoder)
   + [Available decoders](#available-decoders)
-* [On parser efficiency](#on-parser-efficiency)
+* [Parser efficiency](#on-parser-efficiency)
   + [Streams / files](#streams-files)
   + [In-memory JSON strings](#in-memory-json-strings)
 * [Error handling](#error-handling)
@@ -78,7 +78,7 @@ and uses native `json_decode` to decode JSON document chunks by default. See [cu
 ## Parsing JSON documents
 
 <a name="simple-document"></a>
-### Simple document
+### A simple document
 Let's say that `fruits.json` contains this really big JSON document:
 ```json
 // fruits.json
@@ -121,7 +121,7 @@ $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 
 
 <a name="parsing-json-stream-api-responses"></a>
-## Parsing JSON stream API responses
+## Parsing streaming responses from a JSON API
 A stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
 is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
 resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
@@ -142,10 +142,10 @@ based on iterators, the integration with Symfony HttpClient is very simple. See
 
 
 <a name="tracking-parsing-progress"></a>
-## Tracking parsing progress
+## Tracking the progress
 Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
-count of processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`. To get
-total size of your document in bytes you may want to check:
+count of the processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`.
+To find out the total size of your document in bytes you may want to check:
 - `strlen($document)` if you're parsing string
 - `filesize($file)` if you're parsing a file
 - `Content-Length` http header if you're parsing http stream response
@@ -179,13 +179,13 @@ If you want to iterate only `results` subtree in this `fruits.json`:
     }
 }
 ```
-do it like this:
+use Json Pointer `"/results"` as the second argument:
 ```php
 <?php
 
 use \JsonMachine\JsonMachine;
 
-$fruits = JsonMachine::fromFile("fruits.json", "/results" /* <- Json Pointer */);
+$fruits = JsonMachine::fromFile("fruits.json", "/results");
 foreach ($fruits as $name => $data) {
     // The same as above, which means:
     // 1st iteration: $name === "apple" and $data === ["color" => "red"]
@@ -200,7 +200,7 @@ foreach ($fruits as $name => $data) {
 > you are currently iterating. Thus the memory consumption is constant.
 
 <a name="json-pointer"></a>
-### Few words about Json Pointer
+### What is Json Pointer?
 It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
@@ -220,7 +220,7 @@ Some examples:
 
 <a name="custom-decoder"></a>
 ## Custom decoders
-As a third parameter of all `JsonMachine::from*` functions is an optional instance of
+As a third parameter of all the `JsonMachine::from*` functions is an optional instance of
 `JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
 `json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
@@ -247,7 +247,7 @@ $jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 
 
 <a name="on-parser-efficiency"></a>
-## On parser efficiency
+## Parser efficiency
 
 <a name="streams-files"></a>
 ### Streams / files
@@ -265,16 +265,15 @@ This means, that `JsonMachine` is constantly efficient for any size of processed
 
 <a name="in-memory-json-strings"></a>
 ### In-memory JSON strings
-There is also a method `JsonMachine::fromString()`. You may wonder, why is it there. Why just not use
-`json_decode`? True, when parsing short strings, JSON Machine may be overhead. But if you are
+There is also a method `JsonMachine::fromString()`. If you are
 forced to parse a big string and the stream is not available, JSON Machine may be better than `json_decode`.
-The reason is that unlike `json_decode` it still traverses the JSON string one item at a time and doesn't
-load the whole resulting PHP structure into memory at once.
+The reason is that unlike `json_decode`, JSON Machine still traverses the JSON string one item at a time and doesn't
+load all resulting PHP structures into memory at once.
 
 Let's continue with the example with 10,000 users. This time they are all in string in memory.
 When decoding that string with `json_decode`, 10,000 arrays (objects) is created in memory and then the result
-is returned. JSON Machine on the other hand creates single array for found item in the string and yields it back
-to you. When you process this item and iterate to the next one, another single array is created. This is the same
+is returned. JSON Machine on the other hand creates single structure for each found item in the string and yields it back
+to you. When you process this item and iterate to the next one, another single structure is created. This is the same
 behaviour as with streams/files. Following table puts the concept into perspective:
 
 |                             | String items in memory at a time | Decoded PHP items in memory at a time | Total |
@@ -282,7 +281,8 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 | `json_decode()`             |                            10000 |                                 10000 | 20000 |
 | `JsonMachine::fromString()` |                            10000 |                                     1 | 10001 |
 
-The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`.
+The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`. The reason is
+that a PHP structure takes much more memory than its JSON string counterpart.
 
 
 <a name="error-handling"></a>
@@ -302,8 +302,8 @@ but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-sub
 <a name="step2"></a>
 ### "That didn't help"
 The other reason may be, that one of the items you iterate is itself so huge it cannot be decoded at once.
-For example, you're iterating over users and one user has thousands of "friends".
-Use `PassThruDecoder` which does not decode item, get the json string of the user
+For example, you iterate over users and one of them has thousands of "friend" objects in it.
+Use `PassThruDecoder` which does not decode an item, get the json string of the user
 and parse it iteratively yourself using `JsonMachine::fromString()`.
 
 ```php
