@@ -2,7 +2,6 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\FileChunks;
 
 class FileChunksTest extends \PHPUnit_Framework_TestCase
