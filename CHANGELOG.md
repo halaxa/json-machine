@@ -1,23 +1,31 @@
-# master
+# Changelog
 
-## New features
-- Dropped support for PHP 5.6
+## master
+
+### New features
+- Introduced `FileChunks` class. Takes care of the proper resource management when iterating via `JsonMachine::fromFile()`.
+It is used internally, and you probably won't come across it.
+
+### BC breaks
+- `StreamBytes` and `StringBytes` renamed to `StreamChunks` and `StringChunks`.
+These are internal classes, and you probably won't notice the change
+unless you use them directly for some reason.
 
 <br>
 <br>
 
-# 0.4.1
-## New features
+## 0.4.1
+### New features
 - Tracking of parsing progress
 
 <br>
 <br>
 
-# 0.4.0
-## New features
+## 0.4.0
+### New features
 - [Custom decoder](README.md#custom-decoder)
 - PHP 8 support (thanks @snapshotpl)
-## BC breaks
+### BC breaks
 - `ext-json` is not required in `composer.json` anymore, because custom decoder might not need it.
 However **built-in decoders depend on it** so it must be present if you use them.
 - All exceptions now extend `JsonMachineException` (thanks @gabimem)
@@ -38,5 +46,5 @@ $jsonMachine = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 Therefore no additional casting is required.
 - Invalid json object keys will now throw and won't be ignored anymore.
-## Fixed bugs
+### Fixed bugs
 - Decoding of json object keys checks for errors and does not silently ignore them.
