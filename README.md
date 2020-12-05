@@ -228,9 +228,9 @@ and make your own.
 
 <a name="available-decoders"></a>
 ### Available decoders
-- `ExtJsonDecoder` - **Default.** Uses `json_decode` to decode keys and values.
+- **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
 Constructor takes the same params as `json_decode`.
-- `PassThruDecoder` - uses `json_decode` to decode keys but returns values as pure JSON strings.
+- **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON chunk with something else directly in the foreach
 and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
 Constructor takes the same params as `json_decode`.
