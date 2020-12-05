@@ -2,7 +2,7 @@
 
 namespace JsonMachine;
 
-class StringBytes implements \IteratorAggregate
+class StringChunks implements \IteratorAggregate
 {
     /** @var string */
     private $string;

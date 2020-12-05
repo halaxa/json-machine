@@ -2,16 +2,16 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\StringBytes;
+use JsonMachine\StringChunks;
 
-class StringBytesTest extends \PHPUnit_Framework_TestCase
+class StringChunksTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider data_testGeneratorYieldsStringChunks
      */
     public function testGeneratorYieldsStringChunks($string, $chunkSize, array $expectedResult)
     {
-        $stringBytes = new StringBytes($string, $chunkSize);
+        $stringBytes = new StringChunks($string, $chunkSize);
         $result = iterator_to_array($stringBytes);
 
         $this->assertSame($expectedResult, $result);

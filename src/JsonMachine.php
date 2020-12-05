@@ -48,7 +48,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
      */
     public static function fromString($string, $jsonPointer = '', $jsonDecoder = null)
     {
-        return new static(new StringBytes($string), $jsonPointer, $jsonDecoder);
+        return new static(new StringChunks($string), $jsonPointer, $jsonDecoder);
     }
 
     /**
@@ -59,7 +59,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
      */
     public static function fromFile($file, $jsonPointer = '', $jsonDecoder = null)
     {
-        return new static(new StreamBytes(fopen($file, 'r')), $jsonPointer, $jsonDecoder);
+        return new static(new StreamChunks(fopen($file, 'r')), $jsonPointer, $jsonDecoder);
     }
 
     /**
@@ -70,7 +70,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
      */
     public static function fromStream($stream, $jsonPointer = '', $jsonDecoder = null)
     {
-        return new static(new StreamBytes($stream), $jsonPointer, $jsonDecoder);
+        return new static(new StreamChunks($stream), $jsonPointer, $jsonDecoder);
     }
 
     /**

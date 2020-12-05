@@ -4,7 +4,7 @@ namespace JsonMachineTest;
 
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
-use JsonMachine\StringBytes;
+use JsonMachine\StringChunks;
 
 class LexerTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +34,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function testProvidesLocationalData($formattedJsonFilePath)
     {
         $json = file_get_contents($formattedJsonFilePath);
-        $lexer = new Lexer(new StringBytes($json));
+        $lexer = new Lexer(new StringChunks($json));
         $tokens = $this->tokensWithLocationalInformation();
         $i = 0;
 

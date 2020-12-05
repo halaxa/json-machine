@@ -3,19 +3,19 @@
 namespace JsonMachineTest;
 
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\StreamBytes;
+use JsonMachine\StreamChunks;
 
-class StreamBytesTest extends \PHPUnit_Framework_TestCase
+class StreamChunksTest extends \PHPUnit_Framework_TestCase
 {
     public function testThrowsIfNoResource()
     {
         $this->setExpectedException(InvalidArgumentException::class);
-        new StreamBytes(false);
+        new StreamChunks(false);
     }
 
     public function testGeneratorYieldsData()
     {
-        $result = iterator_to_array(new StreamBytes(fopen('data://text/plain,test', 'r')));
+        $result = iterator_to_array(new StreamChunks(fopen('data://text/plain,test', 'r')));
         $this->assertSame(['test'], $result);
     }
 }

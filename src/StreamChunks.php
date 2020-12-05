@@ -4,7 +4,7 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 
-class StreamBytes implements \IteratorAggregate
+class StreamChunks implements \IteratorAggregate
 {
     private $stream;
 
