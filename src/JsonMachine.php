@@ -59,7 +59,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
      */
     public static function fromFile($file, $jsonPointer = '', $jsonDecoder = null)
     {
-        return new static(new StreamChunks(fopen($file, 'r')), $jsonPointer, $jsonDecoder);
+        return new static(new FileChunks($file), $jsonPointer, $jsonDecoder);
     }
 
     /**
