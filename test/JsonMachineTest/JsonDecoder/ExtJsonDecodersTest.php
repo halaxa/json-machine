@@ -6,7 +6,7 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use PHPUnit_Framework_TestCase;
 
-class DecodersTest extends PHPUnit_Framework_TestCase
+class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataPassesOptionsToJsonDecode

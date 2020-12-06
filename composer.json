@@ -22,5 +22,8 @@
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"},
         "files": ["src/functions.php"]
+    },
+    "autoload-dev" : {
+        "psr-0": {"JsonMachineTest\\": "test/JsonMachineTest/"}
     }
 }
