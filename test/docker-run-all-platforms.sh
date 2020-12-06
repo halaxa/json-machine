@@ -52,5 +52,5 @@ do
         --user "$(id -u):$(id -g)" \
         --env COMPOSER_CACHE_DIR=/dev/null \
         "$CONTAINER_NAME" \
-        test/run.sh "$@"
+        test/run.sh "$@" || true
 done

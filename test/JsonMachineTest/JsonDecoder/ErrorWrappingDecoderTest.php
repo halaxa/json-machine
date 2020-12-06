@@ -2,33 +2,31 @@
 
 namespace JsonMachineTest\JsonDecoder;
 
-use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\DecodingError;
 use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\JsonMachine;
 use PHPUnit_Framework_TestCase;
 
 class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider data_testTrueFalseMatrix
-     * @param array $mockMethods
+     * @param array $case
      */
-    public function testTrueFalseMatrix(array $mockMethods)
+    public function testTrueFalseMatrix(array $case)
     {
-        $innerDecoderMock = $this->createMock(Decoder::class);
-        $innerDecoderMock->method('decodeValue')->willReturn($mockMethods['decodeValue']);
-        $innerDecoderMock->method('decodeKey')->willReturn($mockMethods['decodeKey']);
-
-        $decoder = new ErrorWrappingDecoder($innerDecoderMock);
+        $innerDecoder = new StubDecoder($case['decodeKey'], $case['decodeValue']);
+        $decoder = new ErrorWrappingDecoder($innerDecoder);
 
         $keyResult = $decoder->decodeKey('"json"');
         $valueResult = $decoder->decodeValue('"json"');
 
         $this->assertTrue($keyResult->isOk());
         $this->assertTrue($valueResult->isOk());
-        $this->assertEquals($mockMethods['wrappedDecodeValue'], $valueResult);
-        $this->assertEquals($mockMethods['wrappedDecodeKey'], $keyResult);
+        $this->assertEquals($case['wrappedDecodeValue'], $valueResult);
+        $this->assertEquals($case['wrappedDecodeKey'], $keyResult);
     }
 
     public function data_testTrueFalseMatrix()
@@ -72,5 +70,31 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
                 ]
             ],
         ];
+    }
+
+    public function testCatchesErrorInsideIteratedJsonChunk()
+    {
+        $json = /** @lang JSON */ '
+        {
+            "results": [
+                {"correct": "correct"},
+                {"incorrect": nulll},
+                {"correct": "correct"}
+            ]
+        }
+        ';
+
+        $items = JsonMachine::fromString($json, '/results', new ErrorWrappingDecoder(new ExtJsonDecoder(true)));
+        $result = iterator_to_array($items);
+
+        $this->assertSame('correct', $result[0]['correct']);
+        $this->assertSame('correct', $result[2]['correct']);
+
+        /** @var DecodingError $decodingError */
+        $decodingError = $result[1];
+        $this->assertInstanceOf(DecodingError::class, $decodingError);
+        $this->assertSame('{"incorrect":nulll}', $decodingError->getMalformedJson());
+        $this->assertSame('Syntax error', $decodingError->getErrorMessage());
+
     }
 }
