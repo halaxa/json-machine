@@ -23,6 +23,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Custom decoders](#custom-decoder)
   + [Available decoders](#available-decoders)
 * [Error handling](#error-handling)
+  + [Catching erroneous items](#erroneous-items)
 * [Parser efficiency](#on-parser-efficiency)
   + [Streams / files](#streams-files)
   + [In-memory JSON strings](#in-memory-json-strings)
@@ -230,11 +231,11 @@ and make your own.
 ### Available decoders
 - **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
 Constructor takes the same params as `json_decode`.
+
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON chunk with something else directly in the foreach
 and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
 Constructor takes the same params as `json_decode`.
-
 Example:
 ```php
 <?php
@@ -242,14 +243,44 @@ Example:
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\JsonMachine;
 
-$jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
+$items = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
+```
+
+- **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
+thus enabling you to skip erroneous chunks instead of diyng on `SyntaxError` exception.
+Example:
+```php
+<?php
+
+use JsonMachine\JsonMachine;
+use JsonMachine\JsonDecoder\DecodingError;
+use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
+
+$items = JsonMachine::fromFile('path/to.json', '', new ErrorWrappingDecoder(new ExtJsonDecoder()));
+foreach ($items as $key => $item) {
+    if ($key instanceof DecodingError || $item instanceof DecodingError) {
+        // handle error of this malformed json item
+        continue;
+    }
+    var_dump($key, $item);
+}
 ```
 
 
 <a name="error-handling"></a>
 ## Error handling
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
-When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
+
+<a name="erroneous-items"></a>
+### Catching erroneous items
+If there's an error anywhere in a json stream, `SyntaxError`. That's very inconvenient,
+because is there is an error inside one json item only you are unable to parse the rest of the document
+because of one malformed item. `ErrorWrappingDecoder` is a decoder decorator which can help you with that.
+Wrap a decoder with it, and all erroneous chunks/items you are iterating will be given to you in the foreach via
+`DecodingError`. You can skip them and continue further with the document. See example in
+[Available decoders](#available-decoders). Syntax errors in the structure of a json stream between the iterated
+chunks will still throw `SyntaxError` exception though.
 
 
 <a name="on-parser-efficiency"></a>
