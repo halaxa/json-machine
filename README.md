@@ -22,14 +22,14 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
   + [What is Json Pointer?](#json-pointer)
 * [Custom decoders](#custom-decoder)
   + [Available decoders](#available-decoders)
+* [Error handling](#error-handling)
 * [Parser efficiency](#on-parser-efficiency)
   + [Streams / files](#streams-files)
   + [In-memory JSON strings](#in-memory-json-strings)
-* [Error handling](#error-handling)
 * [Troubleshooting](#troubleshooting)
-    + ["I'm still getting Allowed memory size ... exhausted"](#step1)
-    + ["That didn't help"](#step2)
-    + ["I am still out of luck"](#step3)
+  + ["I'm still getting Allowed memory size ... exhausted"](#step1)
+  + ["That didn't help"](#step2)
+  + ["I am still out of luck"](#step3)
 * [Running tests](#running-tests)
   + [Running tests on all supported PHP platforms](#running-tests-on-all-supported-php-platforms)
 * [Installation](#installation)
@@ -246,6 +246,12 @@ $jsonMachine = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
 
 
+<a name="error-handling"></a>
+## Error handling
+Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
+When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
+
+
 <a name="on-parser-efficiency"></a>
 ## Parser efficiency
 
@@ -283,12 +289,6 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 
 The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`. The reason is
 that a PHP structure takes much more memory than its JSON string counterpart.
-
-
-<a name="error-handling"></a>
-## Error handling
-Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
-When any part of the JSON stream is malformed, `SyntaxError` exception is thrown. Better solution is on the way.
 
 
 <a name="troubleshooting"></a>
@@ -334,7 +334,7 @@ any structure fully recursively and strings will be served as streams.
 ```bash
 tests/run.sh
 ```
-This uses php and composer installation already present in your machine.
+This uses php and composer installation already present in your OS installation.
 
 <a name="running-tests-on-all-supported-php-platforms"></a>
 ### Running tests on all supported PHP platforms
