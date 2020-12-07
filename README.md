@@ -273,14 +273,14 @@ foreach ($items as $key => $item) {
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 
 <a name="erroneous-items"></a>
-### Catching erroneous items
-If there's an error anywhere in a json stream, `SyntaxError`. That's very inconvenient,
-because is there is an error inside one json item only you are unable to parse the rest of the document
+### Skipping erroneous items
+If there's an error anywhere in a json stream, `SyntaxError` exception is thrown. That's very inconvenient,
+because if there is an error inside one json item you are unable to parse the rest of the document
 because of one malformed item. `ErrorWrappingDecoder` is a decoder decorator which can help you with that.
-Wrap a decoder with it, and all erroneous chunks/items you are iterating will be given to you in the foreach via
-`DecodingError`. You can skip them and continue further with the document. See example in
+Wrap a decoder with it, and all erroneous items you are iterating will be given to you in the foreach via
+`DecodingError`. This way you can skip them and continue further with the document. See example in
 [Available decoders](#available-decoders). Syntax errors in the structure of a json stream between the iterated
-chunks will still throw `SyntaxError` exception though.
+items will still throw `SyntaxError` exception though.
 
 
 <a name="on-parser-efficiency"></a>
