@@ -318,8 +318,8 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 | `json_decode()`             |                            10000 |                                 10000 | 20000 |
 | `JsonMachine::fromString()` |                            10000 |                                     1 | 10001 |
 
-The reality is even brighter. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`. The reason is
-that a PHP structure takes much more memory than its JSON string counterpart.
+The reality is even better. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`. The reason is
+that a PHP structure takes much more memory than its corresponding JSON representation.
 
 
 <a name="troubleshooting"></a>
