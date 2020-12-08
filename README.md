@@ -20,7 +20,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Tracking the progress](#tracking-parsing-progress)
 * [Parsing a subtree](#parsing-a-subtree)
   + [What is Json Pointer?](#json-pointer)
-* [Custom decoders](#custom-decoder)
+* [Decoders](#decoders)
   + [Available decoders](#available-decoders)
 * [Error handling](#error-handling)
   + [Catching erroneous items](#erroneous-items)
@@ -60,19 +60,20 @@ foreach ($users as $id => $user) {
 Random access like `$users[42]` or counting results like `count($users)` **is not possible** by design.
 Use above-mentioned `foreach` and find the item or count the collection there.
 
-Requires `ext-json` if used out of the box. See [custom decoder](#custom-decoder).
+Requires `ext-json` if used out of the box. See [Decoders](#decoders).
 
 
 <a name="introduction"></a>
 ## Introduction
-JSON Machine is an efficient, easy-to-use and fast JSON stream parser based on generators
-developed for unpredictably long JSON streams or documents. Main features are:
+JSON Machine is an efficient, easy-to-use and fast JSON stream/pull/incremental/lazy (whatever you name it) parser
+based on generators developed for unpredictably long JSON streams or documents. Main features are:
 
 - Constant memory footprint for unpredictably large JSON documents.
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
-- Speed. Performace critical code contains no unnecessary function calls, no regular expressions
-and uses native `json_decode` to decode JSON document chunks by default. See [custom decoder](#custom-decoder).
+- Speed. Performance critical code contains no unnecessary function calls, no regular expressions
+and uses native `json_decode` to decode JSON document chunks by default. See [Decoders](#decoders).
+- Parses not only streams but any iterable that produces JSON chunks.
 - Thoroughly tested. More than 100 tests and 700 assertions.
 
 <a name="parsing-json-documents"></a>
@@ -198,7 +199,7 @@ foreach ($fruits as $name => $data) {
 >
 > Value of `results` is not loaded into memory at once, but only one item in
 > `results` at a time. It is always one item in memory at a time at the level/subtree
-> you are currently iterating. Thus the memory consumption is constant.
+> you are currently iterating. Thus, the memory consumption is constant.
 
 <a name="json-pointer"></a>
 ### What is Json Pointer?
@@ -219,8 +220,8 @@ Some examples:
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
 
-<a name="custom-decoder"></a>
-## Custom decoders
+<a name="decoders"></a>
+## Decoders
 As a third parameter of all the `JsonMachine::from*` functions is an optional instance of
 `JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
@@ -247,7 +248,7 @@ $items = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
 
 - **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
-thus enabling you to skip erroneous chunks instead of diyng on `SyntaxError` exception.
+thus enabling you to skip erroneous chunks instead of dying on `SyntaxError` exception.
 Example:
 ```php
 <?php
@@ -303,7 +304,7 @@ This means, that `JsonMachine` is constantly efficient for any size of processed
 <a name="in-memory-json-strings"></a>
 ### In-memory JSON strings
 There is also a method `JsonMachine::fromString()`. If you are
-forced to parse a big string and the stream is not available, JSON Machine may be better than `json_decode`.
+forced to parse a big string, and the stream is not available, JSON Machine may be better than `json_decode`.
 The reason is that unlike `json_decode`, JSON Machine still traverses the JSON string one item at a time and doesn't
 load all resulting PHP structures into memory at once.
 
@@ -327,7 +328,7 @@ that a PHP structure takes much more memory than its corresponding JSON represen
 
 <a name="step1"></a>
 ### "I'm still getting Allowed memory size ... exhausted"
-One of the reasons may be that the items you want to iterate over are in some subkey such as `"results"`
+One of the reasons may be that the items you want to iterate over are in some sub-key such as `"results"`
 but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-subtree).
 
 <a name="step2"></a>
