@@ -5,7 +5,7 @@
 ### New features
 - Introduced `FileChunks` class. Takes care of the proper resource management when iterating via `JsonMachine::fromFile()`.
 It is used internally, and you probably won't come across it.
-- New `ErrorWrappingDecoder`. Use it when you want to skip erroneous JSON items. See [Decoders](README.md#decoders)
+- New `ErrorWrappingDecoder`. Use it when you want to skip malformed JSON items. See [Decoders](README.md#decoders).
 
 ### BC breaks
 - `StreamBytes` and `StringBytes` renamed to `StreamChunks` and `StringChunks`.

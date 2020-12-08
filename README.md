@@ -23,7 +23,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Decoders](#decoders)
   + [Available decoders](#available-decoders)
 * [Error handling](#error-handling)
-  + [Catching erroneous items](#erroneous-items)
+  + [Catching malformed items](#malformed-items)
 * [Parser efficiency](#on-parser-efficiency)
   + [Streams / files](#streams-files)
   + [In-memory JSON strings](#in-memory-json-strings)
@@ -248,7 +248,7 @@ $items = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
 
 - **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
-thus enabling you to skip erroneous chunks instead of dying on `SyntaxError` exception.
+thus enabling you to skip malformed chunks instead of dying on `SyntaxError` exception.
 Example:
 ```php
 <?php
@@ -273,12 +273,12 @@ foreach ($items as $key => $item) {
 ## Error handling
 Since 0.4.0 every exception extends `JsonMachineException`, so you can catch that to filter any error from JSON Machine library.
 
-<a name="erroneous-items"></a>
-### Skipping erroneous items
+<a name="malformed-items"></a>
+### Skipping malformed items
 If there's an error anywhere in a json stream, `SyntaxError` exception is thrown. That's very inconvenient,
 because if there is an error inside one json item you are unable to parse the rest of the document
 because of one malformed item. `ErrorWrappingDecoder` is a decoder decorator which can help you with that.
-Wrap a decoder with it, and all erroneous items you are iterating will be given to you in the foreach via
+Wrap a decoder with it, and all malformed items you are iterating will be given to you in the foreach via
 `DecodingError`. This way you can skip them and continue further with the document. See example in
 [Available decoders](#available-decoders). Syntax errors in the structure of a json stream between the iterated
 items will still throw `SyntaxError` exception though.
