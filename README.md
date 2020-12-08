@@ -72,7 +72,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
 - Speed. Performance critical code contains no unnecessary function calls, no regular expressions
-and uses native `json_decode` to decode JSON document chunks by default. See [Decoders](#decoders).
+and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
 - Thoroughly tested. More than 100 tests and 700 assertions.
 
@@ -234,7 +234,7 @@ and make your own.
 Constructor takes the same params as `json_decode`.
 
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
-Useful when you want to parse a JSON chunk with something else directly in the foreach
+Useful when you want to parse a JSON item with something else directly in the foreach
 and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
 Constructor takes the same params as `json_decode`.
 Example:
@@ -248,7 +248,7 @@ $items = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
 ```
 
 - **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
-thus enabling you to skip malformed chunks instead of dying on `SyntaxError` exception.
+thus enabling you to skip malformed items instead of dying on `SyntaxError` exception.
 Example:
 ```php
 <?php
