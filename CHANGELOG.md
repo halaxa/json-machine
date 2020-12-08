@@ -5,6 +5,7 @@
 ### New features
 - Introduced `FileChunks` class. Takes care of the proper resource management when iterating via `JsonMachine::fromFile()`.
 It is used internally, and you probably won't come across it.
+- New `ErrorWrappingDecoder`. Use it when you want to skip erroneous JSON items. See [Decoders](README.md#decoders)
 
 ### BC breaks
 - `StreamBytes` and `StringBytes` renamed to `StreamChunks` and `StringChunks`.
@@ -23,7 +24,7 @@ unless you use them directly for some reason.
 
 ## 0.4.0
 ### New features
-- [Custom decoder](README.md#custom-decoder)
+- [Decoders](README.md#decoders)
 - PHP 8 support (thanks @snapshotpl)
 ### BC breaks
 - `ext-json` is not required in `composer.json` anymore, because custom decoder might not need it.
