@@ -1,6 +1,12 @@
 # Changelog
 
 ## master
+nothing yet
+
+<br>
+<br>
+
+## 0.5.0
 
 ### New features
 - Introduced `FileChunks` class. Takes care of the proper resource management when iterating via `JsonMachine::fromFile()`.
