@@ -20,12 +20,12 @@ class Parser implements \IteratorAggregate, PositionAware
     const ARRAY_END = 32;
     const COMMA = 64;
     const COLON = 128;
+    const ANY_VALUE = self::OBJECT_START | self::ARRAY_START | self::SCALAR_CONST | self::SCALAR_STRING;
 
     const AFTER_ARRAY_START = self::ANY_VALUE | self::ARRAY_END;
     const AFTER_OBJECT_START = self::SCALAR_STRING | self::OBJECT_END;
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
-    const ANY_VALUE = self::OBJECT_START | self::ARRAY_START | self::SCALAR_CONST | self::SCALAR_STRING;
 
     private $type = [
         'n' => self::SCALAR_CONST,
@@ -104,6 +104,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $jsonBuffer = '';
         $key = null;
         $previousToken = null;
+        $objectKeyExpected = false;
         $inArray = false; // todo remove one of inArray, inObject
         $inObject = false;
         $expectedType = self::OBJECT_START | self::ARRAY_START;
@@ -122,9 +123,9 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             switch ($firstChar) {
                 case '"':
-                    if ($inObject && ($previousToken === ',' || $previousToken === '{')) {
+                    if ($objectKeyExpected) {
+                        $objectKeyExpected = false;
                         $expectedType = self::COLON;
-                        $previousToken = null;
                         if ($currentLevel === $iteratorLevel) {
                             $key = $this->token;
                             $jsonBuffer = '';
@@ -135,6 +136,10 @@ class Parser implements \IteratorAggregate, PositionAware
                                 $this->error($keyResult->getErrorMessage());
                             }
                             // endinlined
+                            // fixme: If there's an error in a key outside the iterator level and ErrorWrappingDecoder
+                            // fixme: is used, DecodingError is saved in $currentPath instead of throwing an exception.
+                            // fixme: The parser will go on, but silently ignore a possibly matching collection.
+                            // fixme: Possible solutions: hard dependency on json_decode or add Decoder::decodeInternalKey()
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             unset($currentPath[$currentLevel+1]);
                         }
@@ -144,11 +149,11 @@ class Parser implements \IteratorAggregate, PositionAware
                     }
                 case ',':
                     if ($inObject) {
+                        $objectKeyExpected = true;
                         $expectedType = self::SCALAR_STRING;
                     } else {
                         $expectedType = self::ANY_VALUE;
                     }
-                    $previousToken = ',';
                     break;
                 case ':':
                     $expectedType = self::ANY_VALUE;
@@ -161,7 +166,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     $stack[$currentLevel] = '{';
                     $inArray = !$inObject = true;
                     $expectedType = self::AFTER_OBJECT_START;
-                    $previousToken = '{';
+                    $objectKeyExpected = true;
                     break;
                 case '[':
                     ++$currentLevel;

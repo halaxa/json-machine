@@ -197,8 +197,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testScalarResult()
     {
-        $this->markTestSkipped('To be implemented');
+        $this->markTestIncomplete('To be implemented');
         $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
+        $this->assertSame([3], iterator_to_array($result));
     }
 
     private function createParser($json, $jsonPointer = '')
