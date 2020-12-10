@@ -111,13 +111,15 @@ class Parser implements \IteratorAggregate, PositionAware
 
         foreach ($this->lexer as $this->token) {
             $firstChar = $this->token[0];
-            if ( ! isset($this->type[$firstChar]) || ! ($this->type[$firstChar] & $expectedType)) {
+            $tokenType = isset($this->type[$firstChar]) ? $this->type[$firstChar] : 0;
+            if (0 === ($tokenType & $expectedType)) {
                 $this->error("Unexpected symbol");
             }
-            if ($currentPath === $this->jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $expectedType & self::ANY_VALUE))) {
+            $isValue = ($tokenType | self::ANY_VALUE) === self::ANY_VALUE;
+            if ($currentPath === $this->jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $isValue))) {
                 $jsonBuffer .= $this->token;
             }
-            if ($currentLevel < $iteratorLevel && $inArray && $expectedType & self::ANY_VALUE) {
+            if ($inArray && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
                 unset($currentPath[$currentLevel+1]);
             }
