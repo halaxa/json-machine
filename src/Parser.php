@@ -108,6 +108,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $inArray = false; // todo remove one of inArray, inObject
         $inObject = false;
         $expectedType = self::OBJECT_START | self::ARRAY_START;
+        $subtreeEnded = false;
 
         foreach ($this->lexer as $this->token) {
             $firstChar = $this->token[0];
@@ -191,11 +192,15 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = self::AFTER_OBJECT_VALUE;
                     }
             }
-            if ( ! $pathFound && $currentPath == $this->jsonPointerPath) {
+            if ( ! $pathFound && $currentPath === $this->jsonPointerPath) {
                 $pathFound = true;
             }
+            if ($pathFound && $currentPath !== $this->jsonPointerPath) {
+                $subtreeEnded = true;
+                break;
+            }
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
-                if ($currentPath == $this->jsonPointerPath) {
+                if ($currentPath === $this->jsonPointerPath) {
                     $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
                     // inlined
                     if ( ! $valueResult->isOk()) {
@@ -226,7 +231,7 @@ class Parser implements \IteratorAggregate, PositionAware
             throw new PathNotFoundException("Path '{$this->jsonPointer}' was not found in json stream.");
         }
 
-        if ($currentLevel > -1){
+        if ($currentLevel > -1 && ! $subtreeEnded){
             $this->error('JSON string ended unexpectedly', UnexpectedEndSyntaxErrorException::class);
         }
     }

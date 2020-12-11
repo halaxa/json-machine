@@ -202,6 +202,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([3], iterator_to_array($result));
     }
 
+    public function testGeneratorQuitsAfterSubtreeEndHasBeenFinished()
+    {
+        $json = '
+            {
+                "results": [1],
+                "other": [2],
+                "results": [3]
+            }
+        ';
+
+        $parser = $this->createParser($json, '/results');
+        $this->assertSame([1], iterator_to_array($parser));
+    }
+
     private function createParser($json, $jsonPointer = '')
     {
         return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer);
