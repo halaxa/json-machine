@@ -1,7 +1,8 @@
 # Changelog
 
 ## master
-nothing yet
+- Parser ends when the end of the desired subtree is reached and does not heat up our atmosphere further.
+- Microoptimizations: 8% speed gain. 
 
 <br>
 <br>
