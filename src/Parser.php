@@ -27,35 +27,8 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
-    private $type = [
-        'n' => self::SCALAR_CONST,
-        't' => self::SCALAR_CONST,
-        'f' => self::SCALAR_CONST,
-        '-' => self::SCALAR_CONST,
-        '0' => self::SCALAR_CONST,
-        '1' => self::SCALAR_CONST,
-        '2' => self::SCALAR_CONST,
-        '3' => self::SCALAR_CONST,
-        '4' => self::SCALAR_CONST,
-        '5' => self::SCALAR_CONST,
-        '6' => self::SCALAR_CONST,
-        '7' => self::SCALAR_CONST,
-        '8' => self::SCALAR_CONST,
-        '9' => self::SCALAR_CONST,
-        '"' => self::SCALAR_STRING,
-        '{' => self::OBJECT_START,
-        '}' => self::OBJECT_END,
-        '[' => self::ARRAY_START,
-        ']' => self::ARRAY_END,
-        ',' => self::COMMA,
-        ':' => self::COLON,
-    ];
-
     /** @var Lexer */
     private $lexer;
-
-    /** @var string */
-    private $token;
 
     /** @var string */
     private $jsonPointerPath;
@@ -95,6 +68,29 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getIterator()
     {
         // todo Allow to call getIterator only once per instance
+        ${'n'} = self::SCALAR_CONST;
+        ${'t'} = self::SCALAR_CONST;
+        ${'f'} = self::SCALAR_CONST;
+        ${'-'} = self::SCALAR_CONST;
+        ${'0'} = self::SCALAR_CONST;
+        ${'1'} = self::SCALAR_CONST;
+        ${'2'} = self::SCALAR_CONST;
+        ${'3'} = self::SCALAR_CONST;
+        ${'4'} = self::SCALAR_CONST;
+        ${'5'} = self::SCALAR_CONST;
+        ${'6'} = self::SCALAR_CONST;
+        ${'7'} = self::SCALAR_CONST;
+        ${'8'} = self::SCALAR_CONST;
+        ${'9'} = self::SCALAR_CONST;
+
+        ${'"'} = self::SCALAR_STRING;
+        ${'{'} = self::OBJECT_START;
+        ${'}'} = self::OBJECT_END;
+        ${'['} = self::ARRAY_START;
+        ${']'} = self::ARRAY_END;
+        ${','} = self::COMMA;
+        ${':'} = self::COLON;
+
         $iteratorLevel = count($this->jsonPointerPath);
         $iteratorStruct = null;
         $currentPath = [];
@@ -105,38 +101,40 @@ class Parser implements \IteratorAggregate, PositionAware
         $key = null;
         $previousToken = null;
         $objectKeyExpected = false;
-        $inArray = false; // todo remove one of inArray, inObject
-        $inObject = false;
+        $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
         $expectedType = self::OBJECT_START | self::ARRAY_START;
         $subtreeEnded = false;
+        $token = null;
 
-        foreach ($this->lexer as $this->token) {
-            $firstChar = $this->token[0];
-            $tokenType = isset($this->type[$firstChar]) ? $this->type[$firstChar] : 0;
+        $lexer = $this->lexer;
+        $jsonPointerPath = $this->jsonPointerPath;
+        
+        foreach ($lexer as $token) {
+            $tokenType = ${$token[0]};
             if (0 === ($tokenType & $expectedType)) {
-                $this->error("Unexpected symbol");
+                $this->error("Unexpected symbol", $token);
             }
-            $isValue = ($tokenType | self::ANY_VALUE) === self::ANY_VALUE;
-            if ($currentPath === $this->jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $isValue))) {
-                $jsonBuffer .= $this->token;
+            $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
+            if ($currentPath === $jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $isValue))) {
+                $jsonBuffer .= $token;
             }
-            if ($inArray && $isValue && $currentLevel < $iteratorLevel) {
+            if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
                 unset($currentPath[$currentLevel+1]);
             }
-            switch ($firstChar) {
+            switch ($token[0]) {
                 case '"':
                     if ($objectKeyExpected) {
                         $objectKeyExpected = false;
-                        $expectedType = self::COLON;
+                        $expectedType = 128; // 128 = self::COLON
                         if ($currentLevel === $iteratorLevel) {
-                            $key = $this->token;
+                            $key = $token;
                             $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
                             // inlined
-                            $keyResult = $this->jsonDecoder->decodeKey($this->token);
+                            $keyResult = $this->jsonDecoder->decodeKey($token);
                             if ( ! $keyResult->isOk()) {
-                                $this->error($keyResult->getErrorMessage());
+                                $this->error($keyResult->getErrorMessage(), $token);
                             }
                             // endinlined
                             // fixme: If there's an error in a key outside the iterator level and ErrorWrappingDecoder
@@ -153,13 +151,13 @@ class Parser implements \IteratorAggregate, PositionAware
                 case ',':
                     if ($inObject) {
                         $objectKeyExpected = true;
-                        $expectedType = self::SCALAR_STRING;
+                        $expectedType = 2; // 2 = self::SCALAR_STRING
                     } else {
-                        $expectedType = self::ANY_VALUE;
+                        $expectedType = 23; // 23 = self::ANY_VALUE
                     }
                     break;
                 case ':':
-                    $expectedType = self::ANY_VALUE;
+                    $expectedType = 23; // 23 = self::ANY_VALUE
                     break;
                 case '{':
                     ++$currentLevel;
@@ -167,8 +165,8 @@ class Parser implements \IteratorAggregate, PositionAware
                         $iteratorStruct = '{';
                     }
                     $stack[$currentLevel] = '{';
-                    $inArray = !$inObject = true;
-                    $expectedType = self::AFTER_OBJECT_START;
+                    $inObject = true;
+                    $expectedType = 10; // 10 = self::AFTER_OBJECT_START
                     $objectKeyExpected = true;
                     break;
                 case '[':
@@ -177,34 +175,34 @@ class Parser implements \IteratorAggregate, PositionAware
                         $iteratorStruct = '[';
                     }
                     $stack[$currentLevel] = '[';
-                    $inArray = !$inObject = false;
-                    $expectedType = self::AFTER_ARRAY_START;
+                    $inObject = false;
+                    $expectedType = 55; // 55 = self::AFTER_ARRAY_START;
                     break;
                 case '}':
                 case ']':
                     --$currentLevel;
-                    $inArray = !$inObject = $stack[$currentLevel] === '{';
+                    $inObject = $stack[$currentLevel] === '{';
                 default:
                     expectedTypeAfterValue:
-                    if ($inArray) {
-                        $expectedType = self::AFTER_ARRAY_VALUE;
+                    if ($inObject) {
+                        $expectedType = 72; // 72 = self::AFTER_OBJECT_VALUE;
                     } else {
-                        $expectedType = self::AFTER_OBJECT_VALUE;
+                        $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if ( ! $pathFound && $currentPath === $this->jsonPointerPath) {
+            if ( ! $pathFound && $currentPath === $jsonPointerPath) {
                 $pathFound = true;
             }
-            if ($pathFound && $currentPath !== $this->jsonPointerPath) {
+            if ($pathFound && $currentPath !== $jsonPointerPath) {
                 $subtreeEnded = true;
                 break;
             }
             if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
-                if ($currentPath === $this->jsonPointerPath) {
+                if ($currentPath === $jsonPointerPath) {
                     $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
                     // inlined
                     if ( ! $valueResult->isOk()) {
-                        $this->error($valueResult->getErrorMessage());
+                        $this->error($valueResult->getErrorMessage(), $token);
                     }
                     // endinlined
                     if ($iteratorStruct === '[') {
@@ -213,7 +211,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         // inlined
                         $keyResult = $this->jsonDecoder->decodeKey($key);
                         if ( ! $keyResult->isOk()) {
-                            $this->error($keyResult->getErrorMessage());
+                            $this->error($keyResult->getErrorMessage(), $token);
                         }
                         // endinlined
                         yield $keyResult->getValue() => $valueResult->getValue();
@@ -223,8 +221,8 @@ class Parser implements \IteratorAggregate, PositionAware
             }
         }
 
-        if ($this->token === null) {
-            $this->error('Cannot iterate empty JSON');
+        if ($token === null) {
+            $this->error('Cannot iterate empty JSON', $token);
         }
 
         if ( ! $pathFound) {
@@ -232,7 +230,7 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         if ($currentLevel > -1 && ! $subtreeEnded){
-            $this->error('JSON string ended unexpectedly', UnexpectedEndSyntaxErrorException::class);
+            $this->error('JSON string ended unexpectedly', $token,UnexpectedEndSyntaxErrorException::class);
         }
     }
 
@@ -252,9 +250,9 @@ class Parser implements \IteratorAggregate, PositionAware
         return $this->jsonPointer;
     }
 
-    private function error($msg, $exception = SyntaxError::class)
+    private function error($msg, $token, $exception = SyntaxError::class)
     {
-        throw new $exception($msg." '".$this->token."'", $this->lexer->getPosition());
+        throw new $exception($msg." '".$token."'", $this->lexer->getPosition());
     }
 
     public function getPosition()

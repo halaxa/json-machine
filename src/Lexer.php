@@ -29,6 +29,8 @@ class Lexer implements \IteratorAggregate, PositionAware
         $isEscaping = false;
         $width = 0;
         $trackingLineBreak = false;
+        $position = 0;
+        $column = 0;
 
         // Treat UTF-8 BOM bytes as whitespace
         ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
@@ -48,14 +50,12 @@ class Lexer implements \IteratorAggregate, PositionAware
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
-                ++$this->position;
+                ++$position;
                 if ($inString) {
-                    if ($byte === '"' && !$isEscaping) {
-                        $inString = false;
-                    }
+                    $inString = ! ($byte === '"' && !$isEscaping);
                     $isEscaping = ($byte === '\\' && !$isEscaping);
                     $tokenBuffer .= $byte;
-                    $width++;
+                    ++$width;
                     continue;
                 }
 
@@ -66,31 +66,37 @@ class Lexer implements \IteratorAggregate, PositionAware
                 }
 
                 if (isset($$byte)) {
-                    $this->column++;
+                    ++$column;
                     if ($tokenBuffer !== '') {
+                        $this->position = $position;
+                        $this->column = $column;
                         yield $tokenBuffer;
-                        $this->column += $width;
+                        $column += $width;
                         $tokenBuffer = '';
                         $width = 0;
                     }
                     if ($$byte) { // is not whitespace
+                        $this->position = $position;
+                        $this->column = $column;
                         yield $byte;
                     // track line number and reset column for each newline
                     } elseif ($byte === "\r" || $byte === "\n") {
                         $trackingLineBreak = ($byte === "\r");
                         $this->line++;
-                        $this->column = 0;
+                        $column = 0;
                     }
                 } else {
                     if ($byte === '"') {
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
-                    $width++;
+                    ++$width;
                 }
             }
         }
         if ($tokenBuffer !== '') {
+            $this->position = $position;
+            $this->column = $column;
             yield $tokenBuffer;
         }
     }
