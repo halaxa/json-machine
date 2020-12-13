@@ -202,7 +202,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([3], iterator_to_array($result));
     }
 
-    public function testGeneratorQuitsAfterSubtreeHasBeenFinished()
+    public function testGeneratorQuitsAfterFirstFoundSubtreeHasBeenFinished()
     {
         $json = '
             {
