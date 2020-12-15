@@ -20,6 +20,7 @@ class Parser implements \IteratorAggregate, PositionAware
     const ARRAY_END = 32;
     const COMMA = 64;
     const COLON = 128;
+    const SCALAR_VALUE = self::SCALAR_CONST | self::SCALAR_STRING;
     const ANY_VALUE = self::OBJECT_START | self::ARRAY_START | self::SCALAR_CONST | self::SCALAR_STRING;
 
     const AFTER_ARRAY_START = self::ANY_VALUE | self::ARRAY_END;
@@ -115,13 +116,19 @@ class Parser implements \IteratorAggregate, PositionAware
                 $this->error("Unexpected symbol", $token);
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
-            if ($currentPath === $jsonPointerPath && ($currentLevel > $iteratorLevel || ($currentLevel === $iteratorLevel && $isValue))) {
+            if ($currentPath === $jsonPointerPath
+                && ($currentLevel > $iteratorLevel
+                    || ($currentLevel === $iteratorLevel && $isValue)
+                    || ($currentLevel+1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
+                )
+            ) {
                 $jsonBuffer .= $token;
             }
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
                 unset($currentPath[$currentLevel+1]);
             }
+            // todo move this switch to the top just after the syntax check to be a correct FSM
             switch ($token[0]) {
                 case '"':
                     if ($objectKeyExpected) {
@@ -197,7 +204,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $subtreeEnded = true;
                 break;
             }
-            if ($currentLevel === $iteratorLevel && $jsonBuffer !== '') {
+            if ($currentLevel <= $iteratorLevel && $jsonBuffer !== '') {
                 if ($currentPath === $jsonPointerPath) {
                     $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
                     // inlined
