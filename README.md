@@ -13,7 +13,8 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [TL;DR](#tl-dr)
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
-  + [Simple document](#simple-document)
+  + [Iterating a collection](#simple-document)
+  + [Getting single scalar values](#getting-scalar-values)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -80,7 +81,7 @@ and uses native `json_decode` to decode JSON document items by default. See [Dec
 ## Parsing JSON documents
 
 <a name="simple-document"></a>
-### A simple document
+### Itearting a collection
 Let's say that `fruits.json` contains this really big JSON document:
 ```json
 // fruits.json
@@ -121,6 +122,47 @@ use JsonMachine\JsonMachine;
 $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
+<a name="getting-scalar-values"></a>
+### Getting single scalar values
+You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this:
+```json
+// fruits.json
+{
+    "lastModified": "2012-12-12",
+    "apple": {
+        "color": "red"
+    },
+    "pear": {
+        "color": "yellow"
+    },
+    // ... gigabytes follow ...
+}
+``` 
+Get the single value of `lastModified` key like this:
+```php
+<?php
+
+use \JsonMachine\JsonMachine;
+
+$fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
+foreach ($fruits as $key => $value) {
+    // 1st and final iteration: $key === "lastModified" and $data === "2012-12-12"
+}
+```
+When parser finds the value and yields it to you, it ends. So when a single scalar value is in the beginning
+of a gigabytes-size file or stream, it just gets the value from the beginning in no time and with almost no memory
+consumed. 
+
+Obvious shortcut might be:
+```php
+<?php
+
+use \JsonMachine\JsonMachine;
+
+$fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
+$lastModified = iterator_to_array($fruits)['lastModified'];
+```
+Also supports array indices.
 
 <a name="parsing-json-stream-api-responses"></a>
 ## Parsing streaming responses from a JSON API
@@ -216,7 +258,7 @@ Some examples:
 |--------------------|---------------------------------------------------------------------------------------------------|
 | `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
 | `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
-| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indexes)                    |
+| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
 

@@ -1,8 +1,14 @@
 # Changelog
 
 ## master
+### New features
+- **New:** Iterates over scalar values as well, not only over iterable values.
 - Parser ends when the end of the desired subtree is reached and does not heat up our atmosphere further.
 - Microoptimizations: about 8% speed gain.
+
+
+### BC breaks
+- A json pointer that matches scalar value does not throw anymore, but the scalar value is yielded in foreach.
 
 <br>
 <br>
