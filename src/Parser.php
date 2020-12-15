@@ -205,26 +205,25 @@ class Parser implements \IteratorAggregate, PositionAware
                 break;
             }
             if ($currentLevel <= $iteratorLevel && $jsonBuffer !== '') {
-                if ($currentPath === $jsonPointerPath) {
-                    $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
+                $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
+                // inlined
+                if ( ! $valueResult->isOk()) {
+                    $this->error($valueResult->getErrorMessage(), $token);
+                }
+                // endinlined
+                if ($iteratorStruct === '[') {
+                    yield $valueResult->getValue();
+                    $jsonBuffer = '';
+                } else {
                     // inlined
-                    if ( ! $valueResult->isOk()) {
-                        $this->error($valueResult->getErrorMessage(), $token);
+                    $keyResult = $this->jsonDecoder->decodeKey($key);
+                    if ( ! $keyResult->isOk()) {
+                        $this->error($keyResult->getErrorMessage(), $token);
                     }
                     // endinlined
-                    if ($iteratorStruct === '[') {
-                        yield $valueResult->getValue();
-                    } else {
-                        // inlined
-                        $keyResult = $this->jsonDecoder->decodeKey($key);
-                        if ( ! $keyResult->isOk()) {
-                            $this->error($keyResult->getErrorMessage(), $token);
-                        }
-                        // endinlined
-                        yield $keyResult->getValue() => $valueResult->getValue();
-                    }
+                    yield $keyResult->getValue() => $valueResult->getValue();
+                    $jsonBuffer = '';
                 }
-                $jsonBuffer = '';
             }
         }
 
