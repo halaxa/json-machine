@@ -118,8 +118,13 @@ class Parser implements \IteratorAggregate, PositionAware
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if ($currentPath === $jsonPointerPath
                 && ($currentLevel > $iteratorLevel
-                    || ($currentLevel === $iteratorLevel && $isValue)
-                    || ($currentLevel+1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
+                    || (
+                        ! $objectKeyExpected
+                        && (
+                            ($currentLevel === $iteratorLevel && $isValue)
+                            || ($currentLevel+1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
+                        )
+                    )
                 )
             ) {
                 $jsonBuffer .= $token;
@@ -136,7 +141,6 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 128; // 128 = self::COLON
                         if ($currentLevel === $iteratorLevel) {
                             $key = $token;
-                            $jsonBuffer = '';
                         } elseif ($currentLevel < $iteratorLevel) {
                             // inlined
                             $keyResult = $this->jsonDecoder->decodeKey($token);
@@ -151,10 +155,14 @@ class Parser implements \IteratorAggregate, PositionAware
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             unset($currentPath[$currentLevel+1]);
                         }
-                        break;
                     } else {
-                        goto expectedTypeAfterValue;
+                        if ($inObject) {
+                            $expectedType = 72; // 72 = self::AFTER_OBJECT_VALUE;
+                        } else {
+                            $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
+                        }
                     }
+                    break;
                 case ',':
                     if ($inObject) {
                         $objectKeyExpected = true;
@@ -190,7 +198,6 @@ class Parser implements \IteratorAggregate, PositionAware
                     --$currentLevel;
                     $inObject = $stack[$currentLevel] === '{';
                 default:
-                    expectedTypeAfterValue:
                     if ($inObject) {
                         $expectedType = 72; // 72 = self::AFTER_OBJECT_VALUE;
                     } else {
