@@ -14,7 +14,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
   + [Iterating a collection](#simple-document)
-  + [Getting single scalar values](#getting-scalar-values)
+  + [Getting single scalar values](#getting-scalar-values) <sup>`master`</sup>
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -123,7 +123,7 @@ $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
 <a name="getting-scalar-values"></a>
-### Getting single scalar values
+### Getting single scalar values <sup>`master`</sup>
 You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this:
 ```json
 // fruits.json
