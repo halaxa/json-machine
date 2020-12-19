@@ -2,8 +2,9 @@
 
 ## master
 ### New features
-- **New:** Iterates over scalar values as well, not only over iterable values.
-- Parser ends when the end of the desired subtree is reached and does not heat up our atmosphere further.
+- **New:** Json pointer can find scalar values in JSON document as well as iterable values. See
+[Getting single scalar values](README.md#getting-scalar-values)
+- Parser ends when the end of the desired data is reached and does not heat up the atmosphere further.
 - Microoptimizations: about 8% speed gain.
 
 

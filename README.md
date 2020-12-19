@@ -145,22 +145,22 @@ Get the single value of `lastModified` key like this:
 use \JsonMachine\JsonMachine;
 
 $fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
-foreach ($fruits as $lastModified) {
-    // 1st and final iteration: $lastModified === "2012-12-12"
+foreach ($fruits as $key => $value) {
+    // 1st and final iteration: $key === 'lastModified' and $lastModified === "2012-12-12"
 }
 ```
 When parser finds the value and yields it to you, it ends. So when a single scalar value is in the beginning
 of a gigabytes-sized file or stream, it just gets the value from the beginning in no time and with almost no memory
 consumed. 
 
-Obvious shortcut might be:
+The obvious shortcut is:
 ```php
 <?php
 
 use \JsonMachine\JsonMachine;
 
 $fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
-$lastModified = iterator_to_array($fruits)[0];
+$lastModified = iterator_to_array($fruits)['lastModified'];
 ```
 Single scalar value access supports array indices in json pointer as well.
 

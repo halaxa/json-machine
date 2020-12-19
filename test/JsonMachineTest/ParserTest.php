@@ -195,13 +195,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testScalarResult()
-    {
-        $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
-        $this->assertSame([3], iterator_to_array($result));
-    }
-
-    public function testGeneratorQuitsAfterFirstFoundSubtreeHasBeenFinished()
+    public function testGeneratorQuitsAfterFirstFoundCollectionHasBeenFinished()
     {
         $json = '
             {
@@ -213,6 +207,26 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->createParser($json, '/results');
         $this->assertSame([1], iterator_to_array($parser));
+    }
+
+    public function testScalarResult()
+    {
+        $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
+        $this->assertSame([3], iterator_to_array($result));
+    }
+
+    public function testGeneratorQuitsAfterFirstScalarHasBeenFound()
+    {
+        $json = '
+            {
+                "result": "one",
+                "other": [2],
+                "result": "three"
+            }
+        ';
+
+        $parser = $this->createParser($json, '/result');
+        $this->assertSame(["result" => "one"], iterator_to_array($parser));
     }
 
     private function createParser($json, $jsonPointer = '')

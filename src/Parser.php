@@ -142,6 +142,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         if ($currentLevel === $iteratorLevel) {
                             $key = $token;
                         } elseif ($currentLevel < $iteratorLevel) {
+                            $key = $token;
                             // inlined
                             $keyResult = $this->jsonDecoder->decodeKey($token);
                             if ( ! $keyResult->isOk()) {
@@ -225,7 +226,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     // inlined
                     $keyResult = $this->jsonDecoder->decodeKey($key);
                     if ( ! $keyResult->isOk()) {
-                        $this->error($keyResult->getErrorMessage(), $token);
+                        $this->error($keyResult->getErrorMessage(), $key);
                     }
                     // endinlined
                     yield $keyResult->getValue() => $valueResult->getValue();
