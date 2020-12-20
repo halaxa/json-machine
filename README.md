@@ -146,7 +146,9 @@ use \JsonMachine\JsonMachine;
 
 $fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
 foreach ($fruits as $key => $value) {
-    // 1st and final iteration: $key === 'lastModified' and $lastModified === "2012-12-12"
+    // 1st and final iteration:
+    // $key === 'lastModified'
+    // $value === '2012-12-12'
 }
 ```
 When parser finds the value and yields it to you, it ends. So when a single scalar value is in the beginning
