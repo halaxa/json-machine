@@ -14,13 +14,13 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
   + [Iterating a collection](#simple-document)
+  + [Parsing a subtree](#parsing-a-subtree)
+    - [What is Json Pointer?](#json-pointer)
   + [Getting single scalar values](#getting-scalar-values) <sup>`master`</sup>
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
 * [Tracking the progress](#tracking-parsing-progress)
-* [Parsing a subtree](#parsing-a-subtree)
-  + [What is Json Pointer?](#json-pointer)
 * [Decoders](#decoders)
   + [Available decoders](#available-decoders)
 * [Error handling](#error-handling)
@@ -122,6 +122,62 @@ use JsonMachine\JsonMachine;
 $objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 
+
+<a name="parsing-a-subtree"></a>
+### Parsing a subtree
+If you want to iterate only `results` subtree in this `fruits.json`:
+```json
+// fruits.json
+{
+    "results": {
+        "apple": {
+            "color": "red"
+        },
+        "pear": {
+            "color": "yellow"
+        }
+    }
+}
+```
+use Json Pointer `"/results"` as the second argument:
+```php
+<?php
+
+use \JsonMachine\JsonMachine;
+
+$fruits = JsonMachine::fromFile("fruits.json", "/results");
+foreach ($fruits as $name => $data) {
+    // The same as above, which means:
+    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
+    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
+}
+```
+
+> Note:
+>
+> Value of `results` is not loaded into memory at once, but only one item in
+> `results` at a time. It is always one item in memory at a time at the level/subtree
+> you are currently iterating. Thus, the memory consumption is constant.
+
+<a name="json-pointer"></a>
+#### What is Json Pointer?
+It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
+It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
+not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
+When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
+`JsonMachine::from*` functions. If you specify a pointer to a scalar value (which logically cannot be iterated)
+or a non-existent position in the document, an exception is thrown.
+
+Some examples:
+
+| Json Pointer value | Will iterate through                                                                              |
+|--------------------|---------------------------------------------------------------------------------------------------|
+| `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
+| `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
+| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
+| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
+
+
 <a name="getting-scalar-values"></a>
 ### Getting single scalar values <sup>`master`</sup>
 You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this:
@@ -208,60 +264,6 @@ foreach ($fruits as $name => $data) {
     echo 'Progress: ' . intval($fruits->getPosition() / $fileSize * 100) . ' %'; 
 }
 ```
-
-<a name="parsing-a-subtree"></a>
-## Parsing a subtree
-If you want to iterate only `results` subtree in this `fruits.json`:
-```json
-// fruits.json
-{
-    "results": {
-        "apple": {
-            "color": "red"
-        },
-        "pear": {
-            "color": "yellow"
-        }
-    }
-}
-```
-use Json Pointer `"/results"` as the second argument:
-```php
-<?php
-
-use \JsonMachine\JsonMachine;
-
-$fruits = JsonMachine::fromFile("fruits.json", "/results");
-foreach ($fruits as $name => $data) {
-    // The same as above, which means:
-    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
-    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
-}
-```
-
-> Note:
->
-> Value of `results` is not loaded into memory at once, but only one item in
-> `results` at a time. It is always one item in memory at a time at the level/subtree
-> you are currently iterating. Thus, the memory consumption is constant.
-
-<a name="json-pointer"></a>
-### What is Json Pointer?
-It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
-It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
-not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
-When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
-`JsonMachine::from*` functions. If you specify a pointer to a scalar value (which logically cannot be iterated)
-or a non-existent position in the document, an exception is thrown.
-
-Some examples:
-
-| Json Pointer value | Will iterate through                                                                              |
-|--------------------|---------------------------------------------------------------------------------------------------|
-| `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
-| `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
-| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
-| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 
 
 <a name="decoders"></a>
