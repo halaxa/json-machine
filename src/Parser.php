@@ -116,6 +116,10 @@ class Parser implements \IteratorAggregate, PositionAware
                 $this->error("Unexpected symbol", $token);
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
+            if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
+                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
+                unset($currentPath[$currentLevel+1]);
+            }
             if ($currentPath === $jsonPointerPath
                 && ($currentLevel > $iteratorLevel
                     || (
@@ -128,10 +132,6 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 $jsonBuffer .= $token;
-            }
-            if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
-                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
-                unset($currentPath[$currentLevel+1]);
             }
             // todo move this switch to the top just after the syntax check to be a correct FSM
             switch ($token[0]) {
