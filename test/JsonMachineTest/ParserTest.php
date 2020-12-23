@@ -215,6 +215,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([3], iterator_to_array($result));
     }
 
+    public function testScalarResultInArray()
+    {
+        $result = $this->createParser('{"result":[1,2,3]}', '/result/0');
+        $this->assertSame([1], iterator_to_array($result));
+    }
+
     public function testGeneratorQuitsAfterFirstScalarHasBeenFound()
     {
         $json = '

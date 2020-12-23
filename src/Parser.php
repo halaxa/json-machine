@@ -177,7 +177,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     break;
                 case '{':
                     ++$currentLevel;
-                    if ($currentLevel === $iteratorLevel) {
+                    if ($currentLevel <= $iteratorLevel) {
                         $iteratorStruct = '{';
                     }
                     $stack[$currentLevel] = '{';
@@ -187,7 +187,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     break;
                 case '[':
                     ++$currentLevel;
-                    if ($currentLevel === $iteratorLevel) {
+                    if ($currentLevel <= $iteratorLevel) {
                         $iteratorStruct = '[';
                     }
                     $stack[$currentLevel] = '[';
