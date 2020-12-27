@@ -165,8 +165,8 @@ It's a way of addressing one item in JSON document. See the [Json Pointer RFC 69
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
 When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
-`JsonMachine::from*` functions. If you specify a pointer to a scalar value (which logically cannot be iterated)
-or a non-existent position in the document, an exception is thrown.
+`JsonMachine::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
+It can be used to access scalar values as well.
 
 Some examples:
 
@@ -180,7 +180,7 @@ Some examples:
 
 <a name="getting-scalar-values"></a>
 ### Getting single scalar values <sup>`master`</sup>
-You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this:
+You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this example:
 ```json
 // fruits.json
 {
@@ -207,7 +207,7 @@ foreach ($fruits as $key => $value) {
     // $value === '2012-12-12'
 }
 ```
-When parser finds the value and yields it to you, it ends. So when a single scalar value is in the beginning
+When parser finds the value and yields it to you, it stops parsing. So when a single scalar value is in the beginning
 of a gigabytes-sized file or stream, it just gets the value from the beginning in no time and with almost no memory
 consumed. 
 
