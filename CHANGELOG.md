@@ -5,7 +5,7 @@
 - **New:** Json pointer can find scalar values in JSON document as well as iterable values. See
 [Getting single scalar values](README.md#getting-scalar-values)
 - Parser ends when the end of the desired data is reached and does not heat up the atmosphere further.
-- Microoptimizations: about 8% speed gain.
+- Optimizations: about 10% speed gain.
 
 
 ### BC breaks
