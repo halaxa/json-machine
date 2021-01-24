@@ -1,6 +1,12 @@
 # Changelog
 
 ## master
+Nothing yet
+
+<br>
+<br>
+
+## 0.6.0
 ### New features
 - **New:** Json pointer can find scalar values in JSON document as well as iterable values. See
 [Getting single scalar values](README.md#getting-scalar-values)
