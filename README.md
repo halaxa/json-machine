@@ -5,7 +5,7 @@ Very easy to use and memory efficient drop-in replacement for inefficient iterat
 for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://travis-ci.com/halaxa/json-machine)
-[![Latest Stable Version](https://img.shields.io/badge/stable-0.5.0-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
+[![Latest Stable Version](https://img.shields.io/badge/stable-0.6.0-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
