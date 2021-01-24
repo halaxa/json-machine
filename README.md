@@ -16,7 +16,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
   + [Iterating a collection](#simple-document)
   + [Parsing a subtree](#parsing-a-subtree)
     - [What is Json Pointer?](#json-pointer)
-  + [Getting single scalar values](#getting-scalar-values) <sup>`master`</sup>
+  + [Getting single scalar values](#getting-scalar-values)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -179,7 +179,7 @@ Some examples:
 
 
 <a name="getting-scalar-values"></a>
-### Getting single scalar values <sup>`master`</sup>
+### Getting single scalar values
 You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this example:
 ```json
 // fruits.json
@@ -445,4 +445,3 @@ from [www.flaticon.com](https://www.flaticon.com/)
 is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
 <i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i>
-
