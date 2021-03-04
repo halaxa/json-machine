@@ -248,9 +248,9 @@ based on iterators, the integration with Symfony HttpClient is very simple. See
 Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
 count of the processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`.
 To find out the total size of your document in bytes you may want to check:
-- `strlen($document)` if you're parsing string
-- `filesize($file)` if you're parsing a file
-- `Content-Length` http header if you're parsing http stream response
+- `strlen($document)` if you parse a string
+- `filesize($file)` if you parse a file
+- `Content-Length` http header if you parse a http stream response
 - ... you get the point
 
 ```php
@@ -268,8 +268,8 @@ foreach ($fruits as $name => $data) {
 
 <a name="decoders"></a>
 ## Decoders
-As a third parameter of all the `JsonMachine::from*` functions is an optional instance of
-`JsonMachine\JsonDecoder\Decoder`. If none specified, `ExtJsonDecoder` is used by
+As the third and optional parameter of all the `JsonMachine::from*` functions is an instance of
+`JsonMachine\JsonDecoder\Decoder`. If none is specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
 `json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
 and make your own.
@@ -277,12 +277,12 @@ and make your own.
 <a name="available-decoders"></a>
 ### Available decoders
 - **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
-Constructor takes the same params as `json_decode`.
+Constructor takes the same parameters as `json_decode`.
 
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON item with something else directly in the foreach
 and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
-Constructor takes the same params as `json_decode`.
+Constructor has the same parameters as `json_decode`.
 Example:
 ```php
 <?php
