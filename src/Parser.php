@@ -194,6 +194,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     $expectedType = 55; // 55 = self::AFTER_ARRAY_START;
                     continue 2; // valid json chunk is not completed yet
                 case '}':
+                    $objectKeyExpected = false;
                 case ']':
                     --$currentLevel;
                     $inObject = $stack[$currentLevel] === '{';
