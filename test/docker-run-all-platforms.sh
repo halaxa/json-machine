@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+ARGS="$@"
 set -e
 IFS=:
 for VERSION in \
@@ -38,11 +39,12 @@ do
             autoconf \
             g++ \
             libtool \
-            make
-        RUN wget http://pear.php.net/go-pear.phar && php go-pear.phar
-        RUN pecl install xdebug-$XDEBUG_VERSION
-        RUN wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
-              && chmod +x /usr/local/bin/composer
+            make \
+        && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
+        && pecl install xdebug-$XDEBUG_VERSION \
+            && docker-php-ext-enable xdebug \
+        && wget https://getcomposer.org/composer.phar -O /usr/local/bin/composer \
+            && chmod +x /usr/local/bin/composer
     " | docker build --tag "$CONTAINER_NAME" - > /dev/null
     printf "Running tests...\n"
     docker run -it --rm \
@@ -52,5 +54,5 @@ do
         --user "$(id -u):$(id -g)" \
         --env COMPOSER_CACHE_DIR=/dev/null \
         "$CONTAINER_NAME" \
-        test/run.sh "$@" || true
+        test/run.sh "$ARGS" || true
 done
