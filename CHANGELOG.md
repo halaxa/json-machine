@@ -6,6 +6,13 @@ Nothing yet
 <br>
 <br>
 
+## 0.6.1
+### Fixed bugs
+- Empty dict at the end of an item was causing Syntax error in the next item. Reason: closing `}` did not set object key expectation to `false`. (#41 via PR #42).
+
+<br>
+<br>
+
 ## 0.6.0
 ### New features
 - **New:** Json pointer can find scalar values in JSON document as well as iterable values. See
