@@ -28,10 +28,12 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
+    const JSON_POINTER_LOOP = '-';
+
     /** @var Lexer */
     private $lexer;
 
-    /** @var string */
+    /** @var array */
     private $jsonPointerPath;
 
     /** @var string */
@@ -108,7 +110,6 @@ class Parser implements \IteratorAggregate, PositionAware
         $token = null;
 
         $lexer = $this->lexer;
-        $jsonPointerPath = $this->jsonPointerPath;
         
         foreach ($lexer as $token) {
             $tokenType = ${$token[0]};
@@ -120,7 +121,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
                 unset($currentPath[$currentLevel+1]);
             }
-            if ($currentPath === $jsonPointerPath
+            if ($this->inJsonPointer($currentPath)
                 && ($currentLevel > $iteratorLevel
                     || (
                         ! $objectKeyExpected
@@ -205,10 +206,10 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if ( ! $pathFound && $currentPath === $jsonPointerPath) {
+            if ( ! $pathFound && $this->inJsonPointer($currentPath)) {
                 $pathFound = true;
             }
-            if ($pathFound && $currentPath !== $jsonPointerPath) {
+            if ($pathFound && ! $this->inJsonPointerLoop($currentPath)) {
                 $subtreeEnded = true;
                 break;
             }
@@ -272,5 +273,45 @@ class Parser implements \IteratorAggregate, PositionAware
         } else {
             throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
         }
+    }
+
+    /**
+     * Determine whether the given path is within the JSON pointer
+     *
+     * @param array $path
+     * @return bool
+     */
+    private function inJsonPointer(array $path)
+    {
+        if (count($this->jsonPointerPath) > count($path)) {
+            return false;
+        }
+
+        foreach ($this->jsonPointerPath as $index => $segment) {
+            if ($segment !== $path[$index]) {
+                if ($segment !== self::JSON_POINTER_LOOP || filter_var($path[$index], FILTER_VALIDATE_INT) === false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine whether the given path is within a loop of the JSON pointer
+     *
+     * @param array $path
+     * @return bool
+     */
+    private function inJsonPointerLoop(array $path)
+    {
+        $firstLoop = array_search(self::JSON_POINTER_LOOP, $this->jsonPointerPath, true);
+
+        if ($firstLoop === false) {
+            return $this->jsonPointerPath === $path;
+        }
+
+        return array_slice($this->jsonPointerPath, 0, $firstLoop) === array_slice($path, 0, $firstLoop);
     }
 }

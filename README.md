@@ -174,6 +174,7 @@ Some examples:
 |--------------------|---------------------------------------------------------------------------------------------------|
 | `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
 | `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
+| `"/results/-/status"`| `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}`                               |
 | `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 

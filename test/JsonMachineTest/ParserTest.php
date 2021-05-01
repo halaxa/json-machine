@@ -236,6 +236,56 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(["result" => "one"], iterator_to_array($parser));
     }
 
+    public function testGeneratorYieldsNestedValues()
+    {
+        $json = '
+            {
+                "zero": [
+                    {
+                        "one": "ignored",
+                        "two": [
+                            {
+                                "three": 1
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    },
+                    {
+                        "one": 1,
+                        "two": [
+                            {
+                                "three": 2
+                            },
+                            {
+                                "three": 3
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ';
+
+        $parser = $this->createParser($json, '/zero/-/two/-/three');
+
+        $i = 0;
+        $expectedKey = 'three';
+        $expectedValues = [1, 2, 3];
+
+        foreach ($parser as $key => $value) {
+            $this->assertSame($expectedKey, $key);
+            $this->assertSame($expectedValues[$i++], $value);
+        }
+    }
+
     private function createParser($json, $jsonPointer = '')
     {
         return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer);
