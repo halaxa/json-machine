@@ -159,8 +159,8 @@ foreach ($fruits as $name => $data) {
 > `results` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus, the memory consumption is constant.
 
-Json Pointer spec also allows using hyphen (`-`) instead of specific value of an array index. Json Machine interprets
-this as a wildcard which matches any **array index** (not any object key). This enables you to iterate nested values in
+The JSON Pointer spec also allows to use a hyphen (`-`) instead of a specific array index. JSON Machine interprets
+it as a wildcard which matches any **array index** (not any object key). This enables you to iterate nested values in
 arrays without loading the whole item.
 
 Example:
@@ -180,7 +180,7 @@ Example:
 }
 ```
 
-To iterate over all colors of the fruits use json pointer `"/results/-/color"`.
+To iterate over all colors of the fruits, use the JSON pointer `"/results/-/color"`.
 
 <a name="json-pointer"></a>
 #### What is Json Pointer?
