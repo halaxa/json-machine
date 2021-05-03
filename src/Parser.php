@@ -28,8 +28,6 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
-    const JSON_POINTER_LOOP = '-';
-
     /** @var Lexer */
     private $lexer;
 
@@ -109,6 +107,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $subtreeEnded = false;
         $token = null;
 
+        // local variables for faster name lookups
         $lexer = $this->lexer;
         $jsonPointerPath = $this->jsonPointerPath;
         
@@ -119,8 +118,8 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
-                if ($this->jsonPointerPath[$currentLevel] === self::JSON_POINTER_LOOP) {
-                    $currentPath[$currentLevel] = self::JSON_POINTER_LOOP;
+                if ($jsonPointerPath[$currentLevel] === '-') {
+                    $currentPath[$currentLevel] = '-';
                 } else {
                     $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
                 }

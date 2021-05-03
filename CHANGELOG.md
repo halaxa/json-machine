@@ -1,7 +1,7 @@
 # Changelog
 
 ## master
-Nothing yet
+- Use `-` in json pointer as a wildcard in arrays. Example: `/users/-/id`
 
 <br>
 <br>
