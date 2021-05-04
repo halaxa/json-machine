@@ -57,6 +57,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['/1/1', '[0,{"1":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
             'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), ['program_info'=>['id'=>'X1']]],
             'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [["empty"=>[]],["value"=>1]]],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
+            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
+            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['three'=>3]]
         ];
     }
 
