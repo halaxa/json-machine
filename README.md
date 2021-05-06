@@ -15,8 +15,9 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 * [Parsing JSON documents](#parsing-json-documents)
   + [Iterating a collection](#simple-document)
   + [Parsing a subtree](#parsing-a-subtree)
-    - [What is Json Pointer?](#json-pointer)
+  + [Parsing nested values in arrays](#parsing-nested-values)
   + [Getting single scalar values](#getting-scalar-values)
+  + [What is Json Pointer anyway?](#json-pointer)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -159,6 +160,8 @@ foreach ($fruits as $name => $data) {
 > `results` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus, the memory consumption is constant.
 
+<a name="parsing-nested-values"></a>
+### Parsing nested values in arrays
 The JSON Pointer spec also allows to use a hyphen (`-`) instead of a specific array index. JSON Machine interprets
 it as a wildcard which matches any **array index** (not any object key). This enables you to iterate nested values in
 arrays without loading the whole item.
@@ -181,26 +184,6 @@ Example:
 ```
 
 To iterate over all colors of the fruits, use the JSON pointer `"/results/-/color"`.
-
-<a name="json-pointer"></a>
-#### What is Json Pointer?
-It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
-It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
-not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
-When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
-`JsonMachine::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
-It can be used to access scalar values as well.
-
-Some examples:
-
-| Json Pointer value | Will iterate through                                                                              |
-|--------------------|---------------------------------------------------------------------------------------------------|
-| `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
-| `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
-| `"/results/-/status"`| `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}`                               |
-| `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
-| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
-
 
 <a name="getting-scalar-values"></a>
 ### Getting single scalar values
@@ -233,7 +216,7 @@ foreach ($fruits as $key => $value) {
 ```
 When parser finds the value and yields it to you, it stops parsing. So when a single scalar value is in the beginning
 of a gigabytes-sized file or stream, it just gets the value from the beginning in no time and with almost no memory
-consumed. 
+consumed.
 
 The obvious shortcut is:
 ```php
@@ -245,6 +228,26 @@ $fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
 $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
 Single scalar value access supports array indices in json pointer as well.
+
+<a name="json-pointer"></a>
+### What is Json Pointer anyway?
+It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
+It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
+not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
+When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
+`JsonMachine::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
+It can be used to access scalar values as well.
+
+Some examples:
+
+| Json Pointer value    | Will iterate through                                                                                        |
+|-----------------------|-------------------------------------------------------------------------------------------------------------|
+| `""` (empty string - default) | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level)              |
+| `"/result/items"`     | `{"result":{"items":["this","array","will","be","iterated"]}}`                                           |
+| `"/0/items"`          | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                           |
+| `"/results/-/status"` | `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}` (a hyphen instead of an array index) |
+| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5)) | `{"":["this","array","will","be","iterated"]}` |
+
 
 <a name="parsing-json-stream-api-responses"></a>
 ## Parsing streaming responses from a JSON API
