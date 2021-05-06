@@ -31,7 +31,7 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Lexer */
     private $lexer;
 
-    /** @var string */
+    /** @var array */
     private $jsonPointerPath;
 
     /** @var string */
@@ -107,6 +107,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $subtreeEnded = false;
         $token = null;
 
+        // local variables for faster name lookups
         $lexer = $this->lexer;
         $jsonPointerPath = $this->jsonPointerPath;
         
@@ -117,7 +118,11 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
-                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
+                if ($jsonPointerPath[$currentLevel] === '-') {
+                    $currentPath[$currentLevel] = '-';
+                } else {
+                    $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
+                }
                 unset($currentPath[$currentLevel+1]);
             }
             if ($currentPath === $jsonPointerPath

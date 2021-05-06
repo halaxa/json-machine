@@ -159,6 +159,29 @@ foreach ($fruits as $name => $data) {
 > `results` at a time. It is always one item in memory at a time at the level/subtree
 > you are currently iterating. Thus, the memory consumption is constant.
 
+The JSON Pointer spec also allows to use a hyphen (`-`) instead of a specific array index. JSON Machine interprets
+it as a wildcard which matches any **array index** (not any object key). This enables you to iterate nested values in
+arrays without loading the whole item.
+
+Example:
+```json
+// fruitsArray.json
+{
+    "results": [
+        {
+            "name": "apple",
+            "color": "red"
+        },
+        {
+            "name": "pear",
+            "color": "yellow"
+        }
+    ]
+}
+```
+
+To iterate over all colors of the fruits, use the JSON pointer `"/results/-/color"`.
+
 <a name="json-pointer"></a>
 #### What is Json Pointer?
 It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
@@ -174,6 +197,7 @@ Some examples:
 |--------------------|---------------------------------------------------------------------------------------------------|
 | `""` (empty string - default)     | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level) |
 | `"/result/items"`    | `{"result":{"items":["this","array","will","be","iterated"]}}`                                    |
+| `"/results/-/status"`| `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}`                               |
 | `"/0/items"`         | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                    |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5))      | `{"":["this","array","will","be","iterated"]}`              |
 

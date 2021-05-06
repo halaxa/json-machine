@@ -57,6 +57,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['/1/1', '[0,{"1":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
             'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), ['program_info'=>['id'=>'X1']]],
             'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [["empty"=>[]],["value"=>1]]],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
+            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
+            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['three'=>3]]
         ];
     }
 
@@ -234,6 +237,56 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->createParser($json, '/result');
         $this->assertSame(["result" => "one"], iterator_to_array($parser));
+    }
+
+    public function testGeneratorYieldsNestedValues()
+    {
+        $json = '
+            {
+                "zero": [
+                    {
+                        "one": "ignored",
+                        "two": [
+                            {
+                                "three": 1
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    },
+                    {
+                        "one": 1,
+                        "two": [
+                            {
+                                "three": 2
+                            },
+                            {
+                                "three": 3
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ';
+
+        $parser = $this->createParser($json, '/zero/-/two/-/three');
+
+        $i = 0;
+        $expectedKey = 'three';
+        $expectedValues = [1, 2, 3];
+
+        foreach ($parser as $key => $value) {
+            $this->assertSame($expectedKey, $key);
+            $this->assertSame($expectedValues[$i++], $value);
+        }
     }
 
     private function createParser($json, $jsonPointer = '')
