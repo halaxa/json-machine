@@ -1,7 +1,14 @@
 # Changelog
 
 ## master
-- Use `-` in json pointer as a wildcard in arrays. Example: `/users/-/id`
+Nothing yet
+
+<br>
+<br>
+
+## 0.7.0
+### New features
+- Use a `-` in json pointer as a wildcard for an array index. Example: `/users/-/id`. Thanks @cerbero90
 
 <br>
 <br>
