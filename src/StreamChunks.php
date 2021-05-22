@@ -9,7 +9,7 @@ class StreamChunks implements \IteratorAggregate
     /** @var resource */
     private $stream;
 
-    /** @var float|int */
+    /** @var int */
     private $chunkSize;
 
     /**

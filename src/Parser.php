@@ -9,6 +9,7 @@ use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use Traversable;
 
 class Parser implements \IteratorAggregate, PositionAware
 {
@@ -28,7 +29,7 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
-    /** @var Lexer */
+    /** @var Traversable */
     private $lexer;
 
     /** @var array */
@@ -41,11 +42,11 @@ class Parser implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @param \Traversable $lexer
+     * @param Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
      * @param Decoder $jsonDecoder
      */
-    public function __construct(\Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
+    public function __construct(Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
     {
         if (0 === preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointer, $matches)) {
             throw new InvalidArgumentException(
@@ -200,9 +201,11 @@ class Parser implements \IteratorAggregate, PositionAware
                     continue 2; // valid json chunk is not completed yet
                 case '}':
                     $objectKeyExpected = false;
+                    // fall through
                 case ']':
                     --$currentLevel;
                     $inObject = $stack[$currentLevel] === '{';
+                    // fall through
                 default:
                     if ($inObject) {
                         $expectedType = 72; // 72 = self::AFTER_OBJECT_VALUE;

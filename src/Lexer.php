@@ -4,7 +4,7 @@ namespace JsonMachine;
 
 class Lexer implements \IteratorAggregate, PositionAware
 {
-    /** @var resource */
+    /** @var iterable */
     private $bytesIterator;
 
     private $position = 0;
@@ -12,7 +12,7 @@ class Lexer implements \IteratorAggregate, PositionAware
     private $column = 0;
 
     /**
-     * @param \Traversable|array $byteChunks
+     * @param iterable $byteChunks
      */
     public function __construct($byteChunks)
     {
