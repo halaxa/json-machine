@@ -42,22 +42,11 @@ class Parser implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @var bool|null
-     */
-    private $storeUnusedJson;
-
-    /**
-     * @var string
-     */
-    private $unusedJson = '';
-
-    /**
      * @param Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param Decoder|null $jsonDecoder
-     * @param bool|null $storeUnusedJson
+     * @param Decoder $jsonDecoder
      */
-    public function __construct(Traversable $lexer, $jsonPointer = '', $jsonDecoder = null, $storeUnusedJson = null)
+    public function __construct(Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
     {
         if (0 === preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointer, $matches)) {
             throw new InvalidArgumentException(
@@ -75,7 +64,6 @@ class Parser implements \IteratorAggregate, PositionAware
             );
         }, explode('/', $jsonPointer)), 1);
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder(true);
-        $this->storeUnusedJson = $storeUnusedJson;
     }
 
     /**
@@ -126,7 +114,7 @@ class Parser implements \IteratorAggregate, PositionAware
         // local variables for faster name lookups
         $lexer = $this->lexer;
         $jsonPointerPath = $this->jsonPointerPath;
-
+        
         foreach ($lexer as $token) {
             $tokenType = ${$token[0]};
             if (0 === ($tokenType & $expectedType)) {
@@ -154,9 +142,6 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 $jsonBuffer .= $token;
-            }
-            elseif ($this->storeUnusedJson === true) {
-                $this->unusedJson .= $token;
             }
             // todo move this switch to the top just after the syntax check to be a correct FSM
             switch ($token[0]) {
@@ -285,11 +270,6 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getJsonPointer()
     {
         return $this->jsonPointer;
-    }
-
-    public function getUnusedJson()
-    {
-        return $this->unusedJson;
     }
 
     private function error($msg, $token, $exception = SyntaxError::class)
