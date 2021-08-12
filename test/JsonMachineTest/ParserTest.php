@@ -63,6 +63,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['three'=>3]]],
             'ISSUE-62#1' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
             'ISSUE-62#2' => ['/key/-/id', '{"key": [ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]}', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
+            [['/meta_data', '/data/companies'], '{"meta_data": {"total_rows": 2},"data": {"type": "companies","companies": [{"id": "1","company": "Company 1"},{"id": "2","company": "Company 2"}]}}', [['total_rows'=>2],['0'=>['id'=>'1','company'=>'Company 1']],['1'=>['id'=>'2','company'=>'Company 2']]]],
         ];
     }
 
@@ -75,7 +76,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = $this->createParser($json, $jsonPointer);
         $this->expectException(PathNotFoundException::class);
-        $this->expectExceptionMessage("Path '$jsonPointer' was not found in json stream.");
+        $this->expectExceptionMessage("Paths '" . implode(', ', (array)$jsonPointer) . "' were not found in json stream.");
         iterator_to_array($parser);
     }
 
@@ -103,11 +104,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function dataGetJsonPointer()
     {
         return [
-            ['/', ['']],
-            ['////', ['', '', '', '']],
-            ['/apple', ['apple']],
-            ['/apple/pie', ['apple', 'pie']],
-            ['/0/1   ', [0, '1   ']],
+            ['/', ['/' => ['']]],
+            ['////', ['////' => ['', '', '', '']]],
+            ['/apple', ['/apple' => ['apple']]],
+            ['/apple/pie', ['/apple/pie' => ['apple', 'pie']]],
+            ['/0/1   ', ['/0/1   ' => [0, '1   ']]],
+            [['/apple/pie', '/banana'], ['/apple/pie' => ['apple', 'pie'], '/banana' => ['banana']]],
         ];
     }
 
@@ -291,6 +293,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($expectedValues[$i++], $value);
         }
     }
+
 
     private function createParser($json, $jsonPointer = '')
     {

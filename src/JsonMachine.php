@@ -29,7 +29,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $bytesIterator
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|null $jsonDecoder
      */
     public function __construct($bytesIterator, $jsonPointer = '', $jsonDecoder = null)
     {
@@ -43,7 +43,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $string
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|null $jsonDecoder
      * @return self
      */
     public static function fromString($string, $jsonPointer = '', $jsonDecoder = null)
@@ -54,7 +54,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $file
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|null $jsonDecoder
      * @return self
      */
     public static function fromFile($file, $jsonPointer = '', $jsonDecoder = null)
@@ -65,7 +65,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param resource $stream
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|null $jsonDecoder
      * @return self
      */
     public static function fromStream($stream, $jsonPointer = '', $jsonDecoder = null)
@@ -76,7 +76,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param \Traversable|array $iterable
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|null $jsonDecoder
      * @return self
      */
     public static function fromIterable($iterable, $jsonPointer = '', $jsonDecoder = null)
@@ -93,5 +93,9 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     public function getPosition()
     {
         return $this->parser->getPosition();
+    }
+
+    public function getMatchedJsonPointer() {
+        return $this->parser->getMatchedJsonPointer();
     }
 }
