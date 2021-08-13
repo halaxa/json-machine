@@ -93,6 +93,10 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function getMatchingJsonPointerPath($currentPath)
     {
+        if (count($this->jsonPointerPaths) === 1) {
+            return current($this->jsonPointerPaths);
+        }
+
         $matchingPointer = key($this->jsonPointerPaths);
         $matchLength = -1;
 
