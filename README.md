@@ -17,6 +17,7 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
   + [Parsing a subtree](#parsing-a-subtree)
   + [Parsing nested values in arrays](#parsing-nested-values)
   + [Getting single scalar values](#getting-scalar-values)
+  + [Parsing multiple subtrees](#parsing-multiple-subtrees)
   + [What is Json Pointer anyway?](#json-pointer)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
@@ -83,7 +84,7 @@ and uses native `json_decode` to decode JSON document items by default. See [Dec
 ## Parsing JSON documents
 
 <a name="simple-document"></a>
-### Itearting a collection
+### Iterating a collection
 Let's say that `fruits.json` contains this really big JSON document:
 ```json
 // fruits.json
@@ -188,7 +189,7 @@ To iterate over all colors of the fruits, use the JSON pointer `"/results/-/colo
 
 <a name="getting-scalar-values"></a>
 ### Getting single scalar values
-You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this example:
+You can parse single scalar value anywhere in the document the same way as a collection. Consider this example:
 ```json
 // fruits.json
 {
@@ -229,6 +230,62 @@ $fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
 $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
 Single scalar value access supports array indices in json pointer as well.
+
+<a name="parsing-multiple-subtrees"></a>
+### Parsing multiple subtrees
+
+> Subtrees must not intersect!
+
+It is also possible to parse multiple subtrees. Consider this example:
+```json
+// fruits.json
+{
+    "lastModified": "2012-12-12",
+    "berries": [
+        {
+          "fruit": "strawberry",
+          "color": "red"
+        },
+        {
+          "fruit": "raspberry",
+          "color": "red"
+        },
+        {
+          "fruit": "blueberry",
+          "color": "blue"
+        },
+        // ... gigabytes follow ...
+    ],
+    "citrus": [
+      {
+          "vegetable": "orange",
+          "color": "orange"
+      },
+      {
+          "vegetable": "lime",
+          "color": "green"
+      },
+      {
+          "vegetable": "grapefruit",
+          "color": "red"
+      },
+      // ... gigabytes follow ...
+    ]
+}
+``` 
+To iterate over all berries and citrus fruits, use the JSON pointers `["/berries", "/citrus"]`.
+```php
+<?php
+
+use \JsonMachine\JsonMachine;
+
+$fruits = JsonMachine::fromFile('fruits.json', ['/berries', '/citrus']);
+foreach ($fruits as $key => $value) {
+    // get the JSON pointer to see if we got a berry or citrus fruit
+    // e.g. '/berries' for the first iteration
+    $jsonPointer = $fruits->getMatchedJsonPointer();
+}
+```
 
 <a name="json-pointer"></a>
 ### What is Json Pointer anyway?
