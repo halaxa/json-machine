@@ -59,7 +59,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [["empty"=>[]],["value"=>1]]],
             ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
             ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
-            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['three'=>3]]
+            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['three'=>3]],
+            'ISSUE-62' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [125, 785, 459, 853]],
         ];
     }
 
