@@ -19,47 +19,49 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testSyntax($jsonPointer, $json, $expectedResult)
     {
-        $resultWithKeys = iterator_to_array($this->createParser($json, $jsonPointer));
-        $resultNoKeys = iterator_to_array($this->createParser($json, $jsonPointer), false);
+        $result = [];
+        foreach ($this->createParser($json, $jsonPointer) as $key => $value) {
+            $result[] = [$key => $value];
+        }
 
-        $this->assertEquals($expectedResult, $resultWithKeys);
-        $this->assertEquals(array_values($expectedResult), $resultNoKeys);
+        $this->assertSame($expectedResult, $result);
     }
 
     public function dataSyntax()
     {
         return [
             ['', '{}', []],
-            ['', '{"a": "b"}', ['a'=>'b']],
-            ['', '{"a":{"b":{"c":1}}}', ['a'=>['b'=>['c'=>1]]]],
+            ['', '{"a": "b"}', [['a'=>'b']]],
+            ['', '{"a":{"b":{"c":1}}}', [['a'=>['b'=>['c'=>1]]]]],
             ['', '[]', []],
-            ['', '[null,true,false,"a",0,1,42.5]', [null,true,false,"a",0,1,42.5]],
-            ['', '[{"c":1}]', [['c'=>1]]],
-            ['', '[{"c":1},"string",{"d":2},false]', [['c'=>1],"string",['d'=>2],false]],
-            ['', '[false,{"c":1},"string",{"d":2}]', [false,['c'=>1],"string",['d'=>2]]],
-            ['', '[{"c":1,"d":2}]', [['c'=>1,'d'=>2]]],
-            ['/', '{"":{"c":1,"d":2}}', ['c'=>1,'d'=>2]],
-            ['/~0', '{"~":{"c":1,"d":2}}', ['c'=>1,'d'=>2]],
-            ['/~1', '{"/":{"c":1,"d":2}}', ['c'=>1,'d'=>2]],
-            ['/path', '{"path":{"c":1,"d":2}}', ['c'=>1,'d'=>2]],
-            ['/path', '{"no":[null], "path":{"c":1,"d":2}}', ['c'=>1,'d'=>2]],
-            ['/0', '[{"c":1,"d":2}, [null]]', ['c'=>1,'d'=>2]],
-            ['/0/path', '[{"path":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
-            ['/1/path', '[[null], {"path":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
-            ['/path/0', '{"path":[{"c":1,"d":2}, [null]]}', ['c'=>1,'d'=>2]],
-            ['/path/1', '{"path":[null,{"c":1,"d":2}, [null]]}', ['c'=>1,'d'=>2]],
-            ['/path/to', '{"path":{"to":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/path/after-vector', '{"path":{"array":[],"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/path/after-vector', '{"path":{"array":["item"],"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/path/after-vector', '{"path":{"object":{"item":null},"after-vector":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/path/after-vectors', '{"path":{"array":[],"object":{},"after-vectors":{"c":1,"d":2}}}', ['c'=>1,'d'=>2]],
-            ['/0/0', '[{"0":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
-            ['/1/1', '[0,{"1":{"c":1,"d":2}}]', ['c'=>1,'d'=>2]],
-            'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), ['program_info'=>['id'=>'X1']]],
-            'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [["empty"=>[]],["value"=>1]]],
-            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
-            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4]],
-            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', ['three'=>3]]
+            ['', '[null,true,false,"a",0,1,42.5]', [[0=>null],[1=>true],[2=>false],[3=>"a"],[4=>0],[5=>1],[6=>42.5]]],
+            ['', '[{"c":1}]', [[['c'=>1]]]],
+            ['', '[{"c":1},"string",{"d":2},false]', [[0=>['c'=>1]],[1=>"string"],[2=>['d'=>2]],[3=>false]]],
+            ['', '[false,{"c":1},"string",{"d":2}]', [[0=>false],[1=>['c'=>1]],[2=>"string"],[3=>['d'=>2]]]],
+            ['', '[{"c":1,"d":2}]', [[['c'=>1, 'd'=>2]]]],
+            ['/', '{"":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
+            ['/~0', '{"~":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
+            ['/~1', '{"/":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
+            ['/path', '{"path":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
+            ['/path', '{"no":[null], "path":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
+            ['/0', '[{"c":1,"d":2}, [null]]', [['c'=>1],['d'=>2]]],
+            ['/0/path', '[{"path":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
+            ['/1/path', '[[null], {"path":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
+            ['/path/0', '{"path":[{"c":1,"d":2}, [null]]}', [['c'=>1],['d'=>2]]],
+            ['/path/1', '{"path":[null,{"c":1,"d":2}, [null]]}', [['c'=>1],['d'=>2]]],
+            ['/path/to', '{"path":{"to":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
+            ['/path/after-vector', '{"path":{"array":[],"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
+            ['/path/after-vector', '{"path":{"array":["item"],"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
+            ['/path/after-vector', '{"path":{"object":{"item":null},"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
+            ['/path/after-vectors', '{"path":{"array":[],"object":{},"after-vectors":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
+            ['/0/0', '[{"0":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
+            ['/1/1', '[0,{"1":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
+            'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), [['program_info'=>['id'=>'X1']]]],
+            'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [[["empty"=>[]]],[1=>["value"=>1]]]],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', [['one'=>1], ['two'=>2], ['three'=>3], ['four'=>4]]],
+            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['one'=>1], ['two'=>2], ['three'=>3], ['four'=>4]]],
+            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['three'=>3]]],
+            'ISSUE-62' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
         ];
     }
 
