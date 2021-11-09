@@ -41,7 +41,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @param string $jsonPointer
      * @param Decoder $jsonDecoder
      * @return self
