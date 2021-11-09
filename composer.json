@@ -13,11 +13,11 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7.27",
-        "guzzlehttp/guzzle": "^6",
         "ext-json": "*"
     },
     "suggest": {
-        "ext-json": "To run JSON Machine out of the box without custom decoders."
+        "ext-json": "To run JSON Machine out of the box without custom decoders.",
+        "guzzlehttp/guzzle": "To run example with GuzzleHttp"
     },
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"},
