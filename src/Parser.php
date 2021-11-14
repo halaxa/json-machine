@@ -58,28 +58,28 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param array $jsonPointer
+     * @param array $jsonPointers
      * @throws InvalidArgumentException
      */
-    private function buildJsonPointerPaths($jsonPointer)
+    private function buildJsonPointerPaths(array $jsonPointers)
     {
-        $jsonPointerArray = array_values($jsonPointer);
+        $jsonPointers = array_values($jsonPointers);
 
-        foreach ($jsonPointerArray as $jsonPointerEl) {
+        foreach ($jsonPointers as $jsonPointerEl) {
             if (preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointerEl) === 0) {
                 throw new InvalidArgumentException(sprintf("Given value '%s' of \$jsonPointer is not valid JSON Pointer", $jsonPointerEl));
             }
 
-            $jsonPointerFiltered = array_filter($jsonPointerArray, static function($el) use ($jsonPointerEl) {
+            $intersectingJsonPointers = array_filter($jsonPointers, static function($el) use ($jsonPointerEl) {
                 return $jsonPointerEl !== $el && strpos($jsonPointerEl, $el) === 0;
             });
 
-            if (!empty($jsonPointerFiltered)) {
-                throw new InvalidArgumentException(sprintf("JSON Pointer must not intersect: '%s' is within '%s'", $jsonPointerEl, current($jsonPointerFiltered)));
+            if (!empty($intersectingJsonPointers)) {
+                throw new InvalidArgumentException(sprintf("JSON Pointers must not intersect: '%s' is within '%s'", $jsonPointerEl, current($intersectingJsonPointers)));
             }
         }
 
-        $this->jsonPointer = array_combine($jsonPointerArray, $jsonPointerArray);
+        $this->jsonPointer = array_combine($jsonPointers, $jsonPointers);
         $this->jsonPointerPaths = array_map(static function ($el) {
             return array_slice(array_map(static function ($jsonPointerPart) {
                 return str_replace(['~1', '~0'], ['/', '~'], $jsonPointerPart);
