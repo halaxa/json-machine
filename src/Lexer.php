@@ -22,6 +22,7 @@ class Lexer implements \IteratorAggregate, PositionAware
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $inString = false;

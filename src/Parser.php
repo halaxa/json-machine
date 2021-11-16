@@ -67,6 +67,7 @@ class Parser implements \IteratorAggregate, PositionAware
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         // todo Allow to call getIterator only once per instance

@@ -23,6 +23,7 @@ class StringChunks implements \IteratorAggregate
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $len = strlen($this->string);

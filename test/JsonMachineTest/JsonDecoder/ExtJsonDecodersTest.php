@@ -17,17 +17,17 @@ class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
 
         $defaultDecoder = new $className();
         $defaultResult = $defaultDecoder->$methodName($json);
-        $this->assertInternalType("object", $defaultResult->getValue());
-        $this->assertNotInternalType("string", $defaultResult->getValue()->bigint);
+        $this->assertTrue("object" === gettype($defaultResult->getValue()));
+        $this->assertFalse("string" === gettype($defaultResult->getValue()->bigint));
         $this->assertSame([["deeper"]], $defaultResult->getValue()->deep);
 
         $assocDecoder = new $className(true);
         $assocResult = $assocDecoder->$methodName($json);
-        $this->assertInternalType("array", $assocResult->getValue());
+        $this->assertTrue("array" === gettype($assocResult->getValue()));
 
         $objDecoder = new $className(false);
         $objResult = $objDecoder->$methodName($json);
-        $this->assertInternalType("object", $objResult->getValue());
+        $this->assertTrue("object" === gettype($objResult->getValue()));
 
         $depthDecoder = new $className(true, 1);
         $depthResult = $depthDecoder->$methodName($json);

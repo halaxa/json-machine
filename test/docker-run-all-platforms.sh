@@ -6,10 +6,11 @@ for VERSION in \
   5.6:2.5.5 \
   7.0:2.7.2 \
   7.1:2.9.8 \
-  7.2:2.9.8 \
-  7.3:2.9.8 \
-  7.4:2.9.8 \
-  8.0:3.0.0
+  7.2:3.1.1 \
+  7.3:3.1.1 \
+  7.4:3.1.1 \
+  8.0:3.1.1 \
+  8.1-rc:3.1.1
 do
     set -- $VERSION
     PHP_VERSION=$1
@@ -50,9 +51,10 @@ do
     docker run -it --rm \
         --name "$CONTAINER_NAME" \
         --volume "$PWD:/usr/src/json-machine" \
+        --volume "/tmp:/tmp" \
         --workdir "/usr/src/json-machine" \
         --user "$(id -u):$(id -g)" \
-        --env COMPOSER_CACHE_DIR=/dev/null \
+        --env COMPOSER_CACHE_DIR=/tmp \
         "$CONTAINER_NAME" \
         test/run.sh "$ARGS" || true
 done

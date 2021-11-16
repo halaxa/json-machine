@@ -84,6 +84,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
         return new static($iterable, $jsonPointer, $jsonDecoder);
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->parser;

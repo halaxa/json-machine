@@ -28,6 +28,7 @@ class StreamChunks implements \IteratorAggregate
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         while ('' !== ($chunk = fread($this->stream, $this->chunkSize))) {

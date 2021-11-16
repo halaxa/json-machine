@@ -25,6 +25,7 @@ class FileChunks implements \IteratorAggregate
     /**
      * @return \Generator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $fileHandle = fopen($this->fileName, 'r');

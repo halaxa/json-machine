@@ -13,3 +13,5 @@ php:
 install:
   - composer self-update --2
   - composer update --ignore-platform-req=php
+
+script: test/run.sh
