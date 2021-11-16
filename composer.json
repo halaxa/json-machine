@@ -13,12 +13,12 @@
         "php": ">=5.6"
     },
     "require-dev": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "phpunit/phpunit": "^8"
     },
     "suggest": {
         "ext-json": "To run JSON Machine out of the box without custom decoders.",
-        "guzzlehttp/guzzle": "To run example with GuzzleHttp",
-        "phpunit/phpunit": "Not specified in require-dev as the phpunit version varies across PHP versions that JSON Machine supports"
+        "guzzlehttp/guzzle": "To run example with GuzzleHttp"
     },
     "autoload" : {
         "psr-4": {"JsonMachine\\": "src/"},
