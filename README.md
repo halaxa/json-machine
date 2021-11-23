@@ -33,10 +33,10 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
   + ["I'm still getting Allowed memory size ... exhausted"](#step1)
   + ["That didn't help"](#step2)
   + ["I am still out of luck"](#step3)
+* [Installation](#installation)
 * [Development](#development)
   + [Non containerized](#non-containerized)
   + [Containerized](#containerized)
-* [Installation](#installation)
 * [Support](#support)
 * [License](#license)
 
@@ -435,6 +435,14 @@ there's probably no solution yet via JSON Machine. A feature is planned which wi
 any structure fully recursively and strings will be served as streams.
 
 
+<a name="installation"></a>
+## Installation
+```bash
+composer require halaxa/json-machine
+```
+or clone or download this repository (not recommended because of no autoloading).
+
+
 <a name="development"></a>
 ## Development
 Clone this repository. This library supports two development approaches:
@@ -452,13 +460,6 @@ of the build process such as tests.
 to see available dev tools/commands. You can run all the steps of the build process separately as well
 as the whole build process at once. Make basically runs composer dev scripts inside containers in the background.
 
-
-<a name="installation"></a>
-## Installation
-```bash
-composer require halaxa/json-machine
-```
-or clone or download this repository (not recommended because of no autoloading).
 
 
 <a name="support"></a>
