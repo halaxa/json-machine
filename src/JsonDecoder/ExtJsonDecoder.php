@@ -1,8 +1,6 @@
 <?php
 
-
 namespace JsonMachine\JsonDecoder;
-
 
 use JsonMachine\JsonDecoder\Decoder;
 

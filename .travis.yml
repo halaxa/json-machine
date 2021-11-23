@@ -12,6 +12,11 @@ php:
 
 install:
   - composer self-update --2
-  - composer update --ignore-platform-req=php
 
-script: test/run.sh
+script: composer tests
+
+jobs:
+  include:
+    - stage: Code style
+      php: 8.0
+      script: composer cs

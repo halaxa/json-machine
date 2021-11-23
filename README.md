@@ -33,8 +33,9 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
   + ["I'm still getting Allowed memory size ... exhausted"](#step1)
   + ["That didn't help"](#step2)
   + ["I am still out of luck"](#step3)
-* [Running tests](#running-tests)
-  + [Running tests on all supported PHP platforms](#running-tests-on-all-supported-php-platforms)
+* [Development](#development)
+  + [Non containerized](#non-containerized)
+  + [Containerized](#containerized)
 * [Installation](#installation)
 * [Support](#support)
 * [License](#license)
@@ -434,20 +435,22 @@ there's probably no solution yet via JSON Machine. A feature is planned which wi
 any structure fully recursively and strings will be served as streams.
 
 
-<a name="running-tests"></a>
-## Running tests
-```bash
-tests/run.sh
-```
-This uses php and composer installation already present in your OS installation.
+<a name="development"></a>
+## Development
+Clone this repository. This library supports two development approaches:
+1. non containerized (PHP and composer already installed on your machine)
+1. containerized (Docker on your machine)
 
-<a name="running-tests-on-all-supported-php-platforms"></a>
-### Running tests on all supported PHP platforms
-[Install docker](https://docs.docker.com/install/) to your machine and run
-```bash
-tests/docker-run-all-platforms.sh
-```
-This needs no php nor composer installation on your machine. Only Docker.
+<a name="non-containerized"></a>
+### Non containerized
+Run `composer run -l` in the project dir to see available dev scripts. This way you can run some steps
+of the build process such as tests.
+
+<a name="containerized"></a>
+### Containerized
+[Install Docker](https://docs.docker.com/install/) and run `make` in the project dir on your host machine
+to see available dev tools/commands. You can run all the steps of the build process separately as well
+as the whole build process at once. Make basically runs composer dev scripts inside containers in the background.
 
 
 <a name="installation"></a>
@@ -455,7 +458,7 @@ This needs no php nor composer installation on your machine. Only Docker.
 ```bash
 composer require halaxa/json-machine
 ```
-or clone or download this repository (not recommended).
+or clone or download this repository (not recommended because of no autoloading).
 
 
 <a name="support"></a>

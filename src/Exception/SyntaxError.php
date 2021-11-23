@@ -8,5 +8,4 @@ class SyntaxError extends JsonMachineException
     {
         parent::__construct($message." At position $position.");
     }
-
 }

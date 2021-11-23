@@ -19,4 +19,3 @@ $jsonChunks = httpClientChunks($client->stream($response));
 foreach (JsonMachine::fromIterable($jsonChunks, "/args") as $key => $value) {
     var_dump($key, $value);
 }
-
