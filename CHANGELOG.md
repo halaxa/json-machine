@@ -1,7 +1,8 @@
 # Changelog
 
 ## master
-Nothing yet
+- PHP 8.1 support
+- DEV: Build system switched to composer scripts and Makefile
 
 <br>
 <br>
