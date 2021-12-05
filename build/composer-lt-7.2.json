@@ -11,11 +11,11 @@
         "ext-json": "*",
         "phpunit/phpunit": "^5.0"
     },
-    "autoload" : {
+    "autoload": {
         "psr-4": {"JsonMachine\\": "src/"},
         "files": ["src/functions.php"]
     },
-    "autoload-dev" : {
+    "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
     }
 }

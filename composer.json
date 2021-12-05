@@ -30,11 +30,11 @@
         "ext-json": "To run JSON Machine out of the box without custom decoders.",
         "guzzlehttp/guzzle": "To run example with GuzzleHttp"
     },
-    "autoload" : {
+    "autoload": {
         "psr-4": {"JsonMachine\\": "src/"},
         "files": ["src/functions.php"]
     },
-    "autoload-dev" : {
+    "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
     }
 }
