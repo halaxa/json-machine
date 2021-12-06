@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 .PHONY: *
-LATEST_PHP := 8.0 3.1.1
+LATEST_PHP := 8.1 3.1.1
 
 define PHP_VERSIONS
 "5.6 2.5.5"\
@@ -10,7 +10,7 @@ define PHP_VERSIONS
 "7.3 3.1.1"\
 "7.4 3.1.1"\
 "8.0 3.1.1"\
-"8.1-rc 3.1.1"
+"8.1 3.1.1"
 endef
 
 define DOCKER_RUN
