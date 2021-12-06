@@ -1,6 +1,12 @@
 # Changelog
 
 ## master
+nothing yet
+<br>
+<br>
+
+## 0.7.1
+### New features
 - PHP 8.1 support
 - DEV: Build system switched to composer scripts and Makefile
 
