@@ -71,7 +71,17 @@ class Parser implements \IteratorAggregate, PositionAware
             }
 
             $intersectingJsonPointers = array_filter($jsonPointers, static function($el) use ($jsonPointerEl) {
-                return $jsonPointerEl !== $el && strpos($jsonPointerEl, $el) === 0;
+                if ($jsonPointerEl === $el) {
+                    return false;
+                }
+
+                if (strpos($jsonPointerEl, $el) === 0) {
+                    return true;
+                }
+
+                $elWildcard = preg_replace('~/\d+(/|$)~', '/-$1', $el);
+
+                return strpos($jsonPointerEl, $elWildcard) === 0;
             });
 
             if (!empty($intersectingJsonPointers)) {
@@ -93,18 +103,24 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function getMatchingJsonPointerPath($currentPath)
     {
+        $matchingPointer = key($this->jsonPointerPaths);
+
         if (count($this->jsonPointerPaths) === 1) {
+            $this->currentJsonPointer = $matchingPointer;
             return current($this->jsonPointerPaths);
         }
 
-        $matchingPointer = key($this->jsonPointerPaths);
+        $currentPathLength = count($currentPath);
         $matchLength = -1;
 
         foreach ($this->jsonPointerPaths as $jsonPointer => $jsonPointerPath) {
             $matchingParts = [];
 
             foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
-                if (!isset($currentPath[$i]) || $currentPath[$i] !== $jsonPointerPathEl) {
+                if (
+                    !isset($currentPath[$i])
+                    || preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPathEl)
+                ) {
                     continue;
                 }
 
@@ -120,6 +136,10 @@ class Parser implements \IteratorAggregate, PositionAware
             if ($currentMatchLength > $matchLength) {
                 $matchingPointer = $jsonPointer;
                 $matchLength = $currentMatchLength;
+            }
+
+            if ($matchLength === $currentPathLength) {
+                break;
             }
         }
 
