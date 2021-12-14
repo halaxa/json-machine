@@ -43,7 +43,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         $tokenBuffer = '';
         $isEscaping = false;
         $tokenWidth = 0;
-        $trackingLineBreak = false;
+        $ignoreLF = false;
         $position = 1;
         $column = 0;
 
@@ -60,8 +60,8 @@ class Lexer implements \IteratorAggregate, PositionAware
                 }
 
                 // handle CRLF newlines
-                if ($trackingLineBreak && $byte === "\n") {
-                    $trackingLineBreak = false;
+                if ($ignoreLF && $byte === "\n") {
+                    $ignoreLF = false;
                     continue;
                 }
 
@@ -81,8 +81,8 @@ class Lexer implements \IteratorAggregate, PositionAware
                         yield $byte;
                     // track line number and reset column for each newline
                     } elseif ($byte === "\r" || $byte === "\n") {
-                        $trackingLineBreak = ($byte === "\r");
-                        $this->line++;
+                        $ignoreLF = ($byte === "\r");
+                        ++$this->line;
                         $column = 0;
                     }
                 } else {

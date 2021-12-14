@@ -4,6 +4,10 @@ use JsonMachine\JsonMachine;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
+if (in_array('xdebug', get_loaded_extensions())) {
+    trigger_error('Xdebug enabled. Results may be affected.', E_USER_WARNING);
+}
+
 $decoders = [
     'JsonMachine::fromFile()' => function ($file) {
         return JsonMachine::fromFile($file);
