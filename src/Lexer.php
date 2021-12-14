@@ -30,7 +30,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         $isEscaping = false;
         $width = 0;
         $trackingLineBreak = false;
-        $position = 0;
+        $position = 1;
         $column = 0;
 
         // Treat UTF-8 BOM bytes as whitespace
@@ -51,7 +51,6 @@ class Lexer implements \IteratorAggregate, PositionAware
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
-                ++$position;
                 if ($inString) {
                     $inString = ! ($byte === '"' && !$isEscaping);
                     $isEscaping = ($byte === '\\' && !$isEscaping);
@@ -69,7 +68,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                 if (isset($$byte)) {
                     ++$column;
                     if ($tokenBuffer !== '') {
-                        $this->position = $position;
+                        $this->position = $position + $i;
                         $this->column = $column;
                         yield $tokenBuffer;
                         $column += $width;
@@ -77,7 +76,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                         $width = 0;
                     }
                     if ($$byte) { // is not whitespace
-                        $this->position = $position;
+                        $this->position = $position + $i;
                         $this->column = $column;
                         yield $byte;
                     // track line number and reset column for each newline
@@ -94,6 +93,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                     ++$width;
                 }
             }
+            $position += $i;
         }
         if ($tokenBuffer !== '') {
             $this->position = $position;
