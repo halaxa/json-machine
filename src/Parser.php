@@ -162,6 +162,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             // fixme: The parser will go on, but silently ignore a possibly matching collection.
                             // fixme: Possible solutions: hard dependency on json_decode or add Decoder::decodeInternalKey()
                             $currentPath[$currentLevel] = $keyResult->getValue();
+                            unset($keyResult);
                             unset($currentPath[$currentLevel+1]);
                         }
                         continue 2; // valid json chunk is not completed yet
@@ -226,20 +227,21 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             if ($currentLevel <= $iteratorLevel && $jsonBuffer !== '') {
                 $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
+                $jsonBuffer = '';
                 if (! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
                 if ($iteratorStruct === '[') {
                     yield $valueResult->getValue();
-                    $jsonBuffer = '';
                 } else {
                     $keyResult = $this->jsonDecoder->decodeKey($key);
                     if (! $keyResult->isOk()) {
                         $this->error($keyResult->getErrorMessage(), $key);
                     }
                     yield $keyResult->getValue() => $valueResult->getValue();
-                    $jsonBuffer = '';
+                    unset($keyResult);
                 }
+                unset($valueResult);
             }
         }
 
