@@ -25,14 +25,6 @@ class Lexer implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        $inString = false;
-        $tokenBuffer = '';
-        $isEscaping = false;
-        $width = 0;
-        $trackingLineBreak = false;
-        $position = 1;
-        $column = 0;
-
         // Treat UTF-8 BOM bytes as whitespace
         ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
 
@@ -47,6 +39,14 @@ class Lexer implements \IteratorAggregate, PositionAware
         ${':'} = 1;
         ${','} = 1;
 
+        $inString = false;
+        $tokenBuffer = '';
+        $isEscaping = false;
+        $tokenWidth = 0;
+        $trackingLineBreak = false;
+        $position = 1;
+        $column = 0;
+
         foreach ($this->bytesIterator as $bytes) {
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
@@ -55,7 +55,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                     $inString = ! ($byte === '"' && !$isEscaping);
                     $isEscaping = ($byte === '\\' && !$isEscaping);
                     $tokenBuffer .= $byte;
-                    ++$width;
+                    ++$tokenWidth;
                     continue;
                 }
 
@@ -71,9 +71,9 @@ class Lexer implements \IteratorAggregate, PositionAware
                         $this->position = $position + $i;
                         $this->column = $column;
                         yield $tokenBuffer;
-                        $column += $width;
+                        $column += $tokenWidth;
                         $tokenBuffer = '';
-                        $width = 0;
+                        $tokenWidth = 0;
                     }
                     if ($$byte) { // is not whitespace
                         $this->position = $position + $i;
@@ -90,7 +90,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
-                    ++$width;
+                    ++$tokenWidth;
                 }
             }
             $position += $i;
