@@ -64,6 +64,28 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             'ISSUE-62#1' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
             'ISSUE-62#2' => ['/key/-/id', '{"key": [ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]}', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
             [['/meta_data', '/data/companies'], '{"meta_data": {"total_rows": 2},"data": {"type": "companies","companies": [{"id": "1","company": "Company 1"},{"id": "2","company": "Company 2"}]}}', [['total_rows'=>2],['0'=>['id'=>'1','company'=>'Company 1']],['1'=>['id'=>'2','company'=>'Company 2']]]],
+            [
+                ['/data/companies/-/id', '/data/companies/-/company'],
+                '{
+                    "meta_data": {
+                        "total_rows": 2
+                    },
+                    "data": {
+                        "type": "companies",
+                        "companies": [
+                            {"id": "1","company": "Company 1"},
+                            {"id": "2","company": "Company 2"}
+                        ]
+                    }
+                }',
+                [
+                    ['id'=>'1'],
+                    ['company'=>'Company 1'],
+                    ['id'=>'2'],
+                    ['company'=>'Company 2'],
+                ]
+            ]
+
         ];
     }
 
