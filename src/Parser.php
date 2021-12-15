@@ -119,7 +119,10 @@ class Parser implements \IteratorAggregate, PositionAware
             foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
                 if (
                     !isset($currentPath[$i])
-                    || preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPathEl)
+                    || (
+                        $currentPath[$i] !== $jsonPointerPathEl
+                        && preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== $jsonPointerPathEl
+                    )
                 ) {
                     continue;
                 }
@@ -181,6 +184,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $iteratorStruct = null;
         $currentPath = [];
+        $currentPathWildcard = [];
         $pathsFound = [];
         $currentLevel = -1;
         $stack = [$currentLevel => null];
@@ -209,16 +213,17 @@ class Parser implements \IteratorAggregate, PositionAware
                 $this->error("Unexpected symbol", $token);
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
-            if (! $inObject && $isValue && $currentLevel < $iteratorLevel) {
+            if (!$inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPathChanged = true;
-                if ($jsonPointerPath[$currentLevel] === '-') {
-                    $currentPath[$currentLevel] = '-';
-                } else {
-                    $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
-                }
-                unset($currentPath[$currentLevel+1], $stack[$currentLevel+1]);
+                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
+                $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
+                unset($currentPath[$currentLevel+1], $currentPathWildcard[$currentLevel+1], $stack[$currentLevel+1]);
             }
-            if ($currentPath === $jsonPointerPath
+            if (
+                (
+                    $jsonPointerPath === $currentPath
+                    || $jsonPointerPath === $currentPathWildcard
+                )
                 && (
                     $currentLevel > $iteratorLevel
                     || (
@@ -252,7 +257,8 @@ class Parser implements \IteratorAggregate, PositionAware
                             // fixme: The parser will go on, but silently ignore a possibly matching collection.
                             // fixme: Possible solutions: hard dependency on json_decode or add Decoder::decodeInternalKey()
                             $currentPath[$currentLevel] = $keyResult->getValue();
-                            unset($currentPath[$currentLevel+1], $stack[$currentLevel+1]);
+                            $currentPathWildcard[$currentLevel] = $keyResult->getValue();
+                            unset($currentPath[$currentLevel+1], $currentPathWildcard[$currentLevel+1], $stack[$currentLevel+1]);
                         }
                         continue 2; // valid json chunk is not completed yet
                     }
@@ -306,10 +312,12 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if ($currentPath === $jsonPointerPath && !in_array($this->currentJsonPointer, $pathsFound, true)) {
-                $pathsFound[] = $this->currentJsonPointer;
+            if ($jsonPointerPath === $currentPath || $jsonPointerPath === $currentPathWildcard) {
+                if (!in_array($this->currentJsonPointer, $pathsFound, true)) {
+                    $pathsFound[] = $this->currentJsonPointer;
+                }
             }
-            if ($currentPath !== $jsonPointerPath && count($pathsFound) === count($this->jsonPointerPaths)) {
+            elseif (count($pathsFound) === count($this->jsonPointerPaths)) {
                 $subtreeEnded = true;
                 break;
             }
