@@ -8,33 +8,50 @@ use JsonMachine\StringChunks;
 
 class LexerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGeneratesTokens()
+    public function bothDebugModes()
+    {
+        return [
+            'debug enabled' => [true],
+            'debug disabled' => [false],
+        ];
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testGeneratesTokens($debugEnabled)
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
         $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
     }
 
-    public function testWithBOM()
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testWithBOM($debugEnabled)
     {
         $data = ["\xEF\xBB\xBF" . '{}'];
         $expected = ['{','}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
     }
 
-    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString()
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($debugEnabled)
     {
-        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']))));
+        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']), $debugEnabled)));
     }
 
     /**
      * @param string $formattedJsonFilePath
      * @dataProvider dataProvidesLocationalData
      */
-    public function testProvidesLocationalData($formattedJsonFilePath)
+    public function testProvidesLocationalDataWhenDebugEnabled($formattedJsonFilePath)
     {
         $json = file_get_contents($formattedJsonFilePath);
-        $lexer = new Lexer(new StringChunks($json));
+        $lexer = new Lexer(new StringChunks($json), true);
         $expectedTokens = $this->expectedTokens();
         $i = 0;
 

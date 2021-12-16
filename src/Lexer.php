@@ -6,6 +6,7 @@ class Lexer implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $bytesIterator;
+    private $debug = false;
 
     private $position = 0;
     private $line = 1;
@@ -14,9 +15,10 @@ class Lexer implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $byteChunks
      */
-    public function __construct($byteChunks)
+    public function __construct($byteChunks, $debug = false)
     {
         $this->bytesIterator = $byteChunks;
+        $this->debug = $debug;
     }
 
     /**
@@ -24,6 +26,67 @@ class Lexer implements \IteratorAggregate, PositionAware
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
+    {
+        if ($this->debug) {
+            return $this->debugParse();
+        } else {
+            return $this->parse();
+        }
+    }
+
+    public function parse()
+    {
+        // Treat UTF-8 BOM bytes as whitespace
+        ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
+
+        ${' '} = 0;
+        ${"\n"} = 0;
+        ${"\r"} = 0;
+        ${"\t"} = 0;
+        ${'{'} = 1;
+        ${'}'} = 1;
+        ${'['} = 1;
+        ${']'} = 1;
+        ${':'} = 1;
+        ${','} = 1;
+
+        $inString = false;
+        $tokenBuffer = '';
+        $isEscaping = false;
+
+        foreach ($this->bytesIterator as $bytes) {
+            $bytesLength = strlen($bytes);
+            for ($i = 0; $i < $bytesLength; ++$i) {
+                $byte = $bytes[$i];
+                if ($inString) {
+                    $inString = ! ($byte === '"' && !$isEscaping);
+                    $isEscaping = ($byte === '\\' && !$isEscaping);
+                    $tokenBuffer .= $byte;
+                    continue;
+                }
+
+                if (isset($$byte)) { // is token boundary
+                    if ($tokenBuffer !== '') {
+                        yield $tokenBuffer;
+                        $tokenBuffer = '';
+                    }
+                    if ($$byte) { // is not whitespace token boundary
+                        yield $byte;
+                    }
+                } else {
+                    if ($byte === '"') {
+                        $inString = true;
+                    }
+                    $tokenBuffer .= $byte;
+                }
+            }
+        }
+        if ($tokenBuffer !== '') {
+            yield $tokenBuffer;
+        }
+    }
+
+    public function debugParse()
     {
         // Treat UTF-8 BOM bytes as whitespace
         ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
@@ -45,6 +108,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         $tokenWidth = 0;
         $ignoreLF = false;
         $position = 1;
+        $line = 1;
         $column = 0;
 
         foreach ($this->bytesIterator as $bytes) {
@@ -64,6 +128,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                     if ($tokenBuffer !== '') {
                         $this->position = $position + $i;
                         $this->column = $column;
+                        $this->line = $line;
                         yield $tokenBuffer;
                         $column += $tokenWidth;
                         $tokenBuffer = '';
@@ -72,8 +137,9 @@ class Lexer implements \IteratorAggregate, PositionAware
                     if ($$byte) { // is not whitespace
                         $this->position = $position + $i;
                         $this->column = $column;
+                        $this->line = $line;
                         yield $byte;
-                    // track line number and reset column for each newline
+                        // track line number and reset column for each newline
                     } elseif ($byte === "\n") {
                         // handle CRLF newlines
                         if ($ignoreLF) {
@@ -81,10 +147,10 @@ class Lexer implements \IteratorAggregate, PositionAware
                             $ignoreLF = false;
                             continue;
                         }
-                        ++$this->line;
+                        ++$line;
                         $column = 0;
                     } elseif ($byte === "\r") {
-                        ++$this->line;
+                        ++$line;
                         $ignoreLF = true;
                         $column = 0;
                     }

@@ -23,25 +23,29 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         $passThruResult = ['key' => '"value"'];
         $ptDecoder = new PassThruDecoder();
 
-        return [
-            [$extJsonResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path'],
-            [$extJsonResult, 'fromString', '{"path": {"key":"value"}}', '/path'],
-            [$extJsonResult, 'fromFile', __DIR__ . '/JsonMachineTest.json', '/path'],
-            [$extJsonResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path'],
-            [$extJsonResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path'],
+        foreach ([true, false] as $debug) {
+            foreach ([
+                [$extJsonResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', null, $debug],
+                [$extJsonResult, 'fromString', '{"path": {"key":"value"}}', '/path', null, $debug],
+                [$extJsonResult, 'fromFile', __DIR__ . '/JsonMachineTest.json', '/path', null, $debug],
+                [$extJsonResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', null, $debug],
+                [$extJsonResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', null, $debug],
 
-            [$passThruResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', $ptDecoder],
-            [$passThruResult, 'fromString', '{"path": {"key":"value"}}', '/path', $ptDecoder],
-            [$passThruResult, 'fromFile', __DIR__ . '/JsonMachineTest.json', '/path', $ptDecoder],
-            [$passThruResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', $ptDecoder],
-            [$passThruResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', $ptDecoder],
-        ];
+                [$passThruResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromString', '{"path": {"key":"value"}}', '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromFile', __DIR__ . '/JsonMachineTest.json', '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', $ptDecoder, $debug],
+            ] as $case) {
+                yield $case;
+            }
+        }
     }
 
-    public function testGetPosition()
+    public function testGetPositionDebugEnabled()
     {
         $expectedPosition = ['key1' => 10, 'key2' => 20];
-        $items = JsonMachine::fromString('{"key1":1, "key2":2}    ');
+        $items = JsonMachine::fromString('{"key1":1, "key2":2}    ', '', null, true);
         foreach ($items as $key => $val) {
             $this->assertSame($expectedPosition[$key], $items->getPosition());
         }
