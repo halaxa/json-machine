@@ -17,6 +17,12 @@ $decoders = [
     'JsonMachine::fromString()' => function ($file) {
         return JsonMachine::fromString(stream_get_contents(fopen($file, 'r')));
     },
+    'JsonMachine::fromFile() - debug' => function ($file) {
+        return JsonMachine::fromFile($file, '', null, true);
+    },
+    'JsonMachine::fromString() - debug' => function ($file) {
+        return JsonMachine::fromString(stream_get_contents(fopen($file, 'r')), '', null, true);
+    },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);
     },
@@ -37,7 +43,7 @@ foreach ($decoders as $name => $decoder) {
         $textResult = round($fileSizeMb/$time, 2) . ' MB/s';
     }
 
-    echo "$name: $textResult".PHP_EOL;
+    echo str_pad($name.": ", 37, '.')." $textResult".PHP_EOL;
 }
 @unlink($tmpJsonFileName);
 
