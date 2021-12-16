@@ -14,6 +14,7 @@ class Lexer implements \IteratorAggregate, PositionAware
 
     /**
      * @param iterable $byteChunks
+     * @param bool $debug
      */
     public function __construct($byteChunks, $debug = false)
     {

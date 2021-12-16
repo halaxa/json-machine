@@ -2,6 +2,7 @@
 
 ## master
 - Debug mode - provides data for position, line and column. Disabled by default.
+- Performace touches
 <br>
 <br>
 
