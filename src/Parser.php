@@ -104,7 +104,6 @@ class Parser implements \IteratorAggregate, PositionAware
         $stack = [$currentLevel => null];
         $jsonBuffer = '';
         $key = null;
-        $previousToken = null;
         $objectKeyExpected = false;
         $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
         $expectedType = self::OBJECT_START | self::ARRAY_START;
