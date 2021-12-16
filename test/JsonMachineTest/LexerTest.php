@@ -35,16 +35,16 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $json = file_get_contents($formattedJsonFilePath);
         $lexer = new Lexer(new StringChunks($json));
-        $tokens = $this->tokensWithLocationalInformation();
+        $expectedTokens = $this->expectedTokens();
         $i = 0;
 
-        foreach ($lexer as $lexeme) {
+        foreach ($lexer as $token) {
             $i++;
-            $token = array_shift($tokens);
+            $expectedToken = array_shift($expectedTokens);
 
-            $this->assertEquals($token[0], $lexeme, 'lexeme failed with data set #' . $i);
-            $this->assertEquals($token[1], $lexer->getLine(), 'line failed with data set #' . $i);
-            $this->assertEquals($token[2], $lexer->getColumn(), 'column failed with data set #' . $i);
+            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[1], $lexer->getLine(), 'line failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[2], $lexer->getColumn(), 'column failed with expected token #' . $i);
         }
     }
 
@@ -57,7 +57,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    private function tokensWithLocationalInformation()
+    private function expectedTokens()
     {
         return [
             // lexeme, line, column
