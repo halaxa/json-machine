@@ -8,6 +8,8 @@ if (in_array('xdebug', get_loaded_extensions())) {
     trigger_error('Xdebug enabled. Results may be affected.', E_USER_WARNING);
 }
 
+ini_set('memory_limit', -1); // for json_decode use case
+
 $decoders = [
     'JsonMachine::fromFile()' => function ($file) {
         return JsonMachine::fromFile($file);
@@ -45,7 +47,7 @@ function createBigJsonFile()
     $f = fopen($tmpJson, 'w');
     $separator = '';
     fputs($f, '[');
-    for ($i=0; $i<2000; $i++) {
+    for ($i=0; $i<6000; $i++) {
         fputs($f, $separator);
         fputs($f, file_get_contents(__DIR__.'/twitter_example_'. ($i%2) .'.json'));
         $separator = ",\n\n";
