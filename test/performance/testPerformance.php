@@ -31,7 +31,7 @@ foreach ($decoders as $name => $decoder) {
     if (! $result instanceof \Traversable && ! is_array($result)) {
         $textResult = "Decoding error";
     } else {
-        foreach ($result as $item) {
+        foreach ($result as $key => $item) {
         }
         $time = microtime(true) - $start;
         $textResult = round($fileSizeMb/$time, 2) . ' MB/s';
