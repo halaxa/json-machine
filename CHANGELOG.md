@@ -1,7 +1,7 @@
 # Changelog
 
 ## master
-nothing yet
+- Debug mode - provides data for position, line and column. Disabled by default.
 <br>
 <br>
 
