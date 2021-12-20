@@ -164,7 +164,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             unset($keyResult);
                             unset($currentPath[$currentLevel+1]);
                         }
-                        continue 2; // valid json chunk is not completed yet
+                        continue 2; // a valid json chunk is not completed yet
                     } else {
                         if ($inObject) {
                             $expectedType = 72; // 72 = self::AFTER_OBJECT_VALUE;
@@ -180,10 +180,10 @@ class Parser implements \IteratorAggregate, PositionAware
                     } else {
                         $expectedType = 23; // 23 = self::ANY_VALUE
                     }
-                    continue 2; // valid json chunk is not completed yet
+                    continue 2; // a valid json chunk is not completed yet
                 case ':':
                     $expectedType = 23; // 23 = self::ANY_VALUE
-                    continue 2; // valid json chunk is not completed yet
+                    continue 2; // a valid json chunk is not completed yet
                 case '{':
                     ++$currentLevel;
                     if ($currentLevel <= $iteratorLevel) {
@@ -193,7 +193,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     $inObject = true;
                     $expectedType = 10; // 10 = self::AFTER_OBJECT_START
                     $objectKeyExpected = true;
-                    continue 2; // valid json chunk is not completed yet
+                    continue 2; // a valid json chunk is not completed yet
                 case '[':
                     ++$currentLevel;
                     if ($currentLevel <= $iteratorLevel) {
@@ -202,7 +202,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     $stack[$currentLevel] = '[';
                     $inObject = false;
                     $expectedType = 55; // 55 = self::AFTER_ARRAY_START;
-                    continue 2; // valid json chunk is not completed yet
+                    continue 2; // a valid json chunk is not completed yet
                 case '}':
                     $objectKeyExpected = false;
                     // no break
@@ -217,14 +217,10 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if (! $pathFound && $currentPath === $jsonPointerPath) {
-                $pathFound = true;
+            if ($currentLevel > $iteratorLevel) {
+                continue; // a valid json chunk is not completed yet
             }
-            if ($pathFound && $currentPath !== $jsonPointerPath) {
-                $subtreeEnded = true;
-                break;
-            }
-            if ($currentLevel <= $iteratorLevel && $jsonBuffer !== '') {
+            if ($jsonBuffer !== '') {
                 $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
                 $jsonBuffer = '';
                 if (! $valueResult->isOk()) {
@@ -241,6 +237,13 @@ class Parser implements \IteratorAggregate, PositionAware
                     unset($keyResult);
                 }
                 unset($valueResult);
+            }
+            if (! $pathFound && $currentPath === $jsonPointerPath) {
+                $pathFound = true;
+            }
+            if ($pathFound && $currentPath !== $jsonPointerPath) {
+                $subtreeEnded = true;
+                break;
             }
         }
 
