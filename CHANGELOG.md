@@ -3,8 +3,10 @@
 ## master
 
 ### Changed
-- `JSONMachine::getIterator()` now returns `Parser`'s iterator directly. Call `JSONMachine::getIterator()`
-instead of `JSONMachine::getIterator()::getIterator()` to get to `Parser`'s iterator.
+- `JsonMachine::getIterator()` now returns `Parser`'s iterator directly. Call `JsonMachine::getIterator()`
+instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator. Fixes
+https://stackoverflow.com/questions/63706550
+
 ### Added
 - Debug mode - provides data for position, line and column. Disabled by default.
 - Performace touches
