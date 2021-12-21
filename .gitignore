@@ -2,3 +2,5 @@
 /vendor/
 composer.lock
 *.cache
+phpunit.xml
+.php-cs-fixer.php
