@@ -1,6 +1,6 @@
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -23,7 +23,7 @@ function dummy()
     yield ']';
 }
 
-$items = JsonMachine::fromIterable(dummy());
+$items = Items::fromIterable(dummy());
 $previousReport = '';
 foreach ($items as $i => $item) {
     $report = memory_get_peak_usage()

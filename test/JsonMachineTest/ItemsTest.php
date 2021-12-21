@@ -3,17 +3,17 @@
 namespace JsonMachineTest;
 
 use JsonMachine\JsonDecoder\PassThruDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use phpDocumentor\Reflection\DocBlock\Tags\Formatter\PassthroughFormatter;
 
-class JsonMachineTest extends \PHPUnit_Framework_TestCase
+class ItemsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataFactories
      */
     public function testFactories($expected, $methodName, ...$args)
     {
-        $iterator = call_user_func_array(JsonMachine::class."::$methodName", $args);
+        $iterator = call_user_func_array(Items::class."::$methodName", $args);
         $this->assertSame($expected, iterator_to_array($iterator));
     }
 
@@ -45,7 +45,7 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     public function testGetPositionDebugEnabled()
     {
         $expectedPosition = ['key1' => 10, 'key2' => 20];
-        $items = JsonMachine::fromString('{"key1":1, "key2":2}    ', '', null, true);
+        $items = Items::fromString('{"key1":1, "key2":2}    ', '', null, true);
         foreach ($items as $key => $val) {
             $this->assertSame($expectedPosition[$key], $items->getPosition());
         }
@@ -54,7 +54,7 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     public function testIterationWithoutForeach()
     {
         $iterator =
-            JsonMachine::fromString('{"key1":1, "key2":2}')
+            Items::fromString('{"key1":1, "key2":2}')
             ->getIterator();
 
         $iterator->rewind();

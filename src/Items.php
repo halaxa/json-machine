@@ -4,7 +4,7 @@ namespace JsonMachine;
 
 use JsonMachine\JsonDecoder\Decoder;
 
-class JsonMachine implements \IteratorAggregate, PositionAware
+class Items implements \IteratorAggregate, PositionAware
 {
     /**
      * @var iterable

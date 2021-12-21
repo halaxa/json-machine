@@ -6,7 +6,7 @@ use JsonMachine\JsonDecoder\DecodingError;
 use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use PHPUnit_Framework_TestCase;
 
 class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
@@ -84,7 +84,7 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
         }
         ';
 
-        $items = JsonMachine::fromString($json, '/results', new ErrorWrappingDecoder(new ExtJsonDecoder(true)));
+        $items = Items::fromString($json, '/results', new ErrorWrappingDecoder(new ExtJsonDecoder(true)));
         $result = iterator_to_array($items);
 
         $this->assertSame('correct', $result[0]['correct']);

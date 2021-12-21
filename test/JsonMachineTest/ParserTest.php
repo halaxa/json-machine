@@ -7,7 +7,7 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;

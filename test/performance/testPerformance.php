@@ -1,6 +1,6 @@
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -11,17 +11,17 @@ if (in_array('xdebug', get_loaded_extensions())) {
 ini_set('memory_limit', -1); // for json_decode use case
 
 $decoders = [
-    'JsonMachine::fromFile()' => function ($file) {
-        return JsonMachine::fromFile($file);
+    'Items::fromFile()' => function ($file) {
+        return Items::fromFile($file);
     },
-    'JsonMachine::fromString()' => function ($file) {
-        return JsonMachine::fromString(stream_get_contents(fopen($file, 'r')));
+    'Items::fromString()' => function ($file) {
+        return Items::fromString(stream_get_contents(fopen($file, 'r')));
     },
-    'JsonMachine::fromFile() - debug' => function ($file) {
-        return JsonMachine::fromFile($file, '', null, true);
+    'Items::fromFile() - debug' => function ($file) {
+        return Items::fromFile($file, '', null, true);
     },
-    'JsonMachine::fromString() - debug' => function ($file) {
-        return JsonMachine::fromString(stream_get_contents(fopen($file, 'r')), '', null, true);
+    'Items::fromString() - debug' => function ($file) {
+        return Items::fromString(stream_get_contents(fopen($file, 'r')), '', null, true);
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);

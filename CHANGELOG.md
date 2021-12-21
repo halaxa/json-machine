@@ -3,9 +3,10 @@
 ## master
 
 ### Changed
-- Object as default decoding structure instead of array. Same as json_decode() default.
-- `JsonMachine::getIterator()` now returns `Parser`'s iterator directly. Call `JsonMachine::getIterator()`
-instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator. Fixes
+- `JsonMachine` entry point class renamed to `Items`.
+- Object as default decoding structure instead of array. Same as the json_decode() default.
+- `Items::getIterator()` now returns `Parser`'s iterator directly. Call `Items::getIterator()`
+instead of `Items::getIterator()::getIterator()` to get to `Parser`'s iterator. Fixes
 https://stackoverflow.com/questions/63706550
 
 ### Added
@@ -91,9 +92,9 @@ Alternative is to use `ExtJsonDecoder` which decodes items as objects by default
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
-$jsonMachine = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$jsonMachine = Items::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 Therefore no additional casting is required.
 - Invalid json object keys will now throw and won't be ignored anymore.
