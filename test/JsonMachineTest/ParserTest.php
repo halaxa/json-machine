@@ -6,8 +6,11 @@ use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\JsonMachine;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
+use JsonMachine\StringChunks;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -294,6 +297,16 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer);
+        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
+    }
+
+    public function testDefaultDecodingStructureIsObject()
+    {
+        $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
+
+        foreach ($items as $item) {
+            $this->assertInstanceOf(\stdClass::class, $item);
+            $this->assertSame('value', $item->key);
+        }
     }
 }

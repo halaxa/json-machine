@@ -57,6 +57,7 @@ use \JsonMachine\JsonMachine;
 
 foreach ($users as $id => $user) {
     // just process $user as usual
+    var_dump($user->name);
 }
 ```
 
@@ -105,8 +106,8 @@ use \JsonMachine\JsonMachine;
 $fruits = JsonMachine::fromFile('fruits.json');
 
 foreach ($fruits as $name => $data) {
-    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
-    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
+    // 1st iteration: $name === "apple" and $data->color === "red"
+    // 2nd iteration: $name === "pear" and $data->color === "yellow"
 }
 ```
 
@@ -150,8 +151,8 @@ use \JsonMachine\JsonMachine;
 $fruits = JsonMachine::fromFile("fruits.json", "/results");
 foreach ($fruits as $name => $data) {
     // The same as above, which means:
-    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
-    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
+    // 1st iteration: $name === "apple" and $data->color === "red"
+    // 2nd iteration: $name === "pear" and $data->color === "yellow"
 }
 ```
 
