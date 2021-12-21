@@ -3,6 +3,7 @@
 ## master
 
 ### Changed
+- Object as default decoding structure instead of array. Same as json_decode() default.
 - `JsonMachine::getIterator()` now returns `Parser`'s iterator directly. Call `JsonMachine::getIterator()`
 instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator. Fixes
 https://stackoverflow.com/questions/63706550
