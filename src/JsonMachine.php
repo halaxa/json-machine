@@ -110,7 +110,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        return $this->parser;
+        return $this->parser->getIterator();
     }
 
     public function getPosition()

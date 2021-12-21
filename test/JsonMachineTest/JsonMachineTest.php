@@ -50,4 +50,20 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($expectedPosition[$key], $items->getPosition());
         }
     }
+
+    public function testIterationWithoutForeach()
+    {
+        $iterator =
+            JsonMachine::fromString('{"key1":1, "key2":2}')
+            ->getIterator();
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(['key1', 1], [$iterator->key(), $iterator->current()]);
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(['key2', 2], [$iterator->key(), $iterator->current()]);
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
 }
