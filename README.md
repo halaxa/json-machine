@@ -114,15 +114,14 @@ foreach ($fruits as $name => $data) {
 Parsing a json array instead of a json object follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
-If you prefer JSON Machine to return objects instead of arrays, use `new ExtJsonDecoder()` as decoder
-which by default decodes objects - same as `json_decode`
+If you prefer JSON Machine to return arrays instead of objects, use `new ExtJsonDecoder(true)` as a decoder.
 ```php
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonMachine;
 
-$objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder(true));
 ```
 
 
