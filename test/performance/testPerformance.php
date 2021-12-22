@@ -18,10 +18,10 @@ $decoders = [
         return Items::fromString(stream_get_contents(fopen($file, 'r')));
     },
     'Items::fromFile() - debug' => function ($file) {
-        return Items::fromFile($file, '', null, true);
+        return Items::fromFile($file, ['debug' => true]);
     },
     'Items::fromString() - debug' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')), '', null, true);
+        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);

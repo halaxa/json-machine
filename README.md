@@ -121,7 +121,7 @@ If you prefer JSON Machine to return arrays instead of objects, use `new ExtJson
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Items;
 
-$objects = Items::fromFile('path/to.json', '', new ExtJsonDecoder(true));
+$objects = Items::fromFile('path/to.json', ['decoder' => new ExtJsonDecoder(true)]);
 ```
 
 
@@ -147,7 +147,7 @@ use Json Pointer `"/results"` as the second argument:
 
 use \JsonMachine\Items;
 
-$fruits = Items::fromFile("fruits.json", "/results");
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/results']);
 foreach ($fruits as $name => $data) {
     // The same as above, which means:
     // 1st iteration: $name === "apple" and $data->color === "red"
@@ -208,7 +208,7 @@ Get the single value of `lastModified` key like this:
 
 use \JsonMachine\Items;
 
-$fruits = Items::fromFile('fruits.json', '/lastModified');
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 foreach ($fruits as $key => $value) {
     // 1st and final iteration:
     // $key === 'lastModified'
@@ -225,7 +225,7 @@ The obvious shortcut is:
 
 use \JsonMachine\Items;
 
-$fruits = Items::fromFile('fruits.json', '/lastModified');
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
 Single scalar value access supports array indices in json pointer as well.
@@ -318,7 +318,7 @@ Example:
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\Items;
 
-$items = Items::fromFile('path/to.json', '', new PassThruDecoder);
+$items = Items::fromFile('path/to.json', ['decoder' => new PassThruDecoder]);
 ```
 
 - **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
@@ -332,7 +332,7 @@ use JsonMachine\JsonDecoder\DecodingError;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
-$items = Items::fromFile('path/to.json', '', new ErrorWrappingDecoder(new ExtJsonDecoder()));
+$items = Items::fromFile('path/to.json', ['decoder' => new ErrorWrappingDecoder(new ExtJsonDecoder())]);
 foreach ($items as $key => $item) {
     if ($key instanceof DecodingError || $item instanceof DecodingError) {
         // handle error of this malformed json item
@@ -418,9 +418,9 @@ and parse it iteratively yourself using `Items::fromString()`.
 use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 
-$users = Items::fromFile('users.json', '', new PassThruDecoder);
+$users = Items::fromFile('users.json', ['decoder' => new PassThruDecoder]);
 foreach ($users as $user) {
-    foreach (Items::fromString($user, "/friends") as $friend) {
+    foreach (Items::fromString($user, ['pointer' => "/friends"]) as $friend) {
         // process friends one by one
     }
 }

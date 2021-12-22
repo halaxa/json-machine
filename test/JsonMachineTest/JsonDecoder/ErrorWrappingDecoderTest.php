@@ -84,7 +84,10 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
         }
         ';
 
-        $items = Items::fromString($json, '/results', new ErrorWrappingDecoder(new ExtJsonDecoder(true)));
+        $items = Items::fromString($json, [
+            'pointer' => '/results',
+            'decoder' => new ErrorWrappingDecoder(new ExtJsonDecoder(true)),
+        ]);
         $result = iterator_to_array($items);
 
         $this->assertSame('correct', $result[0]['correct']);

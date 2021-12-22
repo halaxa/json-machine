@@ -2,6 +2,7 @@
 
 namespace JsonMachine;
 
+use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\Decoder;
 
 class Items implements \IteratorAggregate, PositionAware
@@ -38,7 +39,7 @@ class Items implements \IteratorAggregate, PositionAware
      * @param bool $debugEnabled
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($bytesIterator, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = false)
+    public function __construct($bytesIterator, $jsonPointer = '', Decoder $jsonDecoder = null, $debugEnabled = false)
     {
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
@@ -57,54 +58,54 @@ class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param string $string
-     * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
-     * @param bool $debugEnabled
+     * @param array $options
      * @return self
-     * @throws Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function fromString($string, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = false)
+    public static function fromString($string, array $options = [])
     {
-        return new static(new StringChunks($string), $jsonPointer, $jsonDecoder, $debugEnabled);
+        $opts = self::normalizeOptions($options);
+
+        return new self(new StringChunks($string), $opts['pointer'], $opts['decoder'], $opts['debug']);
     }
 
     /**
      * @param string $file
-     * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
-     * @param bool $debugEnabled
+     * @param array $options
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public static function fromFile($file, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = false)
+    public static function fromFile($file, array $options = [])
     {
-        return new static(new FileChunks($file), $jsonPointer, $jsonDecoder, $debugEnabled);
+        $opts = self::normalizeOptions($options);
+
+        return new self(new FileChunks($file), $opts['pointer'], $opts['decoder'], $opts['debug']);
     }
 
     /**
      * @param resource $stream
-     * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
-     * @param bool $debugEnabled
+     * @param array $options
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public static function fromStream($stream, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = false)
+    public static function fromStream($stream, array $options = [])
     {
-        return new static(new StreamChunks($stream), $jsonPointer, $jsonDecoder, $debugEnabled);
+        $opts = self::normalizeOptions($options);
+
+        return new self(new StreamChunks($stream), $opts['pointer'], $opts['decoder'], $opts['debug']);
     }
 
     /**
      * @param iterable $iterable
-     * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
-     * @param bool $debugEnabled
+     * @param array $options
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public static function fromIterable($iterable, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = false)
+    public static function fromIterable($iterable, array $options = [])
     {
-        return new static($iterable, $jsonPointer, $jsonDecoder, $debugEnabled);
+        $opts = self::normalizeOptions($options);
+
+        return new self($iterable, $opts['pointer'], $opts['decoder'], $opts['debug']);
     }
 
     #[\ReturnTypeWillChange]
@@ -116,6 +117,51 @@ class Items implements \IteratorAggregate, PositionAware
     public function getPosition()
     {
         return $this->parser->getPosition();
+    }
+
+    /**
+     * @param array $options
+     * @return array{pointer: string, decoder: Decoder, debug: bool}
+     * @throws InvalidArgumentException
+     */
+    private static function normalizeOptions(array $options)
+    {
+        $mergedOptions = array_merge([
+            'pointer' => '',
+            'decoder' => null,
+            'debug' => false,
+        ], $options);
+
+        self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
+        self::optionMustBeType('decoder', $mergedOptions['decoder'], Decoder::class);
+        self::optionMustBeType('debug', $mergedOptions['debug'], 'bool');
+
+        return $mergedOptions;
+    }
+
+    private static function optionMustBeType($name, $value, $type)
+    {
+        if ($value === null) {
+            return;
+        }
+
+        if (class_exists($type) || interface_exists($type)) {
+            if (! $value instanceof $type) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        "Option '$name' must be an instance of $type, %s given.",
+                        is_object($value) ? gettype($value) : get_class($value)
+                    )
+                );
+            }
+        } elseif (gettype($value) !== $type) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    "Option '$name' must be $type, %s given.",
+                    gettype($value)
+                )
+            );
+        }
     }
 
     /**
