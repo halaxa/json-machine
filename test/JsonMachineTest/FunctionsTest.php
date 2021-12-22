@@ -13,7 +13,6 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testObjectsOnEmptyInput($expected, $data)
     {
-        error_reporting(~E_USER_DEPRECATED);
         $this->assertEquals($expected, iterator_to_array(objects($data)));
     }
 
