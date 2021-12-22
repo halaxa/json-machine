@@ -5,7 +5,10 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\Decoder;
 
-class Items implements \IteratorAggregate, PositionAware
+/**
+ * Entry-point facade for JSON Machine
+ */
+final class Items implements \IteratorAggregate, PositionAware
 {
     /**
      * @var iterable
