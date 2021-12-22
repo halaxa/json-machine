@@ -66,6 +66,7 @@ Use above-mentioned `foreach` and find the item or count the collection there.
 
 Requires `ext-json` if used out of the box. See [Decoders](#decoders).
 
+Follow [CHANGELOG](CHANGELOG.md).
 
 <a name="introduction"></a>
 ## Introduction
