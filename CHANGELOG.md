@@ -4,13 +4,13 @@
 
 ### Changed
 - `JsonMachine` entry point class is deprecated, use `Items` instead.
-- Object as default decoding structure instead of array in. Same as the json_decode() default.
-- `Items::getIterator()` now returns `Parser`'s iterator directly. Call `Items::getIterator()`
-instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator if you need it. Fixes
-https://stackoverflow.com/questions/63706550
 
 ### Added
 - New entry point class `Items` replaces `JsonMachine`.
+- Object as default decoding structure instead of array in `Items`.
+- `Items::getIterator()` now returns `Parser`'s iterator directly. Call `Items::getIterator()`
+instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator if you need it. Fixes
+https://stackoverflow.com/questions/63706550
 - Debug mode - provides data for position, line and column. Disabled by default in `Items`, kept enabled
 in `JsonMachine` for BC.
 - Performance touches
