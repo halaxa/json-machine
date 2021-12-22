@@ -43,7 +43,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
      */
     public function __construct($bytesIterator, $jsonPointer = '', $jsonDecoder = null, $debugEnabled = true)
     {
-        trigger_error("Class JsonMachine is deprecated. Use class Items instead.", E_USER_DEPRECATED);
+        @trigger_error("Class JsonMachine is deprecated. Use class Items instead.", E_USER_DEPRECATED);
 
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;

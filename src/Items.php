@@ -134,7 +134,7 @@ class Items implements \IteratorAggregate, PositionAware
 
         self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
         self::optionMustBeType('decoder', $mergedOptions['decoder'], Decoder::class);
-        self::optionMustBeType('debug', $mergedOptions['debug'], 'bool');
+        self::optionMustBeType('debug', $mergedOptions['debug'], 'boolean');
 
         return $mergedOptions;
     }
