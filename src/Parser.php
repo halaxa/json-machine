@@ -161,10 +161,6 @@ class Parser implements \IteratorAggregate, PositionAware
                             if (! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }
-                            // fixme: If there's an error in a key outside the iterator level and ErrorWrappingDecoder
-                            // fixme: is used, DecodingError is saved in $currentPath instead of throwing an exception.
-                            // fixme: The parser will go on, but silently ignore a possibly matching collection.
-                            // fixme: Possible solutions: hard dependency on json_decode or add Decoder::decodeInternalKey()
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             unset($keyResult);
                             unset($currentPath[$currentLevel+1]);
