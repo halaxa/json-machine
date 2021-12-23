@@ -2,6 +2,15 @@
 
 namespace JsonMachine\JsonDecoder;
 
+@trigger_error(sprintf(
+    'Interface %s is deprecated. Use %s instead.',
+    Decoder::class,
+    ChunkDecoder::class
+), E_USER_DEPRECATED);
+
+/**
+ * @deprecated Use ChunkDecoder instead.
+ */
 interface Decoder
 {
     /**

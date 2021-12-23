@@ -2,6 +2,7 @@
 
 namespace JsonMachine;
 
+use JsonMachine\JsonDecoder\ChunkDecoder;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
@@ -21,7 +22,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     private $jsonPointer;
 
     /**
-     * @var Decoder|null
+     * @var Decoder|ChunkDecoder|null
      */
     private $jsonDecoder;
 
@@ -38,7 +39,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $bytesIterator
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @throws Exception\InvalidArgumentException
      */
@@ -64,7 +65,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $string
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @return self
      * @throws Exception\InvalidArgumentException
@@ -77,7 +78,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $file
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @return self
      * @throws Exception\InvalidArgumentException
@@ -90,7 +91,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param resource $stream
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @return self
      * @throws Exception\InvalidArgumentException
@@ -103,7 +104,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $iterable
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @return self
      * @throws Exception\InvalidArgumentException

@@ -2,6 +2,15 @@
 
 namespace JsonMachine\JsonDecoder;
 
+@trigger_error(sprintf(
+    'Class %s is deprecated. Use %s instead.',
+    DecodingResult::class,
+    ChunkDecodingResult::class
+), E_USER_DEPRECATED);
+
+/**
+ * @deprecated Use ChunkDecodingResult instead.
+ */
 class DecodingResult
 {
     private $isOk;

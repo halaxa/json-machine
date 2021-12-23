@@ -7,6 +7,7 @@ use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
+use JsonMachine\JsonDecoder\ChunkDecoder;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use Traversable;
@@ -38,13 +39,13 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var string */
     private $jsonPointer;
 
-    /** @var Decoder */
+    /** @var Decoder|ChunkDecoder */
     private $jsonDecoder;
 
     /**
      * @param Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param Decoder $jsonDecoder
+     * @param Decoder|ChunkDecoder $jsonDecoder
      */
     public function __construct(Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
     {
@@ -152,7 +153,11 @@ class Parser implements \IteratorAggregate, PositionAware
                             $key = $token;
                         } elseif ($currentLevel < $iteratorLevel) {
                             $key = $token;
-                            $keyResult = $this->jsonDecoder->decodeKey($token);
+                            if ($this->jsonDecoder instanceof ChunkDecoder) {
+                                $keyResult = $this->jsonDecoder->decodeInternalKey($token);
+                            } else {
+                                $keyResult = $this->jsonDecoder->decodeKey($token);
+                            }
                             if (! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }
