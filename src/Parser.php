@@ -155,7 +155,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             $key = $token;
                             if ($this->jsonDecoder instanceof ChunkDecoder) {
                                 $keyResult = $this->jsonDecoder->decodeInternalKey($token);
-                            } else {
+                            } elseif ($this->jsonDecoder instanceof Decoder) {
                                 $keyResult = $this->jsonDecoder->decodeKey($token);
                             }
                             if (! $keyResult->isOk()) {

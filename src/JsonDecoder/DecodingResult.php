@@ -3,9 +3,11 @@
 namespace JsonMachine\JsonDecoder;
 
 @trigger_error(sprintf(
-    'Class %s is deprecated. Use %s instead.',
+    'Class %s is deprecated. Use one of %s, %s or %s instead.',
     DecodingResult::class,
-    ChunkDecodingResult::class
+    ValidResult::class,
+    ValidStringResult::class,
+    InvalidResult::class
 ), E_USER_DEPRECATED);
 
 /**
@@ -31,6 +33,7 @@ class DecodingResult
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function isOk()
@@ -39,6 +42,7 @@ class DecodingResult
     }
 
     /**
+     * @deprecated
      * @return mixed
      */
     public function getValue()
@@ -47,6 +51,7 @@ class DecodingResult
     }
 
     /**
+     * @deprecated
      * @return string|null
      */
     public function getErrorMessage()

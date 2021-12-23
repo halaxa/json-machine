@@ -6,9 +6,18 @@ namespace JsonMachine\JsonDecoder;
 
 interface ChunkDecoder
 {
-    public function decodeInternalKey($jsonScalarKey): ChunkDecodingStringResult;
+    /**
+     * @return InvalidResult|ValidStringResult
+     */
+    public function decodeInternalKey($jsonScalarKey);
 
-    public function decodeKey($jsonScalarKey): ChunkDecodingResult;
+    /**
+     * @return InvalidResult|ValidResult
+     */
+    public function decodeKey($jsonScalarKey);
 
-    public function decodeValue($jsonValue): ChunkDecodingResult;
+    /**
+     * @return InvalidResult|ValidResult
+     */
+    public function decodeValue($jsonValue);
 }
