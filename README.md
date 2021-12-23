@@ -13,11 +13,12 @@ for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optiona
 * [TL;DR](#tl-dr)
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
-  + [Iterating a collection](#simple-document)
+  + [Parsing a document](#simple-document)
   + [Parsing a subtree](#parsing-a-subtree)
   + [Parsing nested values in arrays](#parsing-nested-values)
-  + [Getting single scalar values](#getting-scalar-values)
-  + [What is Json Pointer anyway?](#json-pointer)
+  + [Parsing a single scalar value](#getting-scalar-values)
+  + [What is JSON Pointer anyway?](#json-pointer)
+* [Options](#options)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -75,7 +76,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 
 - Constant memory footprint for unpredictably large JSON documents.
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
-- Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
+- Efficient iteration on any subtree of the document, specified by [JSON Pointer](#json-pointer)
 - Speed. Performance critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
@@ -85,8 +86,8 @@ and uses native `json_decode` to decode JSON document items by default. See [Dec
 ## Parsing JSON documents
 
 <a name="simple-document"></a>
-### Itearting a collection
-Let's say that `fruits.json` contains this really big JSON document:
+### Parsing a document
+Let's say that `fruits.json` contains this huge JSON document:
 ```json
 // fruits.json
 {
@@ -142,7 +143,7 @@ If you want to iterate only `results` subtree in this `fruits.json`:
     }
 }
 ```
-use Json Pointer `/results` as `pointer` option:
+use JSON Pointer `/results` as `pointer` option:
 ```php
 <?php
 
@@ -185,11 +186,11 @@ Example:
 }
 ```
 
-To iterate over all colors of the fruits, use the JSON pointer `"/results/-/color"`.
+To iterate over all colors of the fruits, use the JSON Pointer `"/results/-/color"`.
 
 <a name="getting-scalar-values"></a>
-### Getting single scalar values
-You can parse sigle scalar value anywhere in the document the same way as a collection. Consider this example:
+### Parsing a single scalar value
+You can parse a single scalar value anywhere in the document the same way as a collection. Consider this example:
 ```json
 // fruits.json
 {
@@ -203,7 +204,7 @@ You can parse sigle scalar value anywhere in the document the same way as a coll
     // ... gigabytes follow ...
 }
 ``` 
-Get the single value of `lastModified` key like this:
+Get the scalar value of `lastModified` key like this:
 ```php
 <?php
 
@@ -229,11 +230,11 @@ use \JsonMachine\Items;
 $fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
-Single scalar value access supports array indices in json pointer as well.
+Single scalar value access supports array indices in JSON Pointer as well.
 
 <a name="json-pointer"></a>
-### What is Json Pointer anyway?
-It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
+### What is JSON Pointer anyway?
+It's a way of addressing one item in JSON document. See the [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
 When the parser hits the collection you specified, iteration begins. You can pass it as `pointer` option in all
@@ -242,7 +243,7 @@ It can be used to access scalar values as well.
 
 Some examples:
 
-| Json Pointer value    | Will iterate through                                                                                        |
+| JSON Pointer value    | Will iterate through                                                                                        |
 |-----------------------|-------------------------------------------------------------------------------------------------------------|
 | `""` (empty string - default) | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level)              |
 | `"/result/items"`     | `{"result":{"items":["this","array","will","be","iterated"]}}`                                           |
@@ -250,6 +251,16 @@ Some examples:
 | `"/results/-/status"` | `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}` (a hyphen instead of an array index) |
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5)) | `{"":["this","array","will","be","iterated"]}` |
 
+
+<a name="options"></a>
+## Options
+Options may change how a JSON is parsed. Array of options is the second parameter of all `Items::from*` functions.
+Available options are:
+- `pointer` - A JSON Pointer string that tells which part of the document you want to iterate.
+- `decoder` - An instance of `ChunkDecoder` interface.
+- `debug` - `true` or `false` to enable or disable the debug mode. When the debug mode is enabled, data such as line,
+column and position in the document are available during parsing or in exceptions. Keeping debug disabled adds slight
+performance advantage.
 
 <a name="parsing-json-stream-api-responses"></a>
 ## Parsing streaming responses from a JSON API
@@ -406,7 +417,7 @@ that a PHP structure takes much more memory than its corresponding JSON represen
 <a name="step1"></a>
 ### "I'm still getting Allowed memory size ... exhausted"
 One of the reasons may be that the items you want to iterate over are in some sub-key such as `"results"`
-but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-subtree).
+but you forgot to specify a JSON Pointer. See [Parsing a subtree](#parsing-a-subtree).
 
 <a name="step2"></a>
 ### "That didn't help"
