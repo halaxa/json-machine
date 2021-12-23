@@ -142,7 +142,7 @@ If you want to iterate only `results` subtree in this `fruits.json`:
     }
 }
 ```
-use Json Pointer `"/results"` as the second argument:
+use Json Pointer `/results` as `pointer` option:
 ```php
 <?php
 
@@ -236,7 +236,7 @@ Single scalar value access supports array indices in json pointer as well.
 It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
-When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
+When the parser hits the collection you specified, iteration begins. You can pass it as `pointer` option in all
 `Items::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
 It can be used to access scalar values as well.
 
@@ -273,7 +273,7 @@ based on iterators, the integration with Symfony HttpClient is very simple. See
 
 
 <a name="tracking-parsing-progress"></a>
-## Tracking the progress
+## Tracking the progress (with `debug` enabled)
 Big documents may take a while to parse. Call `Items::getPosition()` in your `foreach` to get current
 count of the processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`.
 To find out the total size of your document in bytes you may want to check:
@@ -282,13 +282,15 @@ To find out the total size of your document in bytes you may want to check:
 - `Content-Length` http header if you parse a http stream response
 - ... you get the point
 
+If `debug` is disabled, `getPosition()` always returns `0`.
+
 ```php
 <?php
 
 use JsonMachine\Items;
 
 $fileSize = filesize('fruits.json');
-$fruits = Items::fromFile('fruits.json');
+$fruits = Items::fromFile('fruits.json', ['debug' => true]);
 foreach ($fruits as $name => $data) {
     echo 'Progress: ' . intval($fruits->getPosition() / $fileSize * 100) . ' %'; 
 }
@@ -297,20 +299,20 @@ foreach ($fruits as $name => $data) {
 
 <a name="decoders"></a>
 ## Decoders
-As the third and optional parameter of all the `Items::from*` functions is an instance of
-`JsonMachine\JsonDecoder\Decoder`. If none is specified, `ExtJsonDecoder` is used by
+`Items::from*` functions also accept `decoder` option. It must be an instance of
+`JsonMachine\JsonDecoder\ChunkDecoder`. If none is specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
-`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
+`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\ChunkDecoder`
 and make your own.
 
 <a name="available-decoders"></a>
 ### Available decoders
 - **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
-Constructor takes the same parameters as `json_decode`.
+Constructor has the same parameters as `json_decode`.
 
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON item with something else directly in the foreach
-and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
+and don't want to implement `JsonMachine\JsonDecoder\ChunkDecoder`.
 Constructor has the same parameters as `json_decode`.
 Example:
 ```php
