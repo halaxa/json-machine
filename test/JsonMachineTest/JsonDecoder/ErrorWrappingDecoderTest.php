@@ -7,6 +7,8 @@ use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Items;
+use JsonMachine\JsonDecoder\InvalidResult;
+use JsonMachine\JsonDecoder\ValidResult;
 use PHPUnit_Framework_TestCase;
 
 class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
@@ -31,9 +33,9 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
 
     public function data_testTrueFalseMatrix()
     {
-        $notOkResult = new DecodingResult(false, null, 'Error happened.');
-        $okResult = new DecodingResult(true, 'json');
-        $wrappedNotOkResult = new DecodingResult(true, new DecodingError('"json"', 'Error happened.'));
+        $notOkResult = new InvalidResult('Error happened.');
+        $okResult = new ValidResult('json');
+        $wrappedNotOkResult = new ValidResult(new DecodingError('"json"', 'Error happened.'));
         $wrappedOkResult = $okResult;
 
         return [

@@ -2,14 +2,14 @@
 
 namespace JsonMachine\JsonDecoder;
 
-class ErrorWrappingDecoder implements Decoder
+class ErrorWrappingDecoder implements ChunkDecoder
 {
     /**
      * @var Decoder
      */
     private $innerDecoder;
 
-    public function __construct(Decoder $innerDecoder)
+    public function __construct(ChunkDecoder $innerDecoder)
     {
         $this->innerDecoder = $innerDecoder;
     }
@@ -18,7 +18,7 @@ class ErrorWrappingDecoder implements Decoder
     {
         $result = $this->innerDecoder->decodeKey($jsonScalarKey);
         if (! $result->isOk()) {
-            return new DecodingResult(true, new DecodingError($jsonScalarKey, $result->getErrorMessage()));
+            return new ValidResult(new DecodingError($jsonScalarKey, $result->getErrorMessage()));
         }
         return $result;
     }
@@ -27,8 +27,13 @@ class ErrorWrappingDecoder implements Decoder
     {
         $result = $this->innerDecoder->decodeValue($jsonValue);
         if (! $result->isOk()) {
-            return new DecodingResult(true, new DecodingError($jsonValue, $result->getErrorMessage()));
+            return new ValidResult(new DecodingError($jsonValue, $result->getErrorMessage()));
         }
         return $result;
+    }
+
+    public function decodeInternalKey($jsonScalarKey)
+    {
+        return $this->innerDecoder->decodeInternalKey($jsonScalarKey);
     }
 }

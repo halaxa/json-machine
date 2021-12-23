@@ -3,7 +3,7 @@
 namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ChunkDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
 /**
@@ -22,7 +22,7 @@ final class Items implements \IteratorAggregate, PositionAware
     private $jsonPointer;
 
     /**
-     * @var Decoder|null
+     * @var ChunkDecoder|null
      */
     private $jsonDecoder;
 
@@ -39,11 +39,11 @@ final class Items implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $bytesIterator
      * @param string $jsonPointer
-     * @param Decoder $jsonDecoder
+     * @param ChunkDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($bytesIterator, $jsonPointer = '', Decoder $jsonDecoder = null, $debugEnabled = false)
+    public function __construct($bytesIterator, $jsonPointer = '', ChunkDecoder $jsonDecoder = null, $debugEnabled = false)
     {
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
@@ -125,7 +125,7 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param array $options
-     * @return array{pointer: string, decoder: Decoder, debug: bool}
+     * @return array{pointer: string, decoder: ChunkDecoder, debug: bool}
      * @throws InvalidArgumentException
      */
     private static function normalizeOptions(array $options)
@@ -137,7 +137,7 @@ final class Items implements \IteratorAggregate, PositionAware
         ], $options);
 
         self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
-        self::optionMustBeType('decoder', $mergedOptions['decoder'], Decoder::class);
+        self::optionMustBeType('decoder', $mergedOptions['decoder'], ChunkDecoder::class);
         self::optionMustBeType('debug', $mergedOptions['debug'], 'boolean');
 
         return $mergedOptions;

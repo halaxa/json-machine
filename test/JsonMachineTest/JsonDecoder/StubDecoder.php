@@ -2,9 +2,9 @@
 
 namespace JsonMachineTest\JsonDecoder;
 
-use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ChunkDecoder;
 
-class StubDecoder implements Decoder
+class StubDecoder implements ChunkDecoder
 {
     private $decodedKey;
     private $decodedValue;
@@ -23,5 +23,10 @@ class StubDecoder implements Decoder
     public function decodeValue($jsonValue)
     {
         return $this->decodedValue;
+    }
+
+    public function decodeInternalKey($jsonScalarKey)
+    {
+        return $this->decodedKey;
     }
 }

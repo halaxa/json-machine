@@ -2,8 +2,14 @@
 
 namespace JsonMachineTest;
 
+use JsonMachine\JsonDecoder\ChunkDecoder;
+use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\DecodingResult;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\JsonMachine;
+use JsonMachine\Lexer;
+use JsonMachine\Parser;
 use phpDocumentor\Reflection\DocBlock\Tags\Formatter\PassthroughFormatter;
 
 /**
@@ -76,5 +82,38 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['key2', 2], [$iterator->key(), $iterator->current()]);
         $iterator->next();
         $this->assertFalse($iterator->valid());
+    }
+
+    public function testParserSupportsOldDecoderInterface()
+    {
+        $parser = new Parser(new Lexer(['{"key": "value"}']), "", new DeprecatedDecoderImpl());
+
+        foreach ($parser as $key => $value) {
+            $this->assertSame('key', $key);
+            $this->assertSame('value', $value);
+        }
+    }
+}
+
+class DeprecatedDecoderImpl implements Decoder
+{
+    /**
+     * @var ChunkDecoder
+     */
+    private $decoder;
+
+    public function __construct()
+    {
+        $this->decoder = new ExtJsonDecoder(true);
+    }
+
+    public function decodeKey($jsonScalarKey)
+    {
+        return $this->decoder->decodeKey($jsonScalarKey);
+    }
+
+    public function decodeValue($jsonValue)
+    {
+        return $this->decoder->decodeValue($jsonValue);
     }
 }
