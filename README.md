@@ -2,7 +2,7 @@
 # JSON Machine
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
-for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
+for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://app.travis-ci.com/github/halaxa/json-machine/branches)
 [![Latest Stable Version](https://img.shields.io/badge/stable-0.7.1-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
