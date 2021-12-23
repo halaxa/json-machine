@@ -4,6 +4,7 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
 /**
  * Entry-point facade for JSON Machine
@@ -55,7 +56,7 @@ final class Items implements \IteratorAggregate, PositionAware
                 $this->debugEnabled
             ),
             $this->jsonPointer,
-            $this->jsonDecoder
+            $this->jsonDecoder ?: new ExtJsonDecoder(false)
         );
     }
 

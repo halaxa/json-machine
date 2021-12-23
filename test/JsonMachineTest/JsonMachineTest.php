@@ -20,6 +20,14 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, iterator_to_array($iterator));
     }
 
+    public function testJsonMachineYieldsArraysByDefault()
+    {
+        $iterator = JsonMachine::fromString('{"path": {"key":"value"}}');
+        foreach ($iterator as $item) {
+            $this->assertEquals(['key' => 'value'], $item);
+        }
+    }
+
     public function dataFactories()
     {
         $extJsonResult = ['key' => 'value'];

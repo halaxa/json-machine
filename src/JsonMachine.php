@@ -3,6 +3,7 @@
 namespace JsonMachine;
 
 use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
 /**
  * @deprecated Use class Items instead
@@ -56,7 +57,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
                 $this->debugEnabled
             ),
             $this->jsonPointer,
-            $this->jsonDecoder
+            $this->jsonDecoder ?: new ExtJsonDecoder(true)
         );
     }
 

@@ -300,13 +300,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
     }
 
-    public function testDefaultDecodingStructureIsObject()
+    public function testDefaultDecodingStructureIsArray()
     {
         $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
 
         foreach ($items as $item) {
-            $this->assertInstanceOf(\stdClass::class, $item);
-            $this->assertSame('value', $item->key);
+            $this->assertEquals(['key' => 'value'], $item);
         }
     }
 }
