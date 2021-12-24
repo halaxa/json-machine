@@ -381,7 +381,7 @@ items will still throw `SyntaxError` exception though.
 
 <a name="streams-files"></a>
 ### Streams / files
-JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP array at a time.
+JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP item at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
 PHP structures. Following table shows the difference:
