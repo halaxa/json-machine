@@ -10,6 +10,9 @@ for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optiona
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
+**0.8.0-BETA** is out. Please try it and let me know in the [discussion](https://github.com/halaxa/json-machine/discussions/68).
+
+---
 
 * [TL;DR](#tl-dr)
 * [Introduction](#introduction)
