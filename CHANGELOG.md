@@ -2,6 +2,11 @@
 
 ## master
 
+<br>
+<br>
+
+## 0.8.0-BETA
+Please leave feedback in discussions if someting is broke for you.
 ### Changed
 - `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
 - `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ChunkDecoder` instead.
