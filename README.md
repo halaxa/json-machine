@@ -1,5 +1,5 @@
-![](img/logo.png)
-# JSON Machine
+<img align="right" src="./img/logo.png" />
+
 (README in sync with `master`)
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
@@ -481,6 +481,8 @@ as the whole build process at once. Make basically runs composer dev scripts ins
 ## Support
 Do you like this library? Star it, share it, show it  :)
 Issues and pull requests are very welcome.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G57KTE4)
 
 <a name="license"></a>
 ## License

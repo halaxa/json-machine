@@ -36,5 +36,12 @@
     },
     "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
-    }
+    },
+    "funding": [
+        {
+            "type": "other",
+            "url": "https://ko-fi.com/G2G57KTE4"
+        }
+    ]
+
 }
