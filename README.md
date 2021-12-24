@@ -1,4 +1,4 @@
-<img align="right" src="./img/github.png" />
+<img align="right" src="img/github.png" />
 
 (README in sync with `master`)
 
