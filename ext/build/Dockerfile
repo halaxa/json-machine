@@ -43,7 +43,6 @@ RUN cd php-src \
     && make -j4 \
     && make install
 
-RUN export PATH=~/php-bin/DEBUG/bin:$PATH
-
-RUN mkdir ~/php-bin/DEBUG/etc
+RUN ln -s ~/php-bin/DEBUG/bin/php \
+    && mkdir ~/php-bin/DEBUG/etc
 COPY php.ini ~/php-bin/DEBUG/etc/php.ini
