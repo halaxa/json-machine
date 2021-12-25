@@ -63,3 +63,6 @@ docker-pull: ## Pull the most recent vanilla images for all supported PHP versio
 		build/build-image.sh $$(printf $$version | awk '{print $$1;}') --pull; \
 		SEP="\n"; \
 	done
+
+ext-build:  ## Build JSON Machine's PHP extension
+	docker build --tag json-machine-ext build/ext/
