@@ -40,7 +40,7 @@ RUN cd php-src \
     && ./configure --enable-debug \
         --prefix=$HOME/php-bin/DEBUG \
         --with-config-file-path=$HOME/php-bin/DEBUG/etc \
-    && make -j4 \
+    && make -j`nproc` \
     && make install
 
 ENV PATH="/home/user/php-bin/DEBUG/bin:${PATH}"
