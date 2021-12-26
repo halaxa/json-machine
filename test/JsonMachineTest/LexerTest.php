@@ -4,6 +4,7 @@ namespace JsonMachineTest;
 
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
+use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
 class LexerTest extends \PHPUnit_Framework_TestCase
@@ -14,6 +15,20 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             'debug enabled' => [true],
             'debug disabled' => [false],
         ];
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyYieldsZeroToken($debugEnabled)
+    {
+        $data = ['0'];
+        $expected = ['0'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
+
+        $stream = fopen('data://text/plain,{"value":0}', 'r');
+        $expected = ['{', '"value"', ':', '0', '}'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new StreamChunks($stream, 10), $debugEnabled)));
     }
 
     /**

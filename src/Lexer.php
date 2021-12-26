@@ -53,21 +53,23 @@ class Lexer implements \IteratorAggregate, PositionAware
 
         $inString = false;
         $tokenBuffer = '';
-        $isEscaping = false;
+        $escaping = false;
 
         foreach ($this->bytesIterator as $bytes) {
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
                 if ($inString) {
-                    $inString = ! ($byte === '"' && !$isEscaping);
-                    $isEscaping = ($byte === '\\' && !$isEscaping);
+                    if ($byte == '"' && !$escaping) {
+                        $inString = false;
+                    }
+                    $escaping = ($byte == '\\' && !$escaping);
                     $tokenBuffer .= $byte;
                     continue;
                 }
 
                 if (isset($$byte)) { // is token boundary
-                    if ($tokenBuffer !== '') {
+                    if ($tokenBuffer != '') {
                         yield $tokenBuffer;
                         $tokenBuffer = '';
                     }
@@ -75,14 +77,14 @@ class Lexer implements \IteratorAggregate, PositionAware
                         yield $byte;
                     }
                 } else {
-                    if ($byte === '"') {
+                    if ($byte == '"') {
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
                 }
             }
         }
-        if ($tokenBuffer !== '') {
+        if ($tokenBuffer != '') {
             yield $tokenBuffer;
         }
     }
@@ -105,7 +107,7 @@ class Lexer implements \IteratorAggregate, PositionAware
 
         $inString = false;
         $tokenBuffer = '';
-        $isEscaping = false;
+        $escaping = false;
         $tokenWidth = 0;
         $ignoreLF = false;
         $position = 1;
@@ -117,8 +119,10 @@ class Lexer implements \IteratorAggregate, PositionAware
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
                 if ($inString) {
-                    $inString = ! ($byte === '"' && !$isEscaping);
-                    $isEscaping = ($byte === '\\' && !$isEscaping);
+                    if ($byte == '"' && !$escaping) {
+                        $inString = false;
+                    }
+                    $escaping = ($byte == '\\' && !$escaping);
                     $tokenBuffer .= $byte;
                     ++$tokenWidth;
                     continue;
@@ -126,7 +130,7 @@ class Lexer implements \IteratorAggregate, PositionAware
 
                 if (isset($$byte)) {
                     ++$column;
-                    if ($tokenBuffer !== '') {
+                    if ($tokenBuffer != '') {
                         $this->position = $position + $i;
                         $this->column = $column;
                         $this->line = $line;
@@ -141,7 +145,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                         $this->line = $line;
                         yield $byte;
                         // track line number and reset column for each newline
-                    } elseif ($byte === "\n") {
+                    } elseif ($byte == "\n") {
                         // handle CRLF newlines
                         if ($ignoreLF) {
                             --$column;
@@ -150,13 +154,13 @@ class Lexer implements \IteratorAggregate, PositionAware
                         }
                         ++$line;
                         $column = 0;
-                    } elseif ($byte === "\r") {
+                    } elseif ($byte == "\r") {
                         ++$line;
                         $ignoreLF = true;
                         $column = 0;
                     }
                 } else {
-                    if ($byte === '"') {
+                    if ($byte == '"') {
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
@@ -165,7 +169,7 @@ class Lexer implements \IteratorAggregate, PositionAware
             }
             $position += $i;
         }
-        if ($tokenBuffer !== '') {
+        if ($tokenBuffer != '') {
             $this->position = $position;
             $this->column = $column;
             yield $tokenBuffer;

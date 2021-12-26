@@ -72,7 +72,7 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
     {
         $iterator =
             JsonMachine::fromString('{"key1":1, "key2":2}')
-            ->getIterator();
+            ->getIterator()->getIterator();
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
