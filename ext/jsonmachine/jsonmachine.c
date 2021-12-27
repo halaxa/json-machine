@@ -18,15 +18,27 @@
 
 PHP_FUNCTION(jsonmachine_next_token)
 {
-    // (string $bytes, $finish = false)
-    ZEND_PARSE_PARAMETERS_NONE();
-
     unsigned short int boundary[256] = {0};
+    zend_string *jsonChunk;
+    bool finish = 0;
+    char* tokens[2];
 
-    boundary[' ']  = 1;
+    // (string $bytes, $finish = false)
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+        Z_PARAM_STR(jsonChunk)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_BOOL(finish)
+    ZEND_PARSE_PARAMETERS_END();
+
+    // Treat UTF-8 BOM bytes as whitespace
+    boundary[0xEF] = 1;
+    boundary[0xBB] = 1;
+    boundary[0xBF] = 1;
+
     boundary['\n'] = 1;
     boundary['\r'] = 1;
     boundary['\t'] = 1;
+
     boundary['{']  = 2;
     boundary['}']  = 2;
     boundary['[']  = 2;
@@ -34,19 +46,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     boundary[':']  = 2;
     boundary[',']  = 2;
 
-//    ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
-
-//    ${' '} = 0;
-//    ${"\n"} = 0;
-//    ${"\r"} = 0;
-//    ${"\t"} = 0;
-//    ${'{'} = 1;
-//    ${'}'} = 1;
-//    ${'['} = 1;
-//    ${']'} = 1;
-//    ${':'} = 1;
-//    ${','} = 1;
-
+    RETURN_ARR(tokens);
 }
 
 

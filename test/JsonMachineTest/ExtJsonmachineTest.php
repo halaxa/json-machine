@@ -9,5 +9,8 @@ class ExtJsonmachineTest extends TestCase
     public function testExtensionLoaded()
     {
         $this->assertTrue(function_exists('jsonmachine_next_token'));
+        jsonmachine_next_token('{}');
+        jsonmachine_next_token('{}', true);
+        jsonmachine_next_token('{}', false);
     }
 }
