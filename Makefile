@@ -69,4 +69,4 @@ ext-build:  ## Build JSON Machine's PHP extension
 	docker build --tag json-machine-ext ext/build
 	docker rm json-machine-ext || true
 	docker run --volume "$$PWD:/json-machine" -it --name json-machine-ext json-machine-ext /bin/bash -c \
-		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make && make install"
+		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make && make install && cd /json-machine && vendor/bin/phpunit --filter ExtJsonmachineTest"

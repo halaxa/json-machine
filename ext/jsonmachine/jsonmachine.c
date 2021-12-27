@@ -16,6 +16,41 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
+PHP_FUNCTION(jsonmachine_next_token)
+{
+    // (string $bytes, $finish = false)
+    ZEND_PARSE_PARAMETERS_NONE();
+
+    unsigned short int boundary[256] = {0};
+
+    boundary[' ']  = 1;
+    boundary['\n'] = 1;
+    boundary['\r'] = 1;
+    boundary['\t'] = 1;
+    boundary['{']  = 2;
+    boundary['}']  = 2;
+    boundary['[']  = 2;
+    boundary[']']  = 2;
+    boundary[':']  = 2;
+    boundary[',']  = 2;
+
+//    ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
+
+//    ${' '} = 0;
+//    ${"\n"} = 0;
+//    ${"\r"} = 0;
+//    ${"\t"} = 0;
+//    ${'{'} = 1;
+//    ${'}'} = 1;
+//    ${'['} = 1;
+//    ${']'} = 1;
+//    ${':'} = 1;
+//    ${','} = 1;
+
+}
+
+
+
 /* {{{ void test1() */
 PHP_FUNCTION(test1)
 {

@@ -37,7 +37,7 @@ RUN git clone https://github.com/php/php-src.git
 RUN cd php-src \
     && git checkout php-8.0.9 \
     && ./buildconf --force \
-    && ./configure --enable-debug \
+    && ./configure --enable-debug --enable-mbstring --disable-mbregex \
         --prefix=$HOME/php-bin/DEBUG \
         --with-config-file-path=$HOME/php-bin/DEBUG/etc \
     && make -j`nproc` \
