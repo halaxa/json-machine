@@ -5,7 +5,7 @@ namespace JsonMachine;
 class Lexer implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
-    private $bytesIterator;
+    private $jsonChunks;
     private $debug = false;
 
     private $position = 0;
@@ -13,12 +13,12 @@ class Lexer implements \IteratorAggregate, PositionAware
     private $column = 0;
 
     /**
-     * @param iterable $byteChunks
+     * @param iterable<string> $jsonChunks
      * @param bool $debug
      */
-    public function __construct($byteChunks, $debug = false)
+    public function __construct($jsonChunks, $debug = false)
     {
-        $this->bytesIterator = $byteChunks;
+        $this->jsonChunks = $jsonChunks;
         $this->debug = $debug;
     }
 
@@ -37,43 +37,51 @@ class Lexer implements \IteratorAggregate, PositionAware
 
     public function parse()
     {
-        // Treat UTF-8 BOM bytes as whitespace
-        ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
+        // init ASCII byte map as variable variables for the fastest lookup
+        foreach (range(0,255) as $ord) {
+            ${chr($ord)} = ! in_array(
+                chr($ord),
+                ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
+            );
+        }
 
-        ${' '} = 0;
-        ${"\n"} = 0;
-        ${"\r"} = 0;
-        ${"\t"} = 0;
-        ${'{'} = 1;
-        ${'}'} = 1;
-        ${'['} = 1;
-        ${']'} = 1;
-        ${':'} = 1;
-        ${','} = 1;
+        $boundary = $this->mapOfBoundaryBytes();
 
         $inString = false;
         $tokenBuffer = '';
         $escaping = false;
 
-        foreach ($this->bytesIterator as $bytes) {
-            $bytesLength = strlen($bytes);
+        foreach ($this->jsonChunks as $jsonChunk) {
+            $bytesLength = strlen($jsonChunk);
             for ($i = 0; $i < $bytesLength; ++$i) {
-                $byte = $bytes[$i];
-                if ($inString) {
-                    if ($byte == '"' && !$escaping) {
-                        $inString = false;
-                    }
-                    $escaping = ($byte == '\\' && !$escaping);
+                $byte = $jsonChunk[$i];
+                if ($escaping) {
+                    $escaping = false;
                     $tokenBuffer .= $byte;
                     continue;
                 }
 
-                if (isset($$byte)) { // is token boundary
+                if ($$byte) { // is non-significant byte
+                    $tokenBuffer .= $byte;
+                    continue;
+                }
+
+                if ($inString) {
+                    if ($byte == '"') {
+                        $inString = false;
+                    } elseif ($byte == '\\') {
+                        $escaping = true;
+                    }
+                    $tokenBuffer .= $byte;
+                    continue;
+                }
+
+                if (isset($boundary[$byte])) { // if byte is any token boundary
                     if ($tokenBuffer != '') {
                         yield $tokenBuffer;
                         $tokenBuffer = '';
                     }
-                    if ($$byte) { // is not whitespace token boundary
+                    if ($boundary[$byte]) { // if byte is not whitespace token boundary
                         yield $byte;
                     }
                 } else {
@@ -87,6 +95,30 @@ class Lexer implements \IteratorAggregate, PositionAware
         if ($tokenBuffer != '') {
             yield $tokenBuffer;
         }
+    }
+
+    private function mapOfBoundaryBytes()
+    {
+        $utf8bom1 = "\xEF";
+        $utf8bom2 = "\xBB";
+        $utf8bom3 = "\xBF";
+
+        $boundary = [];
+        $boundary[$utf8bom1] = 0;
+        $boundary[$utf8bom2] = 0;
+        $boundary[$utf8bom3] = 0;
+        $boundary[' ']       = 0;
+        $boundary["\n"]      = 0;
+        $boundary["\r"]      = 0;
+        $boundary["\t"]      = 0;
+        $boundary['{']       = 1;
+        $boundary['}']       = 1;
+        $boundary['[']       = 1;
+        $boundary[']']       = 1;
+        $boundary[':']       = 1;
+        $boundary[',']       = 1;
+
+        return $boundary;
     }
 
     public function debugParse()
@@ -114,7 +146,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         $line = 1;
         $column = 0;
 
-        foreach ($this->bytesIterator as $bytes) {
+        foreach ($this->jsonChunks as $bytes) {
             $bytesLength = strlen($bytes);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];

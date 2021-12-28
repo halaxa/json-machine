@@ -60,6 +60,46 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($debugEnabled)
+    {
+        $json = '"test\"test":';
+        $expected = ['"test\"test"', ':'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator([$json]), $debugEnabled)));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitBeforeStringEnd($debugEnabled)
+    {
+        $chunks = ['{"path": {"key":"value', '"}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value"', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($debugEnabled)
+    {
+        $chunks = ['{"path": {"key":"value\\', '""}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($debugEnabled)
+    {
+        $chunks = ['{"path": {"key":"value\\"', '"}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+    }
+
+    /**
      * @param string $formattedJsonFilePath
      * @dataProvider dataProvidesLocationalData
      */
