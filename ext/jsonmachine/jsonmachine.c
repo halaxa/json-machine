@@ -21,7 +21,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     unsigned short int boundary[256] = {0};
     zend_string *jsonChunk;
     bool finish = 0;
-    char* tokens[2];
+    zend_array tokens[2];
 
     // (string $bytes, $finish = false)
     ZEND_PARSE_PARAMETERS_START(1, 2)
@@ -35,6 +35,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     boundary[0xBB] = 1;
     boundary[0xBF] = 1;
 
+    boundary[' ']  = 1;
     boundary['\n'] = 1;
     boundary['\r'] = 1;
     boundary['\t'] = 1;
