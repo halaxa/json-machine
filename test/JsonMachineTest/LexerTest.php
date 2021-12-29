@@ -2,6 +2,7 @@
 
 namespace JsonMachineTest;
 
+use JsonMachine\DebugLexer;
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
 use JsonMachine\StreamChunks;
@@ -12,91 +13,91 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function bothDebugModes()
     {
         return [
-            'debug enabled' => [true],
-            'debug disabled' => [false],
+            'debug enabled' => [DebugLexer::class],
+            'debug disabled' => [Lexer::class],
         ];
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyYieldsZeroToken($debugEnabled)
+    public function testCorrectlyYieldsZeroToken($lexerClass)
     {
         $data = ['0'];
         $expected = ['0'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
 
         $stream = fopen('data://text/plain,{"value":0}', 'r');
         $expected = ['{', '"value"', ':', '0', '}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new StreamChunks($stream, 10), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new StreamChunks($stream, 10))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testGeneratesTokens($debugEnabled)
+    public function testGeneratesTokens($lexerClass)
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
         $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testWithBOM($debugEnabled)
+    public function testWithBOM($lexerClass)
     {
         $data = ["\xEF\xBB\xBF" . '{}'];
         $expected = ['{','}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($debugEnabled)
+    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($lexerClass)
     {
-        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']), $debugEnabled)));
+        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $lexerClass(new \ArrayIterator(['"test\\\\":']))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($debugEnabled)
+    public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($lexerClass)
     {
         $json = '"test\"test":';
         $expected = ['"test\"test"', ':'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator([$json]), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator([$json]))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyParsesChunksSplitBeforeStringEnd($debugEnabled)
+    public function testCorrectlyParsesChunksSplitBeforeStringEnd($lexerClass)
     {
         $chunks = ['{"path": {"key":"value', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value"', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($debugEnabled)
+    public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($lexerClass)
     {
         $chunks = ['{"path": {"key":"value\\', '""}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
     }
 
     /**
      * @dataProvider bothDebugModes
      */
-    public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($debugEnabled)
+    public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($lexerClass)
     {
         $chunks = ['{"path": {"key":"value\\"', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($chunks), $debugEnabled)));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
     }
 
     /**
@@ -106,7 +107,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function testProvidesLocationalDataWhenDebugEnabled($formattedJsonFilePath)
     {
         $json = file_get_contents($formattedJsonFilePath);
-        $lexer = new Lexer(new StringChunks($json), true);
+        $lexer = new DebugLexer(new StringChunks($json));
         $expectedTokens = $this->expectedTokens();
         $i = 0;
 
@@ -127,7 +128,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function testProvidesLocationalDataWhenDebugDisabled($formattedJsonFilePath)
     {
         $json = file_get_contents($formattedJsonFilePath);
-        $lexer = new Lexer(new StringChunks($json), false);
+        $lexer = new Lexer(new StringChunks($json));
         $expectedTokens = $this->expectedTokens();
         $i = 0;
 

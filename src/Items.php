@@ -50,10 +50,15 @@ final class Items implements \IteratorAggregate, PositionAware
         $this->jsonDecoder = $jsonDecoder;
         $this->debugEnabled = $debugEnabled;
 
+        if ($debugEnabled) {
+            $lexerClass = DebugLexer::class;
+        } else {
+            $lexerClass = Lexer::class;
+        }
+
         $this->parser = new Parser(
-            new Lexer(
-                $this->bytesIterator,
-                $this->debugEnabled
+            new $lexerClass(
+                $this->bytesIterator
             ),
             $this->jsonPointer,
             $this->jsonDecoder ?: new ExtJsonDecoder(false)

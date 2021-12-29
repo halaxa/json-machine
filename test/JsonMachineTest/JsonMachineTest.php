@@ -59,14 +59,6 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testGetPositionDebugEnabled()
-    {
-        $expectedPosition = ['key1' => 10, 'key2' => 20];
-        $items = JsonMachine::fromString('{"key1":1, "key2":2}    ', '', null, true);
-        foreach ($items as $key => $val) {
-            $this->assertSame($expectedPosition[$key], $items->getPosition());
-        }
-    }
 
     public function testIterationWithoutForeach()
     {
