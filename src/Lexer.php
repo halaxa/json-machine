@@ -90,19 +90,20 @@ class Lexer implements \IteratorAggregate, PositionAware
         $utf8bom3 = "\xBF";
 
         $boundary = [];
-        $boundary[$utf8bom1] = 0;
-        $boundary[$utf8bom2] = 0;
-        $boundary[$utf8bom3] = 0;
-        $boundary[' ']       = 0;
-        $boundary["\n"]      = 0;
-        $boundary["\r"]      = 0;
-        $boundary["\t"]      = 0;
-        $boundary['{']       = 1;
-        $boundary['}']       = 1;
-        $boundary['[']       = 1;
-        $boundary[']']       = 1;
-        $boundary[':']       = 1;
-        $boundary[',']       = 1;
+        $boundary[$utf8bom1] = false;
+        $boundary[$utf8bom2] = false;
+        $boundary[$utf8bom3] = false;
+        $boundary[' ']       = false;
+        $boundary["\n"]      = false;
+        $boundary["\r"]      = false;
+        $boundary["\t"]      = false;
+
+        $boundary['{']       = true;
+        $boundary['}']       = true;
+        $boundary['[']       = true;
+        $boundary[']']       = true;
+        $boundary[':']       = true;
+        $boundary[',']       = true;
 
         return $boundary;
     }
