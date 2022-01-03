@@ -2,8 +2,13 @@
 
 namespace JsonMachine;
 
+use JsonMachine\JsonDecoder\ChunkDecoder;
 use JsonMachine\JsonDecoder\Decoder;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
+/**
+ * @deprecated Use class Items instead
+ */
 class JsonMachine implements \IteratorAggregate, PositionAware
 {
     /**
@@ -17,7 +22,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     private $jsonPointer;
 
     /**
-     * @var Decoder|null
+     * @var Decoder|ChunkDecoder|null
      */
     private $jsonDecoder;
 
@@ -28,23 +33,31 @@ class JsonMachine implements \IteratorAggregate, PositionAware
 
     /**
      * @param iterable $bytesIterator
-     * @param string $jsonPointer
-     * @param Decoder|null $jsonDecoder
+     * @param array|string $jsonPointer
+     * @param Decoder|ChunkDecoder|null $jsonDecoder
+     * @throws Exception\InvalidArgumentException
      */
     public function __construct($bytesIterator, $jsonPointer = '', $jsonDecoder = null)
     {
+        @trigger_error("Class JsonMachine is deprecated. Use class Items instead.", E_USER_DEPRECATED);
+
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
         $this->jsonDecoder = $jsonDecoder;
 
-        $this->parser = new Parser(new Lexer($this->bytesIterator), $this->jsonPointer, $this->jsonDecoder);
+        $this->parser = new Parser(
+            new Lexer($this->bytesIterator,true),
+            $this->jsonPointer,
+            $this->jsonDecoder ?: new ExtJsonDecoder(true)
+        );
     }
 
     /**
      * @param string $string
      * @param string $jsonPointer
-     * @param Decoder|null $jsonDecoder
+     * @param Decoder|ChunkDecoder|null $jsonDecoder
      * @return self
+     * @throws Exception\InvalidArgumentException
      */
     public static function fromString($string, $jsonPointer = '', $jsonDecoder = null)
     {
@@ -54,8 +67,9 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $file
      * @param string $jsonPointer
-     * @param Decoder|null $jsonDecoder
+     * @param Decoder|ChunkDecoder|null $jsonDecoder
      * @return self
+     * @throws Exception\InvalidArgumentException
      */
     public static function fromFile($file, $jsonPointer = '', $jsonDecoder = null)
     {
@@ -65,8 +79,9 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param resource $stream
      * @param string $jsonPointer
-     * @param Decoder|null $jsonDecoder
+     * @param Decoder|ChunkDecoder|null $jsonDecoder
      * @return self
+     * @throws Exception\InvalidArgumentException
      */
     public static function fromStream($stream, $jsonPointer = '', $jsonDecoder = null)
     {
@@ -74,10 +89,11 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param \Traversable|array $iterable
+     * @param iterable $iterable
      * @param string $jsonPointer
-     * @param Decoder|null $jsonDecoder
+     * @param Decoder|ChunkDecoder|null $jsonDecoder
      * @return self
+     * @throws Exception\InvalidArgumentException
      */
     public static function fromIterable($iterable, $jsonPointer = '', $jsonDecoder = null)
     {

@@ -2,23 +2,24 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="39.403358mm"
-   height="28.498257mm"
-   viewBox="0 0 139.6182 100.97807"
+   width="1920"
+   height="1080"
+   viewBox="0 0 1800 1012.5"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    sodipodi:docname="logo.svg"
-   inkscape:export-filename="/home/ondrej/PhpstormProjects/json-machine/img/logo.png"
-   inkscape:export-xdpi="82.877655"
-   inkscape:export-ydpi="82.877655">
+   inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\wallpaper.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -28,9 +29,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="-132.34598"
-     inkscape:cy="17.725416"
+     inkscape:zoom="0.35"
+     inkscape:cx="1095.7143"
+     inkscape:cy="690"
      inkscape:document-units="px"
      inkscape:current-layer="g3417"
      showgrid="true"
@@ -38,12 +39,14 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1855"
-     inkscape:window-height="1176"
-     inkscape:window-x="1985"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:snap-page="false" />
+     inkscape:snap-page="false"
+     inkscape:pagecheckerboard="0"
+     units="px" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -52,7 +55,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,45 +67,95 @@
        transform="matrix(0.09438674,0,0,0.09438674,234.85637,301.50434)"
        id="g3417">
       <path
-         inkscape:connector-curvature="0"
-         id="settings_1_"
-         d="m 1884.2342,1459.9638 -76.3362,-47.6465 c 4.1329,-26.8351 5.0908,-53.7265 2.7717,-80.1385 l 79.4565,-43.3447 c 16.8629,-9.1309 24.5539,-29.1333 18.2819,-47.2852 l -17.4102,-50.2139 c -6.3286,-18.1591 -24.7715,-29.0846 -43.6387,-25.8311 l -88.3881,15.0359 c -21.9182,-34.3267 -50.2657,-64.7129 -84.1314,-89.559 l 20.4292,-88.1254 c 4.352,-18.64909 -5.4488,-37.71502 -23.1818,-45.06024 l -49.1485,-20.35799 c -17.6969,-7.3303 -38.1596,-0.79994 -48.2055,15.49073 l -47.954,76.7545 c -34.3217,-5.2781 -68.6396,-5.0648 -102.0212,0.1106 L 1377.78,954.57147 c -10.1202,-16.2228 -30.5277,-22.79466 -48.2558,-15.47354 l -49.1149,20.36472 c -17.7124,7.35891 -27.4957,26.43619 -23.1538,45.07455 l 20.0294,86.5815 c -27.028,19.8065 -51.2499,43.8082 -71.6711,71.5328 l -88.6462,-20.4989 c -18.6224,-4.3409 -37.7136,5.4505 -45.0592,23.1843 l -20.3419,49.1098 c -7.3448,17.732 -0.7696,38.157 15.4678,48.2555 l 77.1772,48.1875 c -4.262,28.009 -5.2227,56.052 -2.458,83.5676 l -79.065,43.0761 c -16.8196,9.1336 -24.5557,29.1325 -18.2787,47.2724 l 17.3849,50.2045 c 6.3191,18.1844 24.7932,29.0633 43.6524,25.8346 l 89.6491,-15.2215 c 21.5728,33.0569 49.3581,62.2945 82.186,86.3979 l -20.3601,88.1701 c -4.4152,18.6241 5.4355,37.7106 23.1325,45.0409 l 49.1485,20.358 c 17.7329,7.3453 38.1444,0.7948 48.2544,-15.4704 l 47.8972,-76.7638 c 33.8903,5.2195 67.749,5.0671 100.778,0.071 l 48.92,78.3932 c 10.079,16.249 30.5059,22.8159 48.2375,15.4498 l 49.1238,-20.347 c 17.6819,-7.3272 27.5483,-26.357 23.1303,-45.0572 l -20.737,-89.8328 c 27.111,-19.8761 51.4189,-43.9027 71.8491,-71.7848 l 87.673,20.2743 c 18.6732,4.3619 37.7131,-5.4519 45.0583,-23.1848 l 20.342,-49.1097 c 7.3185,-17.7419 0.7943,-38.1435 -15.4955,-48.2647 z"
-         style="fill:#1a1a1a"
-         sodipodi:nodetypes="ccccccccccssccccccccccssccccccccccssccccccccccscc" />
-      <circle
-         style="fill:#ffffff"
-         id="path3480"
-         cx="1476.4104"
-         cy="1362.3618"
-         r="219.7307" />
+         id="rect111376"
+         style="fill:#ffffff;stroke:#ffffff;stroke-width:0"
+         d="M 8824.729,3438.2843 H 19296.463 V 8915.37 H 8824.729 Z"
+         inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\gihub.png"
+         inkscape:export-xdpi="31.869921"
+         inkscape:export-ydpi="31.869921" />
       <g
-         id="g4343"
-         transform="translate(-25.417795,0)">
+         id="g23917"
+         transform="matrix(3.2600953,0,0,3.2600953,11684.468,1678.5437)"
+         inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\logo.png"
+         inkscape:export-xdpi="32"
+         inkscape:export-ydpi="32">
+        <path
+           inkscape:connector-curvature="0"
+           id="settings_1_"
+           d="m 1823.5356,1456.4722 -64.5053,-40.262 c 3.4925,-22.676 4.3019,-45.3997 2.3421,-67.7182 l 67.1419,-36.6269 c 14.2495,-7.7158 20.7485,-24.6181 15.4487,-39.9568 l -14.712,-42.4314 c -5.3478,-15.3448 -20.9323,-24.577 -36.8754,-21.8276 l -74.6892,12.7055 c -18.5212,-29.0066 -42.4752,-54.6834 -71.0922,-75.6786 l 17.2629,-74.4675 c 3.6775,-15.7587 -4.6043,-31.8696 -19.589,-38.0765 l -41.5313,-17.2028 c -14.9539,-6.1941 -32.2453,-0.676 -40.7342,13.0899 l -40.5219,64.8587 c -29.0023,-4.4601 -58.0014,-4.2798 -86.2094,0.093 l -39.6971,-63.5633 c -8.5516,-13.7085 -25.7963,-19.2618 -40.7768,-13.0753 l -41.5028,17.2084 c -14.9672,6.2183 -23.2343,22.3389 -19.5654,38.0886 l 16.9252,73.1626 c -22.839,16.7368 -43.3069,37.0187 -60.5631,60.4464 l -74.9075,-17.3219 c -15.7361,-3.6681 -31.8684,4.6058 -38.0757,19.5911 l -17.189,41.4985 c -6.2065,14.9838 -0.6504,32.2434 13.0704,40.7766 l 65.2159,40.7192 c -3.6015,23.668 -4.4133,47.3647 -2.0771,70.6159 l -66.8111,36.3999 c -14.2129,7.718 -20.7498,24.6173 -15.4457,39.9458 l 14.6904,42.4236 c 5.3398,15.3661 20.9507,24.559 36.8869,21.8307 l 75.7549,-12.8624 c 18.2294,27.9335 41.7084,52.6397 69.4484,73.0074 l -17.2045,74.505 c -3.7309,15.7378 4.5929,31.866 19.5473,38.0604 l 41.5311,17.2028 c 14.9846,6.2068 32.2327,0.6716 40.7757,-13.0727 l 40.4739,-64.8667 c 28.6378,4.4107 57.2488,4.2818 85.1589,0.061 l 41.3381,66.2435 c 8.5169,13.7306 25.7779,19.2797 40.7614,13.0552 l 41.5104,-17.1934 c 14.9414,-6.1917 23.2787,-22.2721 19.5453,-38.074 l -17.5229,-75.9101 c 22.9091,-16.7957 43.4496,-37.0986 60.7134,-60.6593 l 74.0851,17.1321 c 15.7792,3.6859 31.8681,-4.6068 38.075,-19.5914 l 17.1892,-41.4986 c 6.1842,-14.9921 0.6712,-32.2317 -13.0939,-40.7842 z"
+           style="fill:#333333;stroke:#ffffff;stroke-width:25.1878;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           sodipodi:nodetypes="ccccccccccssccccccccccssccccccccccssccccccccccscc" />
+        <circle
+           style="fill:#ffffff;stroke-width:0.924896"
+           id="path3480"
+           cx="1481.572"
+           cy="1373.9961"
+           r="203.22807" />
+      </g>
+      <text
+         id="text3482"
+         y="8023.564"
+         x="12413.888"
+         style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:27.4402px;line-height:0%;font-family:KacstDecorative;-inkscape-font-specification:'KacstDecorative Medium';letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         xml:space="preserve"
+         transform="scale(1.1352483,0.88086456)"
+         inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\logo.png"
+         inkscape:export-xdpi="32"
+         inkscape:export-ydpi="32"><tspan
+           y="8023.564"
+           x="12413.888"
+           id="tspan3484"
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;font-size:3264.21px;line-height:1.25;font-family:Bahnschrift;-inkscape-font-specification:'Bahnschrift Light';fill:#808080;stroke:#808080;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">{</tspan></text>
+      <use
+         x="0"
+         y="0"
+         xlink:href="#text3482"
+         id="use53603"
+         transform="matrix(-1,0,0,1,33011.754,-1.5645033e-4)"
+         width="100%"
+         height="100%"
+         inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\logo.png"
+         inkscape:export-xdpi="32"
+         inkscape:export-ydpi="32" />
+      <g
+         id="g110149"
+         transform="matrix(1.1072963,0,0,1.1072963,-609.52121,-351.72583)"
+         inkscape:export-filename="\\wsl$\Ubuntu-20.04\home\filip\prg\json-machine\img\logo.png"
+         inkscape:export-xdpi="32"
+         inkscape:export-ydpi="32">
         <text
-           sodipodi:linespacing="125%"
-           id="text3482"
-           y="1704.96"
-           x="496.31439"
-           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:1427.49255371px;line-height:125%;font-family:KacstDecorative;-inkscape-font-specification:'KacstDecorative Medium';letter-spacing:0px;word-spacing:0px;fill:#4d4d4d;fill-opacity:1;stroke:#4d4d4d;stroke-width:30.61870956;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           xml:space="preserve"><tspan
-             y="1704.96"
-             x="496.31439"
-             id="tspan3484"
-             sodipodi:role="line"
-             style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'Tlwg Typo';-inkscape-font-specification:'Tlwg Typo Medium';fill:#4d4d4d;stroke:#4d4d4d;stroke-width:30.61870956;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">{</tspan></text>
-        <text
-           transform="scale(-1,-1)"
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:1427.49255371px;line-height:125%;font-family:KacstDecorative;-inkscape-font-specification:'KacstDecorative Medium';letter-spacing:0px;word-spacing:0px;fill:#4d4d4d;fill-opacity:1;stroke:#4d4d4d;stroke-width:30.61870956;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           x="-2507.342"
-           y="-1019.7635"
-           id="text3500"
-           sodipodi:linespacing="125%"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'Tlwg Typo';-inkscape-font-specification:'Tlwg Typo Medium';fill:#4d4d4d;stroke:#4d4d4d;stroke-width:30.61870956;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           style="font-style:normal;font-weight:normal;font-size:1463.26px;line-height:0;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none;stroke-width:131.617"
+           x="10021.925"
+           y="5824.5483"
+           id="text26335"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:semi-condensed;font-size:1463.26px;line-height:1.15;font-family:Bahnschrift;-inkscape-font-specification:'Bahnschrift Semi-Condensed';fill:#808080;fill-opacity:1;stroke-width:131.617"
              sodipodi:role="line"
-             id="tspan3502"
-             x="-2507.342"
-             y="-1019.7635">{</tspan></text>
+             id="tspan38795"
+             x="10021.925"
+             y="5824.5483">JSON</tspan><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1463.26px;line-height:1.15;font-family:Bahnschrift;-inkscape-font-specification:Bahnschrift;fill:#808080;fill-opacity:1;stroke-width:131.617"
+             sodipodi:role="line"
+             x="10021.925"
+             y="7507.2974"
+             id="tspan68996" /><tspan
+             sodipodi:role="line"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1463.26px;line-height:0.95;font-family:Bahnschrift;-inkscape-font-specification:Bahnschrift;fill:#808080;fill-opacity:1;stroke-width:131.617"
+             x="10021.925"
+             y="8298.6582"
+             id="tspan26337" /></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-weight:normal;font-size:1186.84px;line-height:1.25;font-family:sans-serif;fill:#333333;fill-opacity:1;stroke:none;stroke-width:29.6708"
+           x="9110.667"
+           y="6974.0317"
+           id="text61566"><tspan
+             sodipodi:role="line"
+             id="tspan61564"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:semi-condensed;font-family:Bahnschrift;-inkscape-font-specification:'Bahnschrift Semi-Condensed';fill:#333333;fill-opacity:1;stroke-width:29.6708"
+             x="9110.667"
+             y="6974.0317">Machine</tspan></text>
       </g>
     </g>
   </g>

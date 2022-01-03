@@ -2,35 +2,32 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\JsonDecoder\ChunkDecoder;
-use JsonMachine\JsonDecoder\Decoder;
-use JsonMachine\JsonDecoder\DecodingResult;
-use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
-use JsonMachine\JsonMachine;
-use JsonMachine\Lexer;
-use JsonMachine\Parser;
-use phpDocumentor\Reflection\DocBlock\Tags\Formatter\PassthroughFormatter;
+use JsonMachine\Items;
 
-/**
- * @deprecated
- */
-class JsonMachineTest extends \PHPUnit_Framework_TestCase
+class ItemsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataFactories
      */
     public function testFactories($expected, $methodName, ...$args)
     {
-        $iterator = call_user_func_array(JsonMachine::class."::$methodName", $args);
+        $iterator = call_user_func_array(Items::class."::$methodName", [
+            $args[0],
+            [
+                'pointer' => $args[1],
+                'decoder' => $args[2],
+                'debug' => $args[3],
+            ]
+        ]);
         $this->assertSame($expected, iterator_to_array($iterator));
     }
 
-    public function testJsonMachineYieldsArraysByDefault()
+    public function testItemsYieldsObjectItemsByDefault()
     {
-        $iterator = JsonMachine::fromString('{"path": {"key":"value"}}');
+        $iterator = Items::fromString('{"path": {"key":"value"}}');
         foreach ($iterator as $item) {
-            $this->assertEquals(['key' => 'value'], $item);
+            $this->assertEquals((object)['key' => 'value'], $item);
         }
     }
 
@@ -59,12 +56,20 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testGetPositionDebugEnabled()
+    {
+        $expectedPosition = ['key1' => 10, 'key2' => 20];
+        $items = Items::fromString('{"key1":1, "key2":2}    ', ['debug' => true]);
+        foreach ($items as $key => $val) {
+            $this->assertSame($expectedPosition[$key], $items->getPosition());
+        }
+    }
 
     public function testIterationWithoutForeach()
     {
         $iterator =
-            JsonMachine::fromString('{"key1":1, "key2":2}')
-            ->getIterator()->getIterator();
+            Items::fromString('{"key1":1, "key2":2}')
+            ->getIterator();
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -74,38 +79,5 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['key2', 2], [$iterator->key(), $iterator->current()]);
         $iterator->next();
         $this->assertFalse($iterator->valid());
-    }
-
-    public function testParserSupportsOldDecoderInterface()
-    {
-        $parser = new Parser(new Lexer(['{"key": "value"}']), "", new DeprecatedDecoderImpl());
-
-        foreach ($parser as $key => $value) {
-            $this->assertSame('key', $key);
-            $this->assertSame('value', $value);
-        }
-    }
-}
-
-class DeprecatedDecoderImpl implements Decoder
-{
-    /**
-     * @var ChunkDecoder
-     */
-    private $decoder;
-
-    public function __construct()
-    {
-        $this->decoder = new ExtJsonDecoder(true);
-    }
-
-    public function decodeKey($jsonScalarKey)
-    {
-        return $this->decoder->decodeKey($jsonScalarKey);
-    }
-
-    public function decodeValue($jsonValue)
-    {
-        return $this->decoder->decodeValue($jsonValue);
     }
 }

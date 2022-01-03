@@ -2,49 +2,143 @@
 
 namespace JsonMachineTest;
 
+use JsonMachine\DebugLexer;
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
+use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
 class LexerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGeneratesTokens()
+    public function bothDebugModes()
+    {
+        return [
+            'debug enabled' => [DebugLexer::class],
+            'debug disabled' => [Lexer::class],
+        ];
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyYieldsZeroToken($lexerClass)
+    {
+        $data = ['0'];
+        $expected = ['0'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
+
+        $stream = fopen('data://text/plain,{"value":0}', 'r');
+        $expected = ['{', '"value"', ':', '0', '}'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new StreamChunks($stream, 10))));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testGeneratesTokens($lexerClass)
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
         $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
-    public function testWithBOM()
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testWithBOM($lexerClass)
     {
         $data = ["\xEF\xBB\xBF" . '{}'];
         $expected = ['{','}'];
-        $this->assertEquals($expected, iterator_to_array(new Lexer(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
-    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString()
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($lexerClass)
     {
-        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new Lexer(new \ArrayIterator(['"test\\\\":']))));
+        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $lexerClass(new \ArrayIterator(['"test\\\\":']))));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($lexerClass)
+    {
+        $json = '"test\"test":';
+        $expected = ['"test\"test"', ':'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator([$json]))));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitBeforeStringEnd($lexerClass)
+    {
+        $chunks = ['{"path": {"key":"value', '"}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value"', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($lexerClass)
+    {
+        $chunks = ['{"path": {"key":"value\\', '""}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
+    }
+
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($lexerClass)
+    {
+        $chunks = ['{"path": {"key":"value\\"', '"}}'];
+        $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
     }
 
     /**
      * @param string $formattedJsonFilePath
      * @dataProvider dataProvidesLocationalData
      */
-    public function testProvidesLocationalData($formattedJsonFilePath)
+    public function testProvidesLocationalDataWhenDebugEnabled($formattedJsonFilePath)
+    {
+        $json = file_get_contents($formattedJsonFilePath);
+        $lexer = new DebugLexer(new StringChunks($json));
+        $expectedTokens = $this->expectedTokens();
+        $i = 0;
+
+        foreach ($lexer as $token) {
+            $i++;
+            $expectedToken = array_shift($expectedTokens);
+
+            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[1], $lexer->getLine(), 'line failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[2], $lexer->getColumn(), 'column failed with expected token #' . $i);
+        }
+    }
+
+    /**
+     * @param string $formattedJsonFilePath
+     * @dataProvider dataProvidesLocationalData
+     */
+    public function testProvidesLocationalDataWhenDebugDisabled($formattedJsonFilePath)
     {
         $json = file_get_contents($formattedJsonFilePath);
         $lexer = new Lexer(new StringChunks($json));
-        $tokens = $this->tokensWithLocationalInformation();
+        $expectedTokens = $this->expectedTokens();
         $i = 0;
 
-        foreach ($lexer as $lexeme) {
+        foreach ($lexer as $token) {
             $i++;
-            $token = array_shift($tokens);
+            $expectedToken = array_shift($expectedTokens);
 
-            $this->assertEquals($token[0], $lexeme, 'lexeme failed with data set #' . $i);
-            $this->assertEquals($token[1], $lexer->getLine(), 'line failed with data set #' . $i);
-            $this->assertEquals($token[2], $lexer->getColumn(), 'column failed with data set #' . $i);
+            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #' . $i);
+            $this->assertEquals(1, $lexer->getLine(), 'line failed with expected token #' . $i);
+            $this->assertEquals(0, $lexer->getColumn(), 'column failed with expected token #' . $i);
         }
     }
 
@@ -57,7 +151,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    private function tokensWithLocationalInformation()
+    private function expectedTokens()
     {
         return [
             // lexeme, line, column

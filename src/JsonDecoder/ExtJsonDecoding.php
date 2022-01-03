@@ -2,7 +2,7 @@
 
 namespace JsonMachine\JsonDecoder;
 
-trait JsonDecodingTrait
+trait ExtJsonDecoding
 {
     /**
      * @var bool
@@ -32,8 +32,18 @@ trait JsonDecodingTrait
         // inlined
         $decoded = json_decode($jsonScalarKey, $this->assoc, $this->depth, $this->options);
         if ($decoded === null && $jsonScalarKey !== 'null') {
-            return new DecodingResult(false, null, json_last_error_msg());
+            return new InvalidResult(json_last_error_msg());
         }
-        return new DecodingResult(true, $decoded);
+        return new ValidResult($decoded);
+    }
+
+    public function decodeInternalKey($jsonScalarKey)
+    {
+        // inlined
+        $decoded = json_decode($jsonScalarKey, $this->assoc, $this->depth, $this->options);
+        if ($decoded === null && $jsonScalarKey !== 'null') {
+            return new InvalidResult(json_last_error_msg());
+        }
+        return new ValidStringResult($decoded);
     }
 }

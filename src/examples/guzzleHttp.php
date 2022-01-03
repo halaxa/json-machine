@@ -6,6 +6,6 @@ $client = new \GuzzleHttp\Client();
 $response = $client->request('GET', 'https://httpbin.org/anything?key=value');
 // Gets PHP stream resource from Guzzle stream
 $phpStream = \GuzzleHttp\Psr7\StreamWrapper::getResource($response->getBody());
-foreach (\JsonMachine\JsonMachine::fromStream($phpStream) as $key => $value) {
+foreach (\JsonMachine\Items::fromStream($phpStream) as $key => $value) {
     var_dump([$key, $value]);
 }

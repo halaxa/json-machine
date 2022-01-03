@@ -1,6 +1,6 @@
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
@@ -16,6 +16,6 @@ function httpClientChunks(ResponseStreamInterface $responseStream)
 $client = HttpClient::create();
 $response = $client->request('GET', 'https://httpbin.org/anything?key=value');
 $jsonChunks = httpClientChunks($client->stream($response));
-foreach (JsonMachine::fromIterable($jsonChunks, "/args") as $key => $value) {
+foreach (Items::fromIterable($jsonChunks, ['pointer' => '/args']) as $key => $value) {
     var_dump($key, $value);
 }

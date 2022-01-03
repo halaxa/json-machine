@@ -1,7 +1,25 @@
 # Changelog
 
 ## master
-nothing yet
+
+<br>
+<br>
+
+## 0.8.0-BETA
+Please leave feedback in discussions if something broke for you.
+### Changed
+- `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
+- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ChunkDecoder` instead.
+- Internal decoders moved to `ChunkDecoder`. `ErrorWrappingDecoder` decorator now requires `ChunkDecoder` as well. 
+
+### Added
+- New entry point class `Items` replaces `JsonMachine`.
+- Object as default decoding structure instead of array in `Items`.
+- `Items::getIterator()` now returns `Parser`'s iterator directly. Call `Items::getIterator()`
+instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator if you need it. Fixes
+https://stackoverflow.com/questions/63706550
+- `Items` hides data for position, line and column into `debug` option which is disabled by default for performance reasons.
+- Performance improvemens
 <br>
 <br>
 
@@ -82,9 +100,9 @@ Alternative is to use `ExtJsonDecoder` which decodes items as objects by default
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
-$jsonMachine = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$jsonMachine = Items::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 Therefore no additional casting is required.
 - Invalid json object keys will now throw and won't be ignored anymore.

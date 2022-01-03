@@ -1,24 +1,29 @@
-![](img/logo.png)
-# JSON Machine
+<img align="right" src="img/github.png" />
+
+(README in sync with `master`)
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
-for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
+for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://app.travis-ci.com/github/halaxa/json-machine/branches)
 [![Latest Stable Version](https://img.shields.io/badge/stable-0.7.1-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
+**0.8.0-BETA** is out. Please try it and let me know in the [discussion](https://github.com/halaxa/json-machine/discussions/68).
+
+---
 
 * [TL;DR](#tl-dr)
 * [Introduction](#introduction)
 * [Parsing JSON documents](#parsing-json-documents)
-  + [Iterating a collection](#simple-document)
+  + [Parsing a document](#simple-document)
   + [Parsing a subtree](#parsing-a-subtree)
   + [Parsing nested values in arrays](#parsing-nested-values)
-  + [Getting single scalar values](#getting-scalar-values)
+  + [Parsing a single scalar value](#getting-scalar-values)
   + [Parsing multiple subtrees](#parsing-multiple-subtrees)
-  + [What is Json Pointer anyway?](#json-pointer)
+  + [What is JSON Pointer anyway?](#json-pointer)
+* [Options](#options)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
   + [GuzzleHttp](#guzzlehttp)
   + [Symfony HttpClient](#symfony-httpclient)
@@ -48,16 +53,17 @@ for PHP 5.6+. See [TL;DR](#tl-dr). No dependencies in production except optional
 ```diff
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
 // this often causes Allowed Memory Size Exhausted
 - $users = json_decode(file_get_contents('500MB-users.json'));
 
 // this usually takes few kB of memory no matter the file size
-+ $users = JsonMachine::fromFile('500MB-users.json');
++ $users = Items::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
     // just process $user as usual
+    var_dump($user->name);
 }
 ```
 
@@ -66,6 +72,7 @@ Use above-mentioned `foreach` and find the item or count the collection there.
 
 Requires `ext-json` if used out of the box. See [Decoders](#decoders).
 
+Follow [CHANGELOG](CHANGELOG.md).
 
 <a name="introduction"></a>
 ## Introduction
@@ -74,7 +81,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 
 - Constant memory footprint for unpredictably large JSON documents.
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
-- Efficient iteration on any subtree of the document, specified by [Json Pointer](#json-pointer)
+- Efficient iteration on any subtree of the document, specified by [JSON Pointer](#json-pointer)
 - Speed. Performance critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
@@ -84,8 +91,8 @@ and uses native `json_decode` to decode JSON document items by default. See [Dec
 ## Parsing JSON documents
 
 <a name="simple-document"></a>
-### Iterating a collection
-Let's say that `fruits.json` contains this really big JSON document:
+### Parsing a document
+Let's say that `fruits.json` contains this huge JSON document:
 ```json
 // fruits.json
 {
@@ -101,28 +108,27 @@ It can be parsed this way:
 ```php
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
-$fruits = JsonMachine::fromFile('fruits.json');
+$fruits = Items::fromFile('fruits.json');
 
 foreach ($fruits as $name => $data) {
-    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
-    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
+    // 1st iteration: $name === "apple" and $data->color === "red"
+    // 2nd iteration: $name === "pear" and $data->color === "yellow"
 }
 ```
 
 Parsing a json array instead of a json object follows the same logic.
 The key in a foreach will be a numeric index of an item.
 
-If you prefer JSON Machine to return objects instead of arrays, use `new ExtJsonDecoder()` as decoder
-which by default decodes objects - same as `json_decode`
+If you prefer JSON Machine to return arrays instead of objects, use `new ExtJsonDecoder(true)` as a decoder.
 ```php
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
-$objects = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
+$objects = Items::fromFile('path/to.json', ['decoder' => new ExtJsonDecoder(true)]);
 ```
 
 
@@ -142,17 +148,17 @@ If you want to iterate only `results` subtree in this `fruits.json`:
     }
 }
 ```
-use Json Pointer `"/results"` as the second argument:
+use JSON Pointer `/results` as `pointer` option:
 ```php
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
-$fruits = JsonMachine::fromFile("fruits.json", "/results");
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/results']);
 foreach ($fruits as $name => $data) {
     // The same as above, which means:
-    // 1st iteration: $name === "apple" and $data === ["color" => "red"]
-    // 2nd iteration: $name === "pear" and $data === ["color" => "yellow"]
+    // 1st iteration: $name === "apple" and $data->color === "red"
+    // 2nd iteration: $name === "pear" and $data->color === "yellow"
 }
 ```
 
@@ -185,11 +191,11 @@ Example:
 }
 ```
 
-To iterate over all colors of the fruits, use the JSON pointer `"/results/-/color"`.
+To iterate over all colors of the fruits, use the JSON Pointer `"/results/-/color"`.
 
 <a name="getting-scalar-values"></a>
-### Getting single scalar values
-You can parse single scalar value anywhere in the document the same way as a collection. Consider this example:
+### Parsing a single scalar value
+You can parse a single scalar value anywhere in the document the same way as a collection. Consider this example:
 ```json
 // fruits.json
 {
@@ -203,13 +209,13 @@ You can parse single scalar value anywhere in the document the same way as a col
     // ... gigabytes follow ...
 }
 ``` 
-Get the single value of `lastModified` key like this:
+Get the scalar value of `lastModified` key like this:
 ```php
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
-$fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 foreach ($fruits as $key => $value) {
     // 1st and final iteration:
     // $key === 'lastModified'
@@ -224,12 +230,12 @@ The obvious shortcut is:
 ```php
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
-$fruits = JsonMachine::fromFile('fruits.json', '/lastModified');
+$fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
-Single scalar value access supports array indices in json pointer as well.
+Single scalar value access supports array indices in JSON Pointer as well.
 
 <a name="parsing-multiple-subtrees"></a>
 ### Parsing multiple subtrees
@@ -288,17 +294,17 @@ foreach ($fruits as $key => $value) {
 ```
 
 <a name="json-pointer"></a>
-### What is Json Pointer anyway?
-It's a way of addressing one item in JSON document. See the [Json Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
+### What is JSON Pointer anyway?
+It's a way of addressing one item in JSON document. See the [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
 not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
-When the parser hits the collection you specified, iteration begins. It is always a second parameter in all
-`JsonMachine::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
+When the parser hits the collection you specified, iteration begins. You can pass it as `pointer` option in all
+`Items::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
 It can be used to access scalar values as well.
 
 Some examples:
 
-| Json Pointer value    | Will iterate through                                                                                        |
+| JSON Pointer value    | Will iterate through                                                                                        |
 |-----------------------|-------------------------------------------------------------------------------------------------------------|
 | `""` (empty string - default) | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level)              |
 | `"/result/items"`     | `{"result":{"items":["this","array","will","be","iterated"]}}`                                           |
@@ -307,10 +313,20 @@ Some examples:
 | `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5)) | `{"":["this","array","will","be","iterated"]}` |
 
 
+<a name="options"></a>
+## Options
+Options may change how a JSON is parsed. Array of options is the second parameter of all `Items::from*` functions.
+Available options are:
+- `pointer` - A JSON Pointer string that tells which part of the document you want to iterate.
+- `decoder` - An instance of `ChunkDecoder` interface.
+- `debug` - `true` or `false` to enable or disable the debug mode. When the debug mode is enabled, data such as line,
+column and position in the document are available during parsing or in exceptions. Keeping debug disabled adds slight
+performance advantage.
+
 <a name="parsing-json-stream-api-responses"></a>
 ## Parsing streaming responses from a JSON API
 A stream API response or any other JSON stream is parsed exactly the same way as file is. The only difference
-is, you use `JsonMachine::fromStream($streamResource)` for it, where `$streamResource` is the stream
+is, you use `Items::fromStream($streamResource)` for it, where `$streamResource` is the stream
 resource with the JSON document. The rest is the same as with parsing files. Here are some examples of
 popular http clients which support streaming responses:
 
@@ -318,7 +334,7 @@ popular http clients which support streaming responses:
 ### GuzzleHttp
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
-`JsonMachine::fromStream` function, and you're set up. See working
+`Items::fromStream` function, and you're set up. See working
 [GuzzleHttp example](src/examples/guzzleHttp.php).
 
 <a name="symfony-httpclient"></a>
@@ -329,8 +345,8 @@ based on iterators, the integration with Symfony HttpClient is very simple. See
 
 
 <a name="tracking-parsing-progress"></a>
-## Tracking the progress
-Big documents may take a while to parse. Call `JsonMachine::getPosition()` in your `foreach` to get current
+## Tracking the progress (with `debug` enabled)
+Big documents may take a while to parse. Call `Items::getPosition()` in your `foreach` to get current
 count of the processed bytes from the beginning. Percentage is then easy to calculate as `position / total * 100`.
 To find out the total size of your document in bytes you may want to check:
 - `strlen($document)` if you parse a string
@@ -338,13 +354,15 @@ To find out the total size of your document in bytes you may want to check:
 - `Content-Length` http header if you parse a http stream response
 - ... you get the point
 
+If `debug` is disabled, `getPosition()` always returns `0`.
+
 ```php
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
 $fileSize = filesize('fruits.json');
-$fruits = JsonMachine::fromFile('fruits.json');
+$fruits = Items::fromFile('fruits.json', ['debug' => true]);
 foreach ($fruits as $name => $data) {
     echo 'Progress: ' . intval($fruits->getPosition() / $fileSize * 100) . ' %'; 
 }
@@ -353,29 +371,29 @@ foreach ($fruits as $name => $data) {
 
 <a name="decoders"></a>
 ## Decoders
-As the third and optional parameter of all the `JsonMachine::from*` functions is an instance of
-`JsonMachine\JsonDecoder\Decoder`. If none is specified, `ExtJsonDecoder` is used by
+`Items::from*` functions also accept `decoder` option. It must be an instance of
+`JsonMachine\JsonDecoder\ChunkDecoder`. If none is specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
-`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\Decoder`
+`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\ChunkDecoder`
 and make your own.
 
 <a name="available-decoders"></a>
 ### Available decoders
 - **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
-Constructor takes the same parameters as `json_decode`.
+Constructor has the same parameters as `json_decode`.
 
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON item with something else directly in the foreach
-and don't want to implement `JsonMachine\JsonDecoder\Decoder`.
+and don't want to implement `JsonMachine\JsonDecoder\ChunkDecoder`.
 Constructor has the same parameters as `json_decode`.
 Example:
 ```php
 <?php
 
 use JsonMachine\JsonDecoder\PassThruDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 
-$items = JsonMachine::fromFile('path/to.json', '', new PassThruDecoder);
+$items = Items::fromFile('path/to.json', ['decoder' => new PassThruDecoder]);
 ```
 
 - **`ErrorWrappingDecoder`** - A decorator which wraps decoding errors inside `DecodingError` object
@@ -384,12 +402,12 @@ Example:
 ```php
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use JsonMachine\JsonDecoder\DecodingError;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
-$items = JsonMachine::fromFile('path/to.json', '', new ErrorWrappingDecoder(new ExtJsonDecoder()));
+$items = Items::fromFile('path/to.json', ['decoder' => new ErrorWrappingDecoder(new ExtJsonDecoder())]);
 foreach ($items as $key => $item) {
     if ($key instanceof DecodingError || $item instanceof DecodingError) {
         // handle error of this malformed json item
@@ -420,7 +438,7 @@ items will still throw `SyntaxError` exception though.
 
 <a name="streams-files"></a>
 ### Streams / files
-JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP array at a time.
+JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP item at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
 PHP structures. Following table shows the difference:
@@ -428,13 +446,13 @@ PHP structures. Following table shows the difference:
 |                        | String items in memory at a time | Decoded PHP items in memory at a time | Total |
 |------------------------|---------------------------------:|--------------------------------------:|------:|
 | `json_decode()`        |                            10000 |                                 10000 | 20000 |
-| `JsonMachine::from*()` |                                1 |                                     1 |     2 |
+| `Items::from*()`       |                                1 |                                     1 |     2 |
 
-This means, that `JsonMachine` is constantly efficient for any size of processed JSON. 100 GB no problem.
+This means, that JSON Machine is constantly efficient for any size of processed JSON. 100 GB no problem.
 
 <a name="in-memory-json-strings"></a>
 ### In-memory JSON strings
-There is also a method `JsonMachine::fromString()`. If you are
+There is also a method `Items::fromString()`. If you are
 forced to parse a big string, and the stream is not available, JSON Machine may be better than `json_decode`.
 The reason is that unlike `json_decode`, JSON Machine still traverses the JSON string one item at a time and doesn't
 load all resulting PHP structures into memory at once.
@@ -448,9 +466,9 @@ behaviour as with streams/files. Following table puts the concept into perspecti
 |                             | String items in memory at a time | Decoded PHP items in memory at a time | Total |
 |-----------------------------|---------------------------------:|--------------------------------------:|------:|
 | `json_decode()`             |                            10000 |                                 10000 | 20000 |
-| `JsonMachine::fromString()` |                            10000 |                                     1 | 10001 |
+| `Items::fromString()`       |                            10000 |                                     1 | 10001 |
 
-The reality is even better. `JsonMachine::fromString` consumes about **5x less memory** than `json_decode`. The reason is
+The reality is even better. `Items::fromString` consumes about **5x less memory** than `json_decode`. The reason is
 that a PHP structure takes much more memory than its corresponding JSON representation.
 
 
@@ -460,24 +478,24 @@ that a PHP structure takes much more memory than its corresponding JSON represen
 <a name="step1"></a>
 ### "I'm still getting Allowed memory size ... exhausted"
 One of the reasons may be that the items you want to iterate over are in some sub-key such as `"results"`
-but you forgot to specify a json pointer. See [Parsing a subtree](#parsing-a-subtree).
+but you forgot to specify a JSON Pointer. See [Parsing a subtree](#parsing-a-subtree).
 
 <a name="step2"></a>
 ### "That didn't help"
 The other reason may be, that one of the items you iterate is itself so huge it cannot be decoded at once.
 For example, you iterate over users and one of them has thousands of "friend" objects in it.
 Use `PassThruDecoder` which does not decode an item, get the json string of the user
-and parse it iteratively yourself using `JsonMachine::fromString()`.
+and parse it iteratively yourself using `Items::fromString()`.
 
 ```php
 <?php
 
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 
-$users = JsonMachine::fromFile('users.json', '', new PassThruDecoder);
+$users = Items::fromFile('users.json', ['decoder' => new PassThruDecoder]);
 foreach ($users as $user) {
-    foreach (JsonMachine::fromString($user, "/friends") as $friend) {
+    foreach (Items::fromString($user, ['pointer' => "/friends"]) as $friend) {
         // process friends one by one
     }
 }
@@ -487,7 +505,7 @@ foreach ($users as $user) {
 ### "I am still out of luck"
 It probably means that the JSON string `$user` itself or one of the friends are too big and do not fit in memory.
 However, you can try this approach recursively. Parse `"/friends"` with `PassThruDecoder` getting one `$friend`
-json string at a time and then parse that using `JsonMachine::fromString()`... If even that does not help,
+json string at a time and then parse that using `Items::fromString()`... If even that does not help,
 there's probably no solution yet via JSON Machine. A feature is planned which will enable you to iterate
 any structure fully recursively and strings will be served as streams.
 
@@ -523,6 +541,8 @@ as the whole build process at once. Make basically runs composer dev scripts ins
 ## Support
 Do you like this library? Star it, share it, show it  :)
 Issues and pull requests are very welcome.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G57KTE4)
 
 <a name="license"></a>
 ## License

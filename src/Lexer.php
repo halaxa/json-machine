@@ -2,127 +2,123 @@
 
 namespace JsonMachine;
 
+use Generator;
+
 class Lexer implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
-    private $bytesIterator;
-
-    private $position = 0;
-    private $line = 1;
-    private $column = 0;
+    private $jsonChunks;
 
     /**
-     * @param iterable $byteChunks
+     * @param iterable<string> $jsonChunks
      */
-    public function __construct($byteChunks)
+    public function __construct($jsonChunks)
     {
-        $this->bytesIterator = $byteChunks;
+        $this->jsonChunks = $jsonChunks;
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
+        // init ASCII byte map as variable variables for the fastest lookup
+        foreach (range(0,255) as $ord) {
+            ${chr($ord)} = ! in_array(
+                chr($ord),
+                ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
+            );
+        }
+
+        $boundary = $this->mapOfBoundaryBytes();
+
         $inString = false;
         $tokenBuffer = '';
-        $isEscaping = false;
-        $width = 0;
-        $trackingLineBreak = false;
-        $position = 0;
-        $column = 0;
+        $escaping = false;
 
-        // Treat UTF-8 BOM bytes as whitespace
-        ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;
-
-        ${' '} = 0;
-        ${"\n"} = 0;
-        ${"\r"} = 0;
-        ${"\t"} = 0;
-        ${'{'} = 1;
-        ${'}'} = 1;
-        ${'['} = 1;
-        ${']'} = 1;
-        ${':'} = 1;
-        ${','} = 1;
-
-        foreach ($this->bytesIterator as $bytes) {
-            $bytesLength = strlen($bytes);
+        foreach ($this->jsonChunks as $jsonChunk) {
+            $bytesLength = strlen($jsonChunk);
             for ($i = 0; $i < $bytesLength; ++$i) {
-                $byte = $bytes[$i];
-                ++$position;
-                if ($inString) {
-                    $inString = ! ($byte === '"' && !$isEscaping);
-                    $isEscaping = ($byte === '\\' && !$isEscaping);
+                $byte = $jsonChunk[$i];
+                if ($escaping) {
+                    $escaping = false;
                     $tokenBuffer .= $byte;
-                    ++$width;
                     continue;
                 }
 
-                // handle CRLF newlines
-                if ($trackingLineBreak && $byte === "\n") {
-                    $trackingLineBreak = false;
+                if ($$byte) { // is non-significant byte
+                    $tokenBuffer .= $byte;
                     continue;
                 }
 
-                if (isset($$byte)) {
-                    ++$column;
-                    if ($tokenBuffer !== '') {
-                        $this->position = $position;
-                        $this->column = $column;
-                        yield $tokenBuffer;
-                        $column += $width;
-                        $tokenBuffer = '';
-                        $width = 0;
+                if ($inString) {
+                    if ($byte == '"') {
+                        $inString = false;
+                    } elseif ($byte == '\\') {
+                        $escaping = true;
                     }
-                    if ($$byte) { // is not whitespace
-                        $this->position = $position;
-                        $this->column = $column;
+                    $tokenBuffer .= $byte;
+                    continue;
+                }
+
+                if (isset($boundary[$byte])) { // if byte is any token boundary
+                    if ($tokenBuffer != '') {
+                        yield $tokenBuffer;
+                        $tokenBuffer = '';
+                    }
+                    if ($boundary[$byte]) { // if byte is not whitespace token boundary
                         yield $byte;
-                    // track line number and reset column for each newline
-                    } elseif ($byte === "\r" || $byte === "\n") {
-                        $trackingLineBreak = ($byte === "\r");
-                        $this->line++;
-                        $column = 0;
                     }
                 } else {
-                    if ($byte === '"') {
+                    if ($byte == '"') {
                         $inString = true;
                     }
                     $tokenBuffer .= $byte;
-                    ++$width;
                 }
             }
         }
-        if ($tokenBuffer !== '') {
-            $this->position = $position;
-            $this->column = $column;
+        if ($tokenBuffer != '') {
             yield $tokenBuffer;
         }
     }
 
-    /**
-     * @return int
-     */
-    public function getPosition()
+    private function mapOfBoundaryBytes(): array
     {
-        return $this->position;
+        $utf8bom1 = "\xEF";
+        $utf8bom2 = "\xBB";
+        $utf8bom3 = "\xBF";
+
+        $boundary = [];
+        $boundary[$utf8bom1] = 0;
+        $boundary[$utf8bom2] = 0;
+        $boundary[$utf8bom3] = 0;
+        $boundary[' ']       = 0;
+        $boundary["\n"]      = 0;
+        $boundary["\r"]      = 0;
+        $boundary["\t"]      = 0;
+        $boundary['{']       = 1;
+        $boundary['}']       = 1;
+        $boundary['[']       = 1;
+        $boundary[']']       = 1;
+        $boundary[':']       = 1;
+        $boundary[',']       = 1;
+
+        return $boundary;
     }
 
-    /**
-     * @return integer The line number of the lexeme currently being processed (index starts at one).
-     */
-    public function getLine()
+    public function getPosition(): int
     {
-        return $this->line;
+        return 0;
     }
 
-    /**
-     * @return integer The, currently being processed, lexeme's position within the line (index starts at one).
-     */
-    public function getColumn()
+    public function getLine(): int
     {
-        return $this->column;
+        return 1;
+    }
+
+    public function getColumn(): int
+    {
+        return 0;
     }
 }

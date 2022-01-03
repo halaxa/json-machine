@@ -2,14 +2,12 @@
 
 namespace JsonMachine\JsonDecoder;
 
-use JsonMachine\JsonDecoder\Decoder;
-
-class PassThruDecoder implements Decoder
+class PassThruDecoder implements ChunkDecoder
 {
-    use JsonDecodingTrait;
+    use ExtJsonDecoding;
 
     public function decodeValue($jsonValue)
     {
-        return new DecodingResult(true, $jsonValue);
+        return new ValidResult($jsonValue);
     }
 }

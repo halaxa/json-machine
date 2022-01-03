@@ -12,14 +12,14 @@
         "tests": "build/composer-update.sh && vendor/bin/phpunit",
         "cs": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose",
         "cs-fix": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --verbose",
-        "performance-tests": "php test/performance/testPerformance.php"
+        "performance-tests": "php -n test/performance/testPerformance.php"
     },
     "config": {
         "lock": false,
         "sort-packages": true
     },
     "require": {
-        "php": ">=5.6"
+        "php": ">=7.0"
     },
     "require-dev": {
         "ext-json": "*",
@@ -36,5 +36,12 @@
     },
     "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
-    }
+    },
+    "funding": [
+        {
+            "type": "other",
+            "url": "https://ko-fi.com/G2G57KTE4"
+        }
+    ]
+
 }

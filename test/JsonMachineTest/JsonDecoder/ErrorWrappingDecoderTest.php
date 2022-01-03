@@ -6,7 +6,9 @@ use JsonMachine\JsonDecoder\DecodingError;
 use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonMachine;
+use JsonMachine\Items;
+use JsonMachine\JsonDecoder\InvalidResult;
+use JsonMachine\JsonDecoder\ValidResult;
 use PHPUnit_Framework_TestCase;
 
 class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
@@ -31,9 +33,9 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
 
     public function data_testTrueFalseMatrix()
     {
-        $notOkResult = new DecodingResult(false, null, 'Error happened.');
-        $okResult = new DecodingResult(true, 'json');
-        $wrappedNotOkResult = new DecodingResult(true, new DecodingError('"json"', 'Error happened.'));
+        $notOkResult = new InvalidResult('Error happened.');
+        $okResult = new ValidResult('json');
+        $wrappedNotOkResult = new ValidResult(new DecodingError('"json"', 'Error happened.'));
         $wrappedOkResult = $okResult;
 
         return [
@@ -84,7 +86,10 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
         }
         ';
 
-        $items = JsonMachine::fromString($json, '/results', new ErrorWrappingDecoder(new ExtJsonDecoder(true)));
+        $items = Items::fromString($json, [
+            'pointer' => '/results',
+            'decoder' => new ErrorWrappingDecoder(new ExtJsonDecoder(true)),
+        ]);
         $result = iterator_to_array($items);
 
         $this->assertSame('correct', $result[0]['correct']);
