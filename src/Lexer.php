@@ -23,15 +23,18 @@ class Lexer implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        // init ASCII byte map as variable variables for the fastest lookup
+        // init the map of JSON-structure (in)significant bytes as local variable variables for the fastest lookup
         foreach (range(0,255) as $ord) {
-            ${chr($ord)} = ! in_array(
+            if (! in_array(
                 chr($ord),
                 ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
-            );
+            )) {
+                ${chr($ord)} = true;
+            }
         }
 
-        $boundary = $this->mapOfBoundaryBytes();
+        $tokenBoundaries = $this->tokenBoundaries();
+        $colonCommaBracket = $this->colonCommaBracketTokenBoundaries();
 
         $inString = false;
         $tokenBuffer = '';
@@ -41,13 +44,14 @@ class Lexer implements \IteratorAggregate, PositionAware
             $bytesLength = strlen($jsonChunk);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $jsonChunk[$i];
+
                 if ($escaping) {
                     $escaping = false;
                     $tokenBuffer .= $byte;
                     continue;
                 }
 
-                if ($$byte) { // is non-significant byte
+                if (isset($$byte)) { // is a JSON-structure insignificant byte
                     $tokenBuffer .= $byte;
                     continue;
                 }
@@ -62,18 +66,16 @@ class Lexer implements \IteratorAggregate, PositionAware
                     continue;
                 }
 
-                if (isset($boundary[$byte])) { // if byte is any token boundary
+                if (isset($tokenBoundaries[$byte])) {
                     if ($tokenBuffer != '') {
                         yield $tokenBuffer;
                         $tokenBuffer = '';
                     }
-                    if ($boundary[$byte]) { // if byte is not whitespace token boundary
+                    if (isset($colonCommaBracket[$byte])) {
                         yield $byte;
                     }
-                } else {
-                    if ($byte == '"') {
-                        $inString = true;
-                    }
+                } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
+                    $inString = true;
                     $tokenBuffer .= $byte;
                 }
             }
@@ -83,29 +85,36 @@ class Lexer implements \IteratorAggregate, PositionAware
         }
     }
 
-    private function mapOfBoundaryBytes(): array
+    private function tokenBoundaries()
     {
         $utf8bom1 = "\xEF";
         $utf8bom2 = "\xBB";
         $utf8bom3 = "\xBF";
 
-        $boundary = [];
-        $boundary[$utf8bom1] = false;
-        $boundary[$utf8bom2] = false;
-        $boundary[$utf8bom3] = false;
-        $boundary[' ']       = false;
-        $boundary["\n"]      = false;
-        $boundary["\r"]      = false;
-        $boundary["\t"]      = false;
+        return array_merge(
+            [
+                $utf8bom1 => true,
+                $utf8bom2 => true,
+                $utf8bom3 => true,
+                ' '  => true,
+                "\n" => true,
+                "\r" => true,
+                "\t" => true,
+            ],
+            $this->colonCommaBracketTokenBoundaries()
+        );
+    }
 
-        $boundary['{']       = true;
-        $boundary['}']       = true;
-        $boundary['[']       = true;
-        $boundary[']']       = true;
-        $boundary[':']       = true;
-        $boundary[',']       = true;
-
-        return $boundary;
+    private function colonCommaBracketTokenBoundaries(): array
+    {
+        return [
+            '{' => true,
+            '}' => true,
+            '[' => true,
+            ']' => true,
+            ':' => true,
+            ',' => true,
+        ];
     }
 
     public function getPosition(): int
