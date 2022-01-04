@@ -3,6 +3,7 @@
 namespace JsonMachineTest;
 
 use JsonMachine\DebugLexer;
+use JsonMachine\IteratorLexerPOC;
 use JsonMachine\Lexer;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
@@ -14,6 +15,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         return [
             'debug enabled' => [DebugLexer::class],
             'debug disabled' => [Lexer::class],
+            'Iterator POC' => [IteratorLexerPOC::class],
         ];
     }
 

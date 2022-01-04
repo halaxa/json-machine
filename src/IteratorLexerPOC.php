@@ -18,7 +18,7 @@ class IteratorLexerPOC implements \Iterator
 
 
     /** @var array */
-    private $tokens = [];
+    private $tokenQueue = [];
 
     /** @var string */
     private $currentToken = '';
@@ -68,15 +68,14 @@ class IteratorLexerPOC implements \Iterator
 
     public function next()
     {
+        if ($this->tokenQueue) {
+            $this->currentToken = array_shift($this->tokenQueue);
+            ++$this->currentTokenKey;
+            return;
+        }
 
-        for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex) {
-
-            if ($this->tokens) {
-                $this->currentToken = array_shift($this->tokens);
-                ++$this->currentTokenKey;
-                return;
-            }
-
+        for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
+        {
             $byte = $this->chunk[$this->chunkIndex];
 
             if ($this->escaping) {
@@ -103,9 +102,13 @@ class IteratorLexerPOC implements \Iterator
             if (isset($this->tokenBoundaries[$byte])) { // if byte is any token boundary
                 $this->flushTokenBuffer();
                 if ($this->tokenBoundaries[$byte]) { // if byte is not whitespace token boundary
-                    $this->tokens[] = $byte;
+                    $this->tokenQueue[] = $byte;
                 }
-                return;
+                if ($this->tokenQueue) {
+                    $this->currentToken = array_shift($this->tokenQueue);
+                    ++$this->currentTokenKey;
+                    return;
+                }
             } else {
                 if ($byte == '"') {
                     $this->inString = true;
@@ -122,7 +125,7 @@ class IteratorLexerPOC implements \Iterator
 
     public function valid()
     {
-        return $this->tokens != [];
+        return $this->tokenQueue != [];
     }
 
 
@@ -184,21 +187,23 @@ class IteratorLexerPOC implements \Iterator
             $this->jsonChunks->rewind();
         }
 
-        if ($this->jsonChunks->valid()) {
+        $valid = $this->jsonChunks->valid();
+
+        if ($valid) {
             $this->chunk = $this->jsonChunks->current();
             $this->chunkLength = strlen($this->chunk);
             $this->chunkIndex = 0;
             $this->jsonChunks->key();
         }
 
-        return $this->jsonChunks->valid();
+        return $valid;
     }
 
 
     private function flushTokenBuffer()
     {
         if ($this->tokenBuffer != '') {
-            $this->tokens[] = $this->tokenBuffer;
+            $this->tokenQueue[] = $this->tokenBuffer;
             $this->tokenBuffer = '';
         }
     }
