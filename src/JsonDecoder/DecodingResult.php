@@ -11,7 +11,7 @@ namespace JsonMachine\JsonDecoder;
 ), E_USER_DEPRECATED);
 
 /**
- * @deprecated Use ChunkDecodingResult instead.
+ * @deprecated
  */
 class DecodingResult
 {
