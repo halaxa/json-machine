@@ -2,7 +2,7 @@
 
 namespace JsonMachine;
 
-use JsonMachine\JsonDecoder\ChunkDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
@@ -22,7 +22,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     private $jsonPointer;
 
     /**
-     * @var Decoder|ChunkDecoder|null
+     * @var Decoder|ItemDecoder|null
      */
     private $jsonDecoder;
 
@@ -34,7 +34,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $bytesIterator
      * @param string $jsonPointer
-     * @param Decoder|ChunkDecoder $jsonDecoder
+     * @param Decoder|ItemDecoder $jsonDecoder
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($bytesIterator, $jsonPointer = '', $jsonDecoder = null)
@@ -55,7 +55,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $string
      * @param string $jsonPointer
-     * @param Decoder|ChunkDecoder $jsonDecoder
+     * @param Decoder|ItemDecoder $jsonDecoder
      * @return self
      * @throws Exception\InvalidArgumentException
      */
@@ -67,7 +67,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param string $file
      * @param string $jsonPointer
-     * @param Decoder|ChunkDecoder $jsonDecoder
+     * @param Decoder|ItemDecoder $jsonDecoder
      * @return self
      * @throws Exception\InvalidArgumentException
      */
@@ -79,7 +79,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param resource $stream
      * @param string $jsonPointer
-     * @param Decoder|ChunkDecoder $jsonDecoder
+     * @param Decoder|ItemDecoder $jsonDecoder
      * @return self
      * @throws Exception\InvalidArgumentException
      */
@@ -91,7 +91,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $iterable
      * @param string $jsonPointer
-     * @param Decoder|ChunkDecoder $jsonDecoder
+     * @param Decoder|ItemDecoder $jsonDecoder
      * @return self
      * @throws Exception\InvalidArgumentException
      */

@@ -2,14 +2,14 @@
 
 namespace JsonMachine\JsonDecoder;
 
-class ErrorWrappingDecoder implements ChunkDecoder
+class ErrorWrappingDecoder implements ItemDecoder
 {
     /**
      * @var Decoder
      */
     private $innerDecoder;
 
-    public function __construct(ChunkDecoder $innerDecoder)
+    public function __construct(ItemDecoder $innerDecoder)
     {
         $this->innerDecoder = $innerDecoder;
     }

@@ -9,8 +9,8 @@
 Please leave feedback in discussions if something broke for you.
 ### Changed
 - `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
-- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ChunkDecoder` instead.
-- Internal decoders moved to `ChunkDecoder`. `ErrorWrappingDecoder` decorator now requires `ChunkDecoder` as well. 
+- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ItemDecoder` instead.
+- Internal decoders moved to `ItemDecoder`. `ErrorWrappingDecoder` decorator now requires `ItemDecoder` as well. 
 
 ### Added
 - New entry point class `Items` replaces `JsonMachine`.

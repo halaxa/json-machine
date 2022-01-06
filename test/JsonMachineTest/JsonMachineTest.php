@@ -2,7 +2,7 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\JsonDecoder\ChunkDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
@@ -90,7 +90,7 @@ class JsonMachineTest extends \PHPUnit_Framework_TestCase
 class DeprecatedDecoderImpl implements Decoder
 {
     /**
-     * @var ChunkDecoder
+     * @var ItemDecoder
      */
     private $decoder;
 
