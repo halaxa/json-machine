@@ -100,7 +100,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
     }
 
-    public function testAnyPossibleChunkSplit()
+    /**
+     * @dataProvider bothDebugModes
+     */
+    public function testAnyPossibleChunkSplit($lexerClass)
     {
         $json = '
           {
@@ -135,7 +138,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
 
         foreach (range(1, strlen($json)) as $chunkLength) {
             $chunks = str_split($json, $chunkLength);
-            $result = iterator_to_array(new Lexer($chunks));
+            $result = iterator_to_array(new $lexerClass($chunks));
 
             $this->assertSame($expected, $result);
         }
