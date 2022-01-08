@@ -11,21 +11,21 @@ if (in_array('xdebug', get_loaded_extensions())) {
 ini_set('memory_limit', -1); // for json_decode use case
 
 $decoders = [
-    'Items::fromFile()' => function ($file) {
-        return Items::fromFile($file);
-    },
+//    'Items::fromFile()' => function ($file) {
+//        return Items::fromFile($file);
+//    },
     'Items::fromString()' => function ($file) {
         return Items::fromString(stream_get_contents(fopen($file, 'r')));
     },
-    'Items::fromFile() - debug' => function ($file) {
-        return Items::fromFile($file, ['debug' => true]);
-    },
-    'Items::fromString() - debug' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
-    },
-    'json_decode()' => function ($file) {
-        return json_decode(stream_get_contents(fopen($file, 'r')), true);
-    },
+//    'Items::fromFile() - debug' => function ($file) {
+//        return Items::fromFile($file, ['debug' => true]);
+//    },
+//    'Items::fromString() - debug' => function ($file) {
+//        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
+//    },
+//    'json_decode()' => function ($file) {
+//        return json_decode(stream_get_contents(fopen($file, 'r')), true);
+//    },
 ];
 
 $tmpJsonFileName = createBigJsonFile();

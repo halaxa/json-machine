@@ -2,6 +2,7 @@
 
 namespace JsonMachineTest;
 
+use ArrayIterator;
 use JsonMachine\DebugLexer;
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
@@ -25,7 +26,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $data = ['0'];
         $expected = ['0'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($data))));
 
         $stream = fopen('data://text/plain,{"value":0}', 'r');
         $expected = ['{', '"value"', ':', '0', '}'];
@@ -39,7 +40,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
         $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($data))));
     }
 
     /**
@@ -49,7 +50,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $data = ["\xEF\xBB\xBF" . '{}'];
         $expected = ['{','}'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($data))));
     }
 
     /**
@@ -57,7 +58,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($lexerClass)
     {
-        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $lexerClass(new \ArrayIterator(['"test\\\\":']))));
+        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $lexerClass(new ArrayIterator(['"test\\\\":']))));
     }
 
     /**
@@ -67,7 +68,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $json = '"test\"test":';
         $expected = ['"test\"test"', ':'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator([$json]))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator([$json]))));
     }
 
     /**
@@ -77,7 +78,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value"', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($chunks))));
     }
 
     /**
@@ -87,7 +88,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value\\', '""}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($chunks))));
     }
 
     /**
@@ -97,7 +98,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value\\"', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $lexerClass(new ArrayIterator($chunks))));
     }
 
     /**
@@ -138,7 +139,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
 
         foreach (range(1, strlen($json)) as $chunkLength) {
             $chunks = str_split($json, $chunkLength);
-            $result = iterator_to_array(new $lexerClass($chunks));
+            $result = iterator_to_array(new $lexerClass(new ArrayIterator($chunks)));
 
             $this->assertSame($expected, $result);
         }
