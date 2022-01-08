@@ -1,15 +1,19 @@
 # Changelog
 
 ## master
-Nothing yet
+### Removed
+- Removed deprecated functions `objects()` and `httpClientChunks()`.
+- Removed deprecated `JsonMachine` entrypoint class.
 <br>
 <br>
 
 ## 0.8.0
 ### Changed
+- Internal decoders moved to `ItemDecoder`. `ErrorWrappingDecoder` decorator now requires `ItemDecoder` as well.
+
+### Deprecated
 - `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
-- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ItemDecoder` instead.
-- Internal decoders moved to `ItemDecoder`. `ErrorWrappingDecoder` decorator now requires `ItemDecoder` as well. 
+- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ItemDecoder` instead. 
 
 ### Added
 - New entry point class `Items` replaces `JsonMachine`.
