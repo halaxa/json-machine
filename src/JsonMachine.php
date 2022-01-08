@@ -46,7 +46,7 @@ class JsonMachine implements \IteratorAggregate, PositionAware
         $this->jsonDecoder = $jsonDecoder;
 
         $this->parser = new Parser(
-            new Lexer($this->bytesIterator,true),
+            new Lexer($this->bytesIterator, true),
             $this->jsonPointer,
             $this->jsonDecoder ?: new ExtJsonDecoder(true)
         );

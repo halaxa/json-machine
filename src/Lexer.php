@@ -24,7 +24,7 @@ class Lexer implements \IteratorAggregate, PositionAware
     public function getIterator()
     {
         // init the map of JSON-structure (in)significant bytes as local variable variables for the fastest lookup
-        foreach (range(0,255) as $ord) {
+        foreach (range(0, 255) as $ord) {
             if (! in_array(
                 chr($ord),
                 ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']

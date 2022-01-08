@@ -79,7 +79,7 @@ class DebugLexer implements \IteratorAggregate, PositionAware
                         $this->column = $column;
                         $this->line = $line;
                         yield $byte;
-                        // track line number and reset column for each newline
+                    // track line number and reset column for each newline
                     } elseif ($byte == "\n") {
                         // handle CRLF newlines
                         if ($ignoreLF) {

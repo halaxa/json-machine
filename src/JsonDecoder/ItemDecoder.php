@@ -1,6 +1,5 @@
 <?php
 
-
 namespace JsonMachine\JsonDecoder;
 
 interface ItemDecoder

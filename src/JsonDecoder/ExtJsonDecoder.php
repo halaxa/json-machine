@@ -2,7 +2,6 @@
 
 namespace JsonMachine\JsonDecoder;
 
-
 class ExtJsonDecoder implements ItemDecoder
 {
     use ExtJsonDecoding;
