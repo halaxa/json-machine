@@ -8,7 +8,6 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ItemDecoder;
-use JsonMachine\JsonDecoder\Decoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use Traversable;
 
@@ -39,15 +38,15 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var string */
     private $jsonPointer;
 
-    /** @var Decoder|ItemDecoder */
+    /** @var ItemDecoder */
     private $jsonDecoder;
 
     /**
      * @param Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param Decoder|ItemDecoder $jsonDecoder
+     * @param ItemDecoder $jsonDecoder
      */
-    public function __construct(Traversable $lexer, $jsonPointer = '', $jsonDecoder = null)
+    public function __construct(Traversable $lexer, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
     {
         if (0 === preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointer, $matches)) {
             throw new InvalidArgumentException(
@@ -153,11 +152,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             $key = $token;
                         } elseif ($currentLevel < $iteratorLevel) {
                             $key = $token;
-                            if ($this->jsonDecoder instanceof ItemDecoder) {
-                                $keyResult = $this->jsonDecoder->decodeInternalKey($token);
-                            } elseif ($this->jsonDecoder instanceof Decoder) {
-                                $keyResult = $this->jsonDecoder->decodeKey($token);
-                            }
+                            $keyResult = $this->jsonDecoder->decodeInternalKey($token);
                             if (! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }

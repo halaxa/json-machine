@@ -5,7 +5,7 @@ namespace JsonMachine\JsonDecoder;
 class ErrorWrappingDecoder implements ItemDecoder
 {
     /**
-     * @var Decoder
+     * @var ItemDecoder
      */
     private $innerDecoder;
 

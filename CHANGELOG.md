@@ -4,6 +4,7 @@
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.
 - Removed deprecated `JsonMachine` entrypoint class.
+- Removed deprecated `Decoder` interface.
 
 ### Changed
 - Default decoding structure of `Parser` is object. (You don't notice unless you use `Parser` class directly)
@@ -14,6 +15,7 @@
 ## 0.8.0
 ### Changed
 - Internal decoders moved to `ItemDecoder`. `ErrorWrappingDecoder` decorator now requires `ItemDecoder` as well.
+- Dropped PHP 5.6 support.
 
 ### Deprecated
 - `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
