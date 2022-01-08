@@ -64,7 +64,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 str_replace('~1', '/', $jsonPointerPart)
             );
         }, explode('/', $jsonPointer)), 1);
-        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder(true);
+        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
     }
 
     /**

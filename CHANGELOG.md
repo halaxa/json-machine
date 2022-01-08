@@ -4,6 +4,10 @@
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.
 - Removed deprecated `JsonMachine` entrypoint class.
+
+### Changed
+- Default decoding structure of `Parser` is object. (You don't notice unless you use `Parser` class directly)
+
 <br>
 <br>
 

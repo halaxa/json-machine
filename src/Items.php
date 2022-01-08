@@ -61,7 +61,7 @@ final class Items implements \IteratorAggregate, PositionAware
                 $this->bytesIterator
             ),
             $this->jsonPointer,
-            $this->jsonDecoder ?: new ExtJsonDecoder(false)
+            $this->jsonDecoder ?: new ExtJsonDecoder()
         );
     }
 
