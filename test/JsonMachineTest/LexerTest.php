@@ -5,6 +5,7 @@ namespace JsonMachineTest;
 use JsonMachine\DebugLexer;
 use JsonMachine\Lexer;
 use JsonMachine\Exception;
+use JsonMachine\QueueChunks;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
@@ -23,8 +24,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCorrectlyYieldsZeroToken($lexerClass)
     {
-        $data = ['0'];
-        $expected = ['0'];
+        $data = ['[0]'];
+        $expected = ['[', '0', ']'];
         $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
 
         $stream = fopen('data://text/plain,{"value":0}', 'r');
@@ -37,8 +38,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGeneratesTokens($lexerClass)
     {
-        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
-        $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
+        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""]'];
+        $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""',']'];
         $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
@@ -142,6 +143,21 @@ class LexerTest extends \PHPUnit_Framework_TestCase
 
             $this->assertSame($expected, $result);
         }
+    }
+
+    public function testRepeatedlyParsesModifiedQueue()
+    {
+        $queue = new QueueChunks();
+        $lexer = new Lexer($queue);
+
+        $queue->push('[1,2,4');
+        $this->assertEquals(['[', '1', ',', '2', ','], iterator_to_array($lexer));
+
+        $queue->push('2,"some ');
+        $this->assertEquals(['42', ','], iterator_to_array($lexer));
+
+        $queue->push('string"]');
+        $this->assertEquals(['"some string"', ']'], iterator_to_array($lexer));
     }
 
     /**

@@ -9,6 +9,10 @@ class Lexer implements \IteratorAggregate, PositionAware
     /** @var iterable */
     private $jsonChunks;
 
+    private $inString = false;
+    private $tokenBuffer = '';
+    private $escaping = false;
+
     /**
      * @param iterable<string> $jsonChunks
      */
@@ -31,9 +35,9 @@ class Lexer implements \IteratorAggregate, PositionAware
         $tokenBoundaries = $this->tokenBoundaries();
         $colonCommaBracket = $this->colonCommaBracketTokenBoundaries();
 
-        $inString = false;
-        $tokenBuffer = '';
-        $escaping = false;
+        $inString = $this->inString;
+        $tokenBuffer = $this->tokenBuffer;
+        $escaping = $this->escaping;
 
         foreach ($this->jsonChunks as $jsonChunk) {
             $bytesLength = strlen($jsonChunk);
@@ -75,9 +79,10 @@ class Lexer implements \IteratorAggregate, PositionAware
                 }
             }
         }
-        if ($tokenBuffer != '') {
-            yield $tokenBuffer;
-        }
+
+        $this->inString = $inString;
+        $this->tokenBuffer = $tokenBuffer;
+        $this->escaping = $escaping;
     }
 
     private function tokenBoundaries()
