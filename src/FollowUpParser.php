@@ -11,7 +11,7 @@ use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use Traversable;
 
-class Parser implements \IteratorAggregate, PositionAware
+class FollowUpParser implements \IteratorAggregate, PositionAware
 {
     const SCALAR_CONST = 1;
     const SCALAR_STRING = 2;

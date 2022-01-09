@@ -27,7 +27,7 @@ final class Items implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @var Parser
+     * @var FollowUpParser
      */
     private $parser;
 
@@ -56,7 +56,7 @@ final class Items implements \IteratorAggregate, PositionAware
             $lexerClass = Lexer::class;
         }
 
-        $this->parser = new Parser(
+        $this->parser = new FollowUpParser(
             new $lexerClass(
                 $this->bytesIterator
             ),
