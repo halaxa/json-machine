@@ -3,7 +3,6 @@
 namespace JsonMachine;
 
 use Generator;
-use Traversable;
 
 class Lexer implements \IteratorAggregate, PositionAware
 {
@@ -13,13 +12,9 @@ class Lexer implements \IteratorAggregate, PositionAware
     /**
      * @param iterable<string> $jsonChunks
      */
-    public function __construct(Traversable $jsonChunks)
+    public function __construct($jsonChunks)
     {
-        if ($jsonChunks instanceof \IteratorAggregate) {
-            $this->jsonChunks = $jsonChunks->getIterator();
-        } else {
-            $this->jsonChunks = $jsonChunks;
-        }
+        $this->jsonChunks = $jsonChunks;
     }
 
     /**
@@ -45,10 +40,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         $tokenBuffer = '';
         $escaping = false;
 
-//        $this->jsonChunks->next();
-        while ($this->jsonChunks->valid()) {
-            $jsonChunk = $this->jsonChunks->current();
-//        foreach ($this->jsonChunks as $jsonChunk) {
+        foreach ($this->jsonChunks as $jsonChunk) {
             $bytesLength = strlen($jsonChunk);
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $jsonChunk[$i];
@@ -87,7 +79,6 @@ class Lexer implements \IteratorAggregate, PositionAware
                     $tokenBuffer .= $byte;
                 }
             }
-            $this->jsonChunks->next();
         }
         if ($tokenBuffer != '') {
             yield $tokenBuffer;

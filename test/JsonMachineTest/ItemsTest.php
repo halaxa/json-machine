@@ -42,13 +42,13 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
                 [$extJsonResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', null, $debug],
                 [$extJsonResult, 'fromString', '{"path": {"key":"value"}}', '/path', null, $debug],
                 [$extJsonResult, 'fromFile', __DIR__ . '/ItemsTest.json', '/path', null, $debug],
-//                [$extJsonResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', null, $debug],
+                [$extJsonResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', null, $debug],
                 [$extJsonResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', null, $debug],
 
                 [$passThruResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromString', '{"path": {"key":"value"}}', '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromFile', __DIR__ . '/ItemsTest.json', '/path', $ptDecoder, $debug],
-//                [$passThruResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', $ptDecoder, $debug],
             ] as $case) {
                 yield $case;
