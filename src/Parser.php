@@ -41,6 +41,36 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var ItemDecoder */
     private $jsonDecoder;
 
+
+
+    /** @var int */
+    private $iteratorLevel;
+
+    private $iteratorStruct = null;
+
+    private $currentPath = [];
+
+    private $pathFound = false;
+
+    private $currentLevel = -1;
+
+    private $stack = [];
+
+    private $jsonBuffer = '';
+
+    private $key = null;
+
+    private $objectKeyExpected = false;
+
+    private $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
+
+    private $expectedType = self::OBJECT_START | self::ARRAY_START;
+
+    private $subtreeEnded = false;
+
+    private $token = null;
+
+
     /**
      * @param Traversable $lexer
      * @param string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
@@ -64,6 +94,9 @@ class Parser implements \IteratorAggregate, PositionAware
             );
         }, explode('/', $jsonPointer)), 1);
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
+
+        $this->iteratorLevel = count($this->jsonPointerPath);
+        $this->stack = [$this->currentLevel => null];
     }
 
     /**
@@ -77,19 +110,19 @@ class Parser implements \IteratorAggregate, PositionAware
             ${$firstByte} = $type;
         }
 
-        $iteratorLevel = count($this->jsonPointerPath);
-        $iteratorStruct = null;
-        $currentPath = [];
-        $pathFound = false;
-        $currentLevel = -1;
-        $stack = [$currentLevel => null];
-        $jsonBuffer = '';
-        $key = null;
-        $objectKeyExpected = false;
-        $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
-        $expectedType = self::OBJECT_START | self::ARRAY_START;
-        $subtreeEnded = false;
-        $token = null;
+        $iteratorLevel = $this->iteratorLevel;
+        $iteratorStruct = $this->iteratorStruct;
+        $currentPath = $this->currentPath;
+        $pathFound = $this->pathFound;
+        $currentLevel = $this->currentLevel;
+        $stack = $this->stack;
+        $jsonBuffer = $this->jsonBuffer;
+        $key = $this->key;
+        $objectKeyExpected = $this->objectKeyExpected;
+        $inObject = $this->inObject;
+        $expectedType = $this->expectedType;
+        $subtreeEnded = $this->subtreeEnded;
+        $token = $this->token;
 
         // local variables for faster name lookups
         $lexer = $this->lexer;
@@ -224,15 +257,34 @@ class Parser implements \IteratorAggregate, PositionAware
             }
         }
 
-        if ($token === null) {
-            $this->error('Cannot iterate empty JSON', $token);
+        $this->iteratorLevel = $iteratorLevel;
+        $this->iteratorStruct = $iteratorStruct;
+        $this->currentPath = $currentPath;
+        $this->pathFound = $pathFound;
+        $this->currentLevel = $currentLevel;
+        $this->stack = $stack;
+        $this->jsonBuffer = $jsonBuffer;
+        $this->key = $key;
+        $this->objectKeyExpected = $objectKeyExpected;
+        $this->inObject = $inObject;
+        $this->expectedType = $expectedType;
+        $this->subtreeEnded = $subtreeEnded;
+        $this->token = $token;
+
+        $this->end();
+    }
+
+    public function end()
+    {
+        if ($this->token === null) {
+            $this->error('Cannot iterate empty JSON', $this->token);
         }
 
-        if ($currentLevel > -1 && ! $subtreeEnded) {
-            $this->error('JSON string ended unexpectedly', $token, UnexpectedEndSyntaxErrorException::class);
+        if ($this->currentLevel > -1 && ! $this->subtreeEnded) {
+            $this->error('JSON string ended unexpectedly', $this->token, UnexpectedEndSyntaxErrorException::class);
         }
 
-        if (! $pathFound) {
+        if (! $this->pathFound) {
             throw new PathNotFoundException("Path '{$this->jsonPointer}' was not found in json stream.");
         }
     }
