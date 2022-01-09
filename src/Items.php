@@ -5,6 +5,7 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use Traversable;
 
 /**
  * Entry-point facade for JSON Machine
@@ -27,7 +28,7 @@ final class Items implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @var FollowUpParser
+     * @var Traversable
      */
     private $parser;
 
@@ -56,7 +57,7 @@ final class Items implements \IteratorAggregate, PositionAware
             $lexerClass = Lexer::class;
         }
 
-        $this->parser = new FollowUpParser(
+        $this->parser = new Parser(
             new $lexerClass(
                 $this->bytesIterator
             ),

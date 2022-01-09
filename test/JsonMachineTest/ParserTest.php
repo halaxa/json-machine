@@ -9,7 +9,7 @@ use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Items;
 use JsonMachine\Lexer;
-use JsonMachine\FollowUpParser;
+use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
@@ -121,7 +121,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testThrowsOnMalformedJsonPointer($jsonPointer)
     {
         $this->expectException(InvalidArgumentException::class);
-        new FollowUpParser(new \ArrayObject(), $jsonPointer);
+        new Parser(new \ArrayObject(), $jsonPointer);
     }
 
     public function dataThrowsOnMalformedJsonPointer()
@@ -297,12 +297,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new FollowUpParser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
+        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
     }
 
     public function testDefaultDecodingStructureIsObject()
     {
-        $items = new FollowUpParser(new Lexer(new StringChunks('[{"key": "value"}]')));
+        $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
 
         foreach ($items as $item) {
             $this->assertEquals((object)['key' => 'value'], $item);

@@ -270,8 +270,6 @@ class FollowUpParser implements \IteratorAggregate, PositionAware
         $this->expectedType = $expectedType;
         $this->subtreeEnded = $subtreeEnded;
         $this->token = $token;
-
-        $this->end();
     }
 
     public function end()
