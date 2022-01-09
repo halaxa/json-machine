@@ -23,14 +23,9 @@ class Lexer implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        // init the map of JSON-structure (in)significant bytes as local variable variables for the fastest lookup
-        foreach (range(0, 255) as $ord) {
-            if (! in_array(
-                chr($ord),
-                ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
-            )) {
-                ${chr($ord)} = true;
-            }
+        // init the map as local variable variables for the fastest lookup
+        foreach ($this->jsonInsignificantBytes() as $jsonInsignificantByte) {
+            ${$jsonInsignificantByte} = true;
         }
 
         $tokenBoundaries = $this->tokenBoundaries();
@@ -130,5 +125,17 @@ class Lexer implements \IteratorAggregate, PositionAware
     public function getColumn(): int
     {
         return 0;
+    }
+
+    private function jsonInsignificantBytes()
+    {
+        $jsonSignificantBytes = ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ','];
+
+        foreach (range(0, 255) as $ord) {
+            $asciiChar = chr($ord);
+            if (! in_array($asciiChar, $jsonSignificantBytes)) {
+                yield chr($ord);
+            }
+        }
     }
 }
