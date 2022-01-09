@@ -157,29 +157,10 @@ class Parser implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        // todo Allow to call getIterator only once per instance
-        ${'n'} = self::SCALAR_CONST;
-        ${'t'} = self::SCALAR_CONST;
-        ${'f'} = self::SCALAR_CONST;
-        ${'-'} = self::SCALAR_CONST;
-        ${'0'} = self::SCALAR_CONST;
-        ${'1'} = self::SCALAR_CONST;
-        ${'2'} = self::SCALAR_CONST;
-        ${'3'} = self::SCALAR_CONST;
-        ${'4'} = self::SCALAR_CONST;
-        ${'5'} = self::SCALAR_CONST;
-        ${'6'} = self::SCALAR_CONST;
-        ${'7'} = self::SCALAR_CONST;
-        ${'8'} = self::SCALAR_CONST;
-        ${'9'} = self::SCALAR_CONST;
-
-        ${'"'} = self::SCALAR_STRING;
-        ${'{'} = self::OBJECT_START;
-        ${'}'} = self::OBJECT_END;
-        ${'['} = self::ARRAY_START;
-        ${']'} = self::ARRAY_END;
-        ${','} = self::COMMA;
-        ${':'} = self::COLON;
+        // expand token types to local variables for the fastest lookup
+        foreach ($this->tokenTypes() as $firstByte => $type) {
+            ${$firstByte} = $type;
+        }
 
         $iteratorStruct = null;
         $currentPath = [];
@@ -397,5 +378,32 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
+    }
+
+    private function tokenTypes()
+    {
+        return [
+            'n' => self::SCALAR_CONST,
+            't' => self::SCALAR_CONST,
+            'f' => self::SCALAR_CONST,
+            '-' => self::SCALAR_CONST,
+            '0' => self::SCALAR_CONST,
+            '1' => self::SCALAR_CONST,
+            '2' => self::SCALAR_CONST,
+            '3' => self::SCALAR_CONST,
+            '4' => self::SCALAR_CONST,
+            '5' => self::SCALAR_CONST,
+            '6' => self::SCALAR_CONST,
+            '7' => self::SCALAR_CONST,
+            '8' => self::SCALAR_CONST,
+            '9' => self::SCALAR_CONST,
+            '"' => self::SCALAR_STRING,
+            '{' => self::OBJECT_START,
+            '}' => self::OBJECT_END,
+            '[' => self::ARRAY_START,
+            ']' => self::ARRAY_END,
+            ',' => self::COMMA,
+            ':' => self::COLON,
+        ];
     }
 }
