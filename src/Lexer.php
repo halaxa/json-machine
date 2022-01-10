@@ -27,7 +27,7 @@ class Lexer implements \IteratorAggregate, PositionAware
         foreach (range(0, 255) as $ord) {
             if (! in_array(
                 chr($ord),
-                ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
+                ['\\', '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
             )) {
                 ${chr($ord)} = true;
             }
@@ -96,7 +96,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                 $utf8bom1 => true,
                 $utf8bom2 => true,
                 $utf8bom3 => true,
-                ' '  => true,
+                ' ' => true,
                 "\n" => true,
                 "\r" => true,
                 "\t" => true,

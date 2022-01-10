@@ -7,7 +7,6 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Items;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
@@ -16,9 +15,10 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataSyntax
+     *
      * @param string $jsonPointer
      * @param string $json
-     * @param array $expectedResult
+     * @param array  $expectedResult
      */
     public function testSyntax($jsonPointer, $json, $expectedResult)
     {
@@ -34,43 +34,44 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['', '{}', []],
-            ['', '{"a": "b"}', [['a'=>'b']]],
-            ['', '{"a":{"b":{"c":1}}}', [['a'=>['b'=>['c'=>1]]]]],
+            ['', '{"a": "b"}', [['a' => 'b']]],
+            ['', '{"a":{"b":{"c":1}}}', [['a' => ['b' => ['c' => 1]]]]],
             ['', '[]', []],
-            ['', '[null,true,false,"a",0,1,42.5]', [[0=>null],[1=>true],[2=>false],[3=>"a"],[4=>0],[5=>1],[6=>42.5]]],
-            ['', '[{"c":1}]', [[['c'=>1]]]],
-            ['', '[{"c":1},"string",{"d":2},false]', [[0=>['c'=>1]],[1=>"string"],[2=>['d'=>2]],[3=>false]]],
-            ['', '[false,{"c":1},"string",{"d":2}]', [[0=>false],[1=>['c'=>1]],[2=>"string"],[3=>['d'=>2]]]],
-            ['', '[{"c":1,"d":2}]', [[['c'=>1, 'd'=>2]]]],
-            ['/', '{"":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
-            ['/~0', '{"~":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
-            ['/~1', '{"/":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
-            ['/path', '{"path":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
-            ['/path', '{"no":[null], "path":{"c":1,"d":2}}', [['c'=>1],['d'=>2]]],
-            ['/0', '[{"c":1,"d":2}, [null]]', [['c'=>1],['d'=>2]]],
-            ['/0/path', '[{"path":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
-            ['/1/path', '[[null], {"path":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
-            ['/path/0', '{"path":[{"c":1,"d":2}, [null]]}', [['c'=>1],['d'=>2]]],
-            ['/path/1', '{"path":[null,{"c":1,"d":2}, [null]]}', [['c'=>1],['d'=>2]]],
-            ['/path/to', '{"path":{"to":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
-            ['/path/after-vector', '{"path":{"array":[],"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
-            ['/path/after-vector', '{"path":{"array":["item"],"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
-            ['/path/after-vector', '{"path":{"object":{"item":null},"after-vector":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
-            ['/path/after-vectors', '{"path":{"array":[],"object":{},"after-vectors":{"c":1,"d":2}}}', [['c'=>1],['d'=>2]]],
-            ['/0/0', '[{"0":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
-            ['/1/1', '[0,{"1":{"c":1,"d":2}}]', [['c'=>1],['d'=>2]]],
-            'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), [['program_info'=>['id'=>'X1']]]],
-            'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [[["empty"=>[]]],[1=>["value"=>1]]]],
-            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', [['one'=>1], ['two'=>2], ['three'=>3], ['four'=>4]]],
-            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['one'=>1], ['two'=>2], ['three'=>3], ['four'=>4]]],
-            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['three'=>3]]],
-            'ISSUE-62#1' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
-            'ISSUE-62#2' => ['/key/-/id', '{"key": [ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]}', [['id'=>125], ['id'=>785], ['id'=>459], ['id'=>853]]],
+            ['', '[null,true,false,"a",0,1,42.5]', [[0 => null], [1 => true], [2 => false], [3 => 'a'], [4 => 0], [5 => 1], [6 => 42.5]]],
+            ['', '[{"c":1}]', [[['c' => 1]]]],
+            ['', '[{"c":1},"string",{"d":2},false]', [[0 => ['c' => 1]], [1 => 'string'], [2 => ['d' => 2]], [3 => false]]],
+            ['', '[false,{"c":1},"string",{"d":2}]', [[0 => false], [1 => ['c' => 1]], [2 => 'string'], [3 => ['d' => 2]]]],
+            ['', '[{"c":1,"d":2}]', [[['c' => 1, 'd' => 2]]]],
+            ['/', '{"":{"c":1,"d":2}}', [['c' => 1], ['d' => 2]]],
+            ['/~0', '{"~":{"c":1,"d":2}}', [['c' => 1], ['d' => 2]]],
+            ['/~1', '{"/":{"c":1,"d":2}}', [['c' => 1], ['d' => 2]]],
+            ['/path', '{"path":{"c":1,"d":2}}', [['c' => 1], ['d' => 2]]],
+            ['/path', '{"no":[null], "path":{"c":1,"d":2}}', [['c' => 1], ['d' => 2]]],
+            ['/0', '[{"c":1,"d":2}, [null]]', [['c' => 1], ['d' => 2]]],
+            ['/0/path', '[{"path":{"c":1,"d":2}}]', [['c' => 1], ['d' => 2]]],
+            ['/1/path', '[[null], {"path":{"c":1,"d":2}}]', [['c' => 1], ['d' => 2]]],
+            ['/path/0', '{"path":[{"c":1,"d":2}, [null]]}', [['c' => 1], ['d' => 2]]],
+            ['/path/1', '{"path":[null,{"c":1,"d":2}, [null]]}', [['c' => 1], ['d' => 2]]],
+            ['/path/to', '{"path":{"to":{"c":1,"d":2}}}', [['c' => 1], ['d' => 2]]],
+            ['/path/after-vector', '{"path":{"array":[],"after-vector":{"c":1,"d":2}}}', [['c' => 1], ['d' => 2]]],
+            ['/path/after-vector', '{"path":{"array":["item"],"after-vector":{"c":1,"d":2}}}', [['c' => 1], ['d' => 2]]],
+            ['/path/after-vector', '{"path":{"object":{"item":null},"after-vector":{"c":1,"d":2}}}', [['c' => 1], ['d' => 2]]],
+            ['/path/after-vectors', '{"path":{"array":[],"object":{},"after-vectors":{"c":1,"d":2}}}', [['c' => 1], ['d' => 2]]],
+            ['/0/0', '[{"0":{"c":1,"d":2}}]', [['c' => 1], ['d' => 2]]],
+            ['/1/1', '[0,{"1":{"c":1,"d":2}}]', [['c' => 1], ['d' => 2]]],
+            'PR-19-FIX' => ['/datafeed/programs/1', file_get_contents(__DIR__.'/PR-19-FIX.json'), [['program_info' => ['id' => 'X1']]]],
+            'ISSUE-41-FIX' => ['/path', '{"path":[{"empty":{}},{"value":1}]}', [[['empty' => []]], [1 => ['value' => 1]]]],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', [['one' => 1], ['two' => 2], ['three' => 3], ['four' => 4]]],
+            ['/zero/-', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['one' => 1], ['two' => 2], ['three' => 3], ['four' => 4]]],
+            ['/zero/-/three', '{"zero":[{"one": 1,"two": 2},{"three": 3,"four": 4}]}', [['three' => 3]]],
+            'ISSUE-62#1' => ['/-/id', '[ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]', [['id' => 125], ['id' => 785], ['id' => 459], ['id' => 853]]],
+            'ISSUE-62#2' => ['/key/-/id', '{"key": [ {"id":125}, {"id":785}, {"id":459}, {"id":853} ]}', [['id' => 125], ['id' => 785], ['id' => 459], ['id' => 853]]],
         ];
     }
 
     /**
      * @dataProvider dataThrowsOnNotFoundJsonPointer
+     *
      * @param string $json
      * @param string $jsonPointer
      */
@@ -85,17 +86,17 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function dataThrowsOnNotFoundJsonPointer()
     {
         return [
-            "non existing pointer" => ['{}', '/not/found'],
+            'non existing pointer' => ['{}', '/not/found'],
             "empty string should not match '0'" => ['{"0":[]}', '/'],
-            "empty string should not match 0" => ['[[]]', '/'],
-            "0 should not match empty string" => ['{"":[]}', '/0'],
+            'empty string should not match 0' => ['[[]]', '/'],
+            '0 should not match empty string' => ['{"":[]}', '/0'],
         ];
     }
 
     /**
      * @dataProvider dataGetJsonPointer
+     *
      * @param string $jsonPointer
-     * @param array $expectedJsonPointer
      */
     public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
     {
@@ -116,6 +117,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnMalformedJsonPointer
+     *
      * @param string $jsonPointer
      */
     public function testThrowsOnMalformedJsonPointer($jsonPointer)
@@ -137,6 +139,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataSyntaxError
+     *
      * @param string $malformedJson
      */
     public function testSyntaxError($malformedJson)
@@ -168,12 +171,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['["string",,"string"]'],
             ['["string","string",]'],
             ['["string",1eeee1]'],
-            ['{"key\u000Z": "non hex key"}']
+            ['{"key\u000Z": "non hex key"}'],
         ];
     }
 
     /**
      * @dataProvider dataUnexpectedEndError
+     *
      * @param string $malformedJson
      */
     public function testUnexpectedEndError($malformedJson)
@@ -201,7 +205,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['{"string":["string","string"]'],
             ['{"string":["string","string"'],
             ['{"string":["string","string",'],
-            ['{"string":["string","string","str']
+            ['{"string":["string","string","str'],
         ];
     }
 
@@ -242,7 +246,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ';
 
         $parser = $this->createParser($json, '/result');
-        $this->assertSame(["result" => "one"], iterator_to_array($parser));
+        $this->assertSame(['result' => 'one'], iterator_to_array($parser));
     }
 
     public function testGeneratorYieldsNestedValues()
@@ -305,7 +309,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
 
         foreach ($items as $item) {
-            $this->assertEquals((object)['key' => 'value'], $item);
+            $this->assertEquals((object) ['key' => 'value'], $item);
         }
     }
 }

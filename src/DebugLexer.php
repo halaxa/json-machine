@@ -11,7 +11,6 @@ class DebugLexer implements \IteratorAggregate, PositionAware
     private $line = 1;
     private $column = 0;
 
-
     /**
      * @param iterable<string> $jsonChunks
      */
@@ -120,7 +119,7 @@ class DebugLexer implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return integer The line number of the lexeme currently being processed (index starts at one).
+     * @return int the line number of the lexeme currently being processed (index starts at one)
      */
     public function getLine()
     {
@@ -128,7 +127,7 @@ class DebugLexer implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return integer The, currently being processed, lexeme's position within the line (index starts at one).
+     * @return int the, currently being processed, lexeme's position within the line (index starts at one)
      */
     public function getColumn()
     {

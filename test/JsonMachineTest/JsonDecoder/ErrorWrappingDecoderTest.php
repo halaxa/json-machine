@@ -2,11 +2,10 @@
 
 namespace JsonMachineTest\JsonDecoder;
 
+use JsonMachine\Items;
 use JsonMachine\JsonDecoder\DecodingError;
-use JsonMachine\JsonDecoder\DecodingResult;
 use JsonMachine\JsonDecoder\ErrorWrappingDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Items;
 use JsonMachine\JsonDecoder\InvalidResult;
 use JsonMachine\JsonDecoder\ValidResult;
 use PHPUnit_Framework_TestCase;
@@ -15,7 +14,6 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider data_testTrueFalseMatrix
-     * @param array $case
      */
     public function testTrueFalseMatrix(array $case)
     {
@@ -42,41 +40,41 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
             [
                 [
                     'decodeValue' => $notOkResult,
-                    'decodeKey'   => $notOkResult,
+                    'decodeKey' => $notOkResult,
                     'wrappedDecodeValue' => $wrappedNotOkResult,
                     'wrappedDecodeKey' => $wrappedNotOkResult,
-                ]
+                ],
             ],
             [
                 [
                     'decodeValue' => $notOkResult,
-                    'decodeKey'   => $okResult,
+                    'decodeKey' => $okResult,
                     'wrappedDecodeValue' => $wrappedNotOkResult,
                     'wrappedDecodeKey' => $wrappedOkResult,
-                ]
+                ],
             ],
             [
                 [
                     'decodeValue' => $okResult,
-                    'decodeKey'   => $notOkResult,
+                    'decodeKey' => $notOkResult,
                     'wrappedDecodeValue' => $wrappedOkResult,
                     'wrappedDecodeKey' => $wrappedNotOkResult,
-                ]
+                ],
             ],
             [
                 [
                     'decodeValue' => $okResult,
-                    'decodeKey'   => $okResult,
+                    'decodeKey' => $okResult,
                     'wrappedDecodeValue' => $wrappedOkResult,
                     'wrappedDecodeKey' => $wrappedOkResult,
-                ]
+                ],
             ],
         ];
     }
 
     public function testCatchesErrorInsideIteratedJsonChunk()
     {
-        $json = /** @lang JSON */ '
+        $json = /* @lang JSON */ '
         {
             "results": [
                 {"correct": "correct"},

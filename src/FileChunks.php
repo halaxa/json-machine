@@ -2,8 +2,6 @@
 
 namespace JsonMachine;
 
-use JsonMachine\Exception\InvalidArgumentException;
-
 class FileChunks implements \IteratorAggregate
 {
     /** @var string */
@@ -14,7 +12,7 @@ class FileChunks implements \IteratorAggregate
 
     /**
      * @param string $fileName
-     * @param int $chunkSize
+     * @param int    $chunkSize
      */
     public function __construct($fileName, $chunkSize = 1024 * 8)
     {

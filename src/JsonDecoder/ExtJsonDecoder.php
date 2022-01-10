@@ -13,6 +13,7 @@ class ExtJsonDecoder implements ItemDecoder
         if ($decoded === null && $jsonValue !== 'null') {
             return new InvalidResult(json_last_error_msg());
         }
+
         return new ValidResult($decoded);
     }
 }

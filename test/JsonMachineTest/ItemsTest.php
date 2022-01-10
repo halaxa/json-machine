@@ -2,8 +2,8 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\JsonDecoder\PassThruDecoder;
 use JsonMachine\Items;
+use JsonMachine\JsonDecoder\PassThruDecoder;
 
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +18,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
                 'pointer' => $args[1],
                 'decoder' => $args[2],
                 'debug' => $args[3],
-            ]
+            ],
         ]);
         $this->assertSame($expected, iterator_to_array($iterator));
     }
@@ -27,7 +27,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
     {
         $iterator = Items::fromString('{"path": {"key":"value"}}');
         foreach ($iterator as $item) {
-            $this->assertEquals((object)['key' => 'value'], $item);
+            $this->assertEquals((object) ['key' => 'value'], $item);
         }
     }
 
@@ -41,13 +41,13 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
             foreach ([
                 [$extJsonResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', null, $debug],
                 [$extJsonResult, 'fromString', '{"path": {"key":"value"}}', '/path', null, $debug],
-                [$extJsonResult, 'fromFile', __DIR__ . '/ItemsTest.json', '/path', null, $debug],
+                [$extJsonResult, 'fromFile', __DIR__.'/ItemsTest.json', '/path', null, $debug],
                 [$extJsonResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', null, $debug],
                 [$extJsonResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', null, $debug],
 
                 [$passThruResult, 'fromStream', fopen('data://text/plain,{"path": {"key":"value"}}', 'r'), '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromString', '{"path": {"key":"value"}}', '/path', $ptDecoder, $debug],
-                [$passThruResult, 'fromFile', __DIR__ . '/ItemsTest.json', '/path', $ptDecoder, $debug],
+                [$passThruResult, 'fromFile', __DIR__.'/ItemsTest.json', '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromIterable', ['{"path": {"key', '":"value"}}'], '/path', $ptDecoder, $debug],
                 [$passThruResult, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":"value"}}']), '/path', $ptDecoder, $debug],
             ] as $case) {

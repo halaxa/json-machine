@@ -3,11 +3,11 @@
 namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 
 /**
- * Entry-point facade for JSON Machine
+ * Entry-point facade for JSON Machine.
  */
 final class Items implements \IteratorAggregate, PositionAware
 {
@@ -37,10 +37,11 @@ final class Items implements \IteratorAggregate, PositionAware
     private $debugEnabled;
 
     /**
-     * @param iterable $bytesIterator
-     * @param string $jsonPointer
+     * @param iterable    $bytesIterator
+     * @param string      $jsonPointer
      * @param ItemDecoder $jsonDecoder
-     * @param bool $debugEnabled
+     * @param bool        $debugEnabled
+     *
      * @throws Exception\InvalidArgumentException
      */
     public function __construct($bytesIterator, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $debugEnabled = false)
@@ -67,8 +68,9 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param string $string
-     * @param array $options
+     *
      * @return self
+     *
      * @throws InvalidArgumentException
      */
     public static function fromString($string, array $options = [])
@@ -80,8 +82,9 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param string $file
-     * @param array $options
+     *
      * @return self
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function fromFile($file, array $options = [])
@@ -93,8 +96,9 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param resource $stream
-     * @param array $options
+     *
      * @return self
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function fromStream($stream, array $options = [])
@@ -106,8 +110,9 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param iterable $iterable
-     * @param array $options
+     *
      * @return self
+     *
      * @throws Exception\InvalidArgumentException
      */
     public static function fromIterable($iterable, array $options = [])
@@ -129,8 +134,8 @@ final class Items implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param array $options
      * @return array{pointer: string, decoder: ItemDecoder, debug: bool}
+     *
      * @throws InvalidArgumentException
      */
     private static function normalizeOptions(array $options)

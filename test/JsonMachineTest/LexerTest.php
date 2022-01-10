@@ -4,7 +4,6 @@ namespace JsonMachineTest;
 
 use JsonMachine\DebugLexer;
 use JsonMachine\Lexer;
-use JsonMachine\Exception;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
@@ -38,7 +37,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     public function testGeneratesTokens($lexerClass)
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
-        $expected = ['{','}','[',']',',',':','null',',','"string"','false',':','true',',','1',',','100000',',','1.555','{','-56',']','""',',','"\\""'];
+        $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""'];
         $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
@@ -47,8 +46,8 @@ class LexerTest extends \PHPUnit_Framework_TestCase
      */
     public function testWithBOM($lexerClass)
     {
-        $data = ["\xEF\xBB\xBF" . '{}'];
-        $expected = ['{','}'];
+        $data = ["\xEF\xBB\xBF".'{}'];
+        $expected = ['{', '}'];
         $this->assertEquals($expected, iterator_to_array(new $lexerClass(new \ArrayIterator($data))));
     }
 
@@ -133,7 +132,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             '{', '"datafeed"', ':', '{', '"info"', ':', '{', '"category"', ':', '"Category name"', '}', ',',
             '"programs"', ':', '[', '{', '"program_info"', ':', '{', '"id"', ':', '"X0\\"\\\\"', ',', '"number"', ':',
             '123', ',', '"constant"', ':', 'false', '}', '}', ',', '{', '"program_info"', ':', '{', '"id"', ':',
-            '"\b\f\n\r\t\u0020X1"', '}', '}', ']', '}', '}'
+            '"\b\f\n\r\t\u0020X1"', '}', '}', ']', '}', '}',
         ];
 
         foreach (range(1, strlen($json)) as $chunkLength) {
@@ -156,12 +155,12 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $i = 0;
 
         foreach ($lexer as $token) {
-            $i++;
+            ++$i;
             $expectedToken = array_shift($expectedTokens);
 
-            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #' . $i);
-            $this->assertEquals($expectedToken[1], $lexer->getLine(), 'line failed with expected token #' . $i);
-            $this->assertEquals($expectedToken[2], $lexer->getColumn(), 'column failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #'.$i);
+            $this->assertEquals($expectedToken[1], $lexer->getLine(), 'line failed with expected token #'.$i);
+            $this->assertEquals($expectedToken[2], $lexer->getColumn(), 'column failed with expected token #'.$i);
         }
     }
 
@@ -177,21 +176,21 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $i = 0;
 
         foreach ($lexer as $token) {
-            $i++;
+            ++$i;
             $expectedToken = array_shift($expectedTokens);
 
-            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #' . $i);
-            $this->assertEquals(1, $lexer->getLine(), 'line failed with expected token #' . $i);
-            $this->assertEquals(0, $lexer->getColumn(), 'column failed with expected token #' . $i);
+            $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #'.$i);
+            $this->assertEquals(1, $lexer->getLine(), 'line failed with expected token #'.$i);
+            $this->assertEquals(0, $lexer->getColumn(), 'column failed with expected token #'.$i);
         }
     }
 
     public function dataProvidesLocationalData()
     {
         return [
-            'cr new lines' => [__DIR__ . '/formatted-cr.json'],
-            'lf new lines' => [__DIR__ . '/formatted-lf.json'],
-            'crlf new lines' => [__DIR__ . '/formatted-crlf.json'],
+            'cr new lines' => [__DIR__.'/formatted-cr.json'],
+            'lf new lines' => [__DIR__.'/formatted-lf.json'],
+            'crlf new lines' => [__DIR__.'/formatted-crlf.json'],
         ];
     }
 
@@ -263,7 +262,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             ['"geo"', 18, 3],
             [':', 18, 8],
             ['null', 18, 10],
-            ['}', 19, 1]
+            ['}', 19, 1],
         ];
     }
 }

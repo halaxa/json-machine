@@ -9,6 +9,7 @@ class DecodingError
 
     /**
      * DecodingError constructor.
+     *
      * @param string $malformedJson
      * @param string $errorMessage
      */
