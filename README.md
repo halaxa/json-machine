@@ -375,9 +375,12 @@ items will still throw `SyntaxError` exception though.
 
 <a name="on-parser-efficiency"></a>
 ## Parser efficiency
+The time complexity is always `O(n)`
 
 <a name="streams-files"></a>
 ### Streams / files
+TL;DR: The memory complexity is `O(2)`
+
 JSON Machine reads a stream (or a file) 1 JSON item at a time and generates corresponding 1 PHP item at a time.
 This is the most efficient way, because if you had say 10,000 users in JSON file and wanted to parse it using
 `json_decode(file_get_contents('big.json'))`, you'd have the whole string in memory as well as all the 10,000
@@ -392,6 +395,8 @@ This means, that JSON Machine is constantly efficient for any size of processed 
 
 <a name="in-memory-json-strings"></a>
 ### In-memory JSON strings
+TL;DR: The memory complexity is `O(n+1)`
+
 There is also a method `Items::fromString()`. If you are
 forced to parse a big string, and the stream is not available, JSON Machine may be better than `json_decode`.
 The reason is that unlike `json_decode`, JSON Machine still traverses the JSON string one item at a time and doesn't
