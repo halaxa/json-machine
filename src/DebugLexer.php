@@ -119,7 +119,9 @@ class DebugLexer implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return int the line number of the lexeme currently being processed (index starts at one)
+     * Returns the line number of the lexeme currently being processed (index starts at one).
+     *
+     * @return int
      */
     public function getLine()
     {
@@ -127,7 +129,9 @@ class DebugLexer implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return int the, currently being processed, lexeme's position within the line (index starts at one)
+     * The position of currently being processed lexeme within the line (index starts at one).
+     *
+     * @return int
      */
     public function getColumn()
     {

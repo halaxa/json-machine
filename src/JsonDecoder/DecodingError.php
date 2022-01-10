@@ -8,8 +8,6 @@ class DecodingError
     private $errorMessage;
 
     /**
-     * DecodingError constructor.
-     *
      * @param string $malformedJson
      * @param string $errorMessage
      */
