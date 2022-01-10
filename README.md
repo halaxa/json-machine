@@ -280,9 +280,11 @@ To iterate over all berries and citrus fruits, use the JSON pointers `["/berries
 ```php
 <?php
 
-use \JsonMachine\JsonMachine;
+use \JsonMachine\Items;
 
-$fruits = JsonMachine::fromFile('fruits.json', ['/berries', '/citrus']);
+$fruits = Items::fromFile('fruits.json', [
+    'pointer' => ['/berries', '/citrus']
+]);
 foreach ($fruits as $key => $value) {
     // get the JSON pointer to see if we got a berry or citrus fruit
     // e.g. '/berries' for the first iteration
