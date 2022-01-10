@@ -31,8 +31,7 @@
         "guzzlehttp/guzzle": "To run example with GuzzleHttp"
     },
     "autoload": {
-        "psr-4": {"JsonMachine\\": "src/"},
-        "files": ["src/functions.php"]
+        "psr-4": {"JsonMachine\\": "src/"}
     },
     "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}

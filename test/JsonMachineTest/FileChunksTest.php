@@ -11,7 +11,7 @@ class FileChunksTest extends \PHPUnit_Framework_TestCase
      */
     public function testGeneratorYieldsStringChunks($chunkSize, array $expectedResult)
     {
-        $fileChunks = new FileChunks(__DIR__ . '/JsonMachineTest.json', $chunkSize);
+        $fileChunks = new FileChunks(__DIR__ . '/ItemsTest.json', $chunkSize);
         $result = iterator_to_array($fileChunks);
 
         $this->assertSame($expectedResult, $result);

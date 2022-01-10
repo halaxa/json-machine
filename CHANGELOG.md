@@ -1,16 +1,25 @@
 # Changelog
 
 ## master
+### Removed
+- Removed deprecated functions `objects()` and `httpClientChunks()`.
+- Removed deprecated `JsonMachine` entrypoint class.
+- Removed deprecated `Decoder` interface.
 
-<br>
-<br>
-
-## 0.8.0-BETA
-Please leave feedback in discussions if something broke for you.
 ### Changed
+- Default decoding structure of `Parser` is object. (You don't notice unless you use `Parser` class directly)
+
+<br>
+<br>
+
+## 0.8.0
+### Changed
+- Internal decoders moved to `ItemDecoder`. `ErrorWrappingDecoder` decorator now requires `ItemDecoder` as well.
+- Dropped PHP 5.6 support.
+
+### Deprecated
 - `JsonMachine\JsonMachine` entry point class is deprecated, use `JsonMachine\Items` instead.
-- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ChunkDecoder` instead.
-- Internal decoders moved to `ChunkDecoder`. `ErrorWrappingDecoder` decorator now requires `ChunkDecoder` as well. 
+- `JsonMachine\JsonDecoder\Decoder` interface is deprecated. Use `JsonMachine\JsonDecoder\ItemDecoder` instead. 
 
 ### Added
 - New entry point class `Items` replaces `JsonMachine`.
@@ -18,8 +27,9 @@ Please leave feedback in discussions if something broke for you.
 - `Items::getIterator()` now returns `Parser`'s iterator directly. Call `Items::getIterator()`
 instead of `JsonMachine::getIterator()::getIterator()` to get to `Parser`'s iterator if you need it. Fixes
 https://stackoverflow.com/questions/63706550
-- `Items` hides data for position, line and column into `debug` option which is disabled by default for performance reasons.
-- Performance improvemens
+- `Items` uses `options` in its factory methods instead of growing number of many parameters. See **Options** in README.
+- `Items` introduces new `debug` option. See **Options** in README.
+- Noticeable performance improvements. What took 10 seconds in `0.7.*` takes **about** 7 seconds in `0.8.0`.
 <br>
 <br>
 

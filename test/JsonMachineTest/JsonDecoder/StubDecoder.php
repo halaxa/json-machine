@@ -2,9 +2,9 @@
 
 namespace JsonMachineTest\JsonDecoder;
 
-use JsonMachine\JsonDecoder\ChunkDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 
-class StubDecoder implements ChunkDecoder
+class StubDecoder implements ItemDecoder
 {
     private $decodedKey;
     private $decodedValue;

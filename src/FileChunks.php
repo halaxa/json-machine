@@ -30,7 +30,7 @@ class FileChunks implements \IteratorAggregate
     {
         $fileHandle = fopen($this->fileName, 'r');
         try {
-           yield from new StreamChunks($fileHandle, $this->chunkSize);
+            yield from new StreamChunks($fileHandle, $this->chunkSize);
         } finally {
             fclose($fileHandle);
         }

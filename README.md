@@ -1,16 +1,13 @@
 <img align="right" src="img/github.png" />
 
-(README in sync with `master`)
+(README in sync with the code)
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
 for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
 [![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://app.travis-ci.com/github/halaxa/json-machine/branches)
-[![Latest Stable Version](https://img.shields.io/badge/stable-0.7.1-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
+[![Latest Stable Version](https://img.shields.io/badge/stable-0.8.0-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
-
----
-**0.8.0-BETA** is out. Please try it and let me know in the [discussion](https://github.com/halaxa/json-machine/discussions/68).
 
 ---
 
@@ -318,7 +315,7 @@ Some examples:
 Options may change how a JSON is parsed. Array of options is the second parameter of all `Items::from*` functions.
 Available options are:
 - `pointer` - A JSON Pointer string that tells which part of the document you want to iterate.
-- `decoder` - An instance of `ChunkDecoder` interface.
+- `decoder` - An instance of `ItemDecoder` interface.
 - `debug` - `true` or `false` to enable or disable the debug mode. When the debug mode is enabled, data such as line,
 column and position in the document are available during parsing or in exceptions. Keeping debug disabled adds slight
 performance advantage.
@@ -372,9 +369,9 @@ foreach ($fruits as $name => $data) {
 <a name="decoders"></a>
 ## Decoders
 `Items::from*` functions also accept `decoder` option. It must be an instance of
-`JsonMachine\JsonDecoder\ChunkDecoder`. If none is specified, `ExtJsonDecoder` is used by
+`JsonMachine\JsonDecoder\ItemDecoder`. If none is specified, `ExtJsonDecoder` is used by
 default. It requires `ext-json` PHP extension to be present, because it uses
-`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\ChunkDecoder`
+`json_decode`. When `json_decode` doesn't do what you want, implement `JsonMachine\JsonDecoder\ItemDecoder`
 and make your own.
 
 <a name="available-decoders"></a>
@@ -384,7 +381,7 @@ Constructor has the same parameters as `json_decode`.
 
 - **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
 Useful when you want to parse a JSON item with something else directly in the foreach
-and don't want to implement `JsonMachine\JsonDecoder\ChunkDecoder`.
+and don't want to implement `JsonMachine\JsonDecoder\ItemDecoder`.
 Constructor has the same parameters as `json_decode`.
 Example:
 ```php

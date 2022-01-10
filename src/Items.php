@@ -3,7 +3,7 @@
 namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\JsonDecoder\ChunkDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 
 /**
@@ -22,7 +22,7 @@ final class Items implements \IteratorAggregate, PositionAware
     private $jsonPointer;
 
     /**
-     * @var ChunkDecoder|null
+     * @var ItemDecoder|null
      */
     private $jsonDecoder;
 
@@ -39,11 +39,11 @@ final class Items implements \IteratorAggregate, PositionAware
     /**
      * @param iterable $bytesIterator
      * @param array|string $jsonPointer
-     * @param ChunkDecoder $jsonDecoder
+     * @param ItemDecoder $jsonDecoder
      * @param bool $debugEnabled
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($bytesIterator, $jsonPointer = '', ChunkDecoder $jsonDecoder = null, $debugEnabled = false)
+    public function __construct($bytesIterator, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $debugEnabled = false)
     {
         $this->bytesIterator = $bytesIterator;
         $this->jsonPointer = $jsonPointer;
@@ -61,7 +61,7 @@ final class Items implements \IteratorAggregate, PositionAware
                 $this->bytesIterator
             ),
             $this->jsonPointer,
-            $this->jsonDecoder ?: new ExtJsonDecoder(false)
+            $this->jsonDecoder ?: new ExtJsonDecoder()
         );
     }
 
@@ -134,7 +134,7 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param array $options
-     * @return array{pointer: string, decoder: ChunkDecoder, debug: bool}
+     * @return array{pointer: string, decoder: ItemDecoder, debug: bool}
      * @throws InvalidArgumentException
      */
     private static function normalizeOptions(array $options)
@@ -146,7 +146,7 @@ final class Items implements \IteratorAggregate, PositionAware
         ], $options);
 
         self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
-        self::optionMustBeType('decoder', $mergedOptions['decoder'], ChunkDecoder::class);
+        self::optionMustBeType('decoder', $mergedOptions['decoder'], ItemDecoder::class);
         self::optionMustBeType('debug', $mergedOptions['debug'], 'boolean');
 
         return $mergedOptions;
