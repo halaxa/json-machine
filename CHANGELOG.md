@@ -7,7 +7,7 @@
 - Removed deprecated `Decoder` interface.
 
 ### Changed
-- Default decoding structure of `Parser` is object. (You don't notice unless you use `Parser` class directly)
+- Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
 
 <br>
 <br>
