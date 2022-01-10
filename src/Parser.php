@@ -53,7 +53,7 @@ class Parser implements \IteratorAggregate, PositionAware
     public function __construct(Traversable $lexer, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
     {
         $this->lexer = $lexer;
-        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder(true);
+        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
         $this->buildJsonPointerPaths((array)$jsonPointer);
     }
 
