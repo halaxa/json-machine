@@ -7,8 +7,8 @@ use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
-use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\JsonDecoder\ItemDecoder;
 use Traversable;
 
 class Parser implements \IteratorAggregate, PositionAware
@@ -45,8 +45,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @param Traversable $lexer
-     * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
+     * @param array|string      $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
      * @param ItemDecoder $jsonDecoder
      * @throws InvalidArgumentException
      */
@@ -210,14 +209,14 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $tokenType = ${$token[0]};
             if (0 === ($tokenType & $expectedType)) {
-                $this->error("Unexpected symbol", $token);
+                $this->error('Unexpected symbol', $token);
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if (!$inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPathChanged = true;
-                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string)(1+(int)$currentPath[$currentLevel]) : "0";
+                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
-                unset($currentPath[$currentLevel+1], $currentPathWildcard[$currentLevel+1], $stack[$currentLevel+1]);
+                unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel+1], $stack[$currentLevel+1]);
             }
             if (
                 (
@@ -230,7 +229,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         ! $objectKeyExpected
                         && (
                             ($currentLevel === $iteratorLevel && $isValue)
-                            || ($currentLevel+1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
+                            || ($currentLevel + 1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
                         )
                     )
                 )
@@ -254,7 +253,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             $currentPathChanged = true;
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             $currentPathWildcard[$currentLevel] = $keyResult->getValue();
-                            unset($keyResult, $currentPath[$currentLevel+1], $currentPathWildcard[$currentLevel+1]);
+                            unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel+1]);
                         }
                         continue 2; // a valid json chunk is not completed yet
                     }

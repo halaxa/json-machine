@@ -26,7 +26,6 @@ trait ExtJsonDecoding
         $this->options = $options;
     }
 
-
     public function decodeKey($jsonScalarKey)
     {
         // inlined
@@ -34,6 +33,7 @@ trait ExtJsonDecoding
         if ($decoded === null && $jsonScalarKey !== 'null') {
             return new InvalidResult(json_last_error_msg());
         }
+
         return new ValidResult($decoded);
     }
 
@@ -44,6 +44,7 @@ trait ExtJsonDecoding
         if ($decoded === null && $jsonScalarKey !== 'null') {
             return new InvalidResult(json_last_error_msg());
         }
+
         return new ValidStringResult($decoded);
     }
 }

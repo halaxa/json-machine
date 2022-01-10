@@ -20,6 +20,7 @@ class ErrorWrappingDecoder implements ItemDecoder
         if (! $result->isOk()) {
             return new ValidResult(new DecodingError($jsonScalarKey, $result->getErrorMessage()));
         }
+
         return $result;
     }
 
@@ -29,6 +30,7 @@ class ErrorWrappingDecoder implements ItemDecoder
         if (! $result->isOk()) {
             return new ValidResult(new DecodingError($jsonValue, $result->getErrorMessage()));
         }
+
         return $result;
     }
 

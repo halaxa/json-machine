@@ -2,7 +2,7 @@
 
 use JsonMachine\Items;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 if (in_array('xdebug', get_loaded_extensions())) {
     trigger_error('Xdebug enabled. Results may be affected.', E_USER_WARNING);
@@ -29,21 +29,21 @@ $decoders = [
 ];
 
 $tmpJsonFileName = createBigJsonFile();
-$fileSizeMb = (filesize($tmpJsonFileName)/1024/1024);
-echo "File size: " . round($fileSizeMb, 2)," MB".PHP_EOL;
+$fileSizeMb = (filesize($tmpJsonFileName) / 1024 / 1024);
+echo 'File size: '.round($fileSizeMb, 2),' MB'.PHP_EOL;
 foreach ($decoders as $name => $decoder) {
     $start = microtime(true);
     $result = $decoder($tmpJsonFileName);
     if (! $result instanceof \Traversable && ! is_array($result)) {
-        $textResult = "Decoding error";
+        $textResult = 'Decoding error';
     } else {
         foreach ($result as $key => $item) {
         }
         $time = microtime(true) - $start;
-        $textResult = round($fileSizeMb/$time, 2) . ' MB/s';
+        $textResult = round($fileSizeMb / $time, 2).' MB/s';
     }
 
-    echo str_pad($name.": ", 37, '.')." $textResult".PHP_EOL;
+    echo str_pad($name.': ', 37, '.')." $textResult".PHP_EOL;
 }
 @unlink($tmpJsonFileName);
 
@@ -53,12 +53,13 @@ function createBigJsonFile()
     $f = fopen($tmpJson, 'w');
     $separator = '';
     fputs($f, '[');
-    for ($i=0; $i<6000; $i++) {
+    for ($i = 0; $i < 6000; ++$i) {
         fputs($f, $separator);
-        fputs($f, file_get_contents(__DIR__.'/twitter_example_'. ($i%2) .'.json'));
+        fputs($f, file_get_contents(__DIR__.'/twitter_example_'.($i % 2).'.json'));
         $separator = ",\n\n";
     }
     fputs($f, ']');
     fclose($f);
+
     return $tmpJson;
 }
