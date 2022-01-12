@@ -70,30 +70,30 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ['/meta_data', '/data/companies'],
                 '{"meta_data": {"total_rows": 2},"data": {"type": "companies","companies": [{"id": "1","company": "Company 1"},{"id": "2","company": "Company 2"}]}}',
                 [
-                    ['total_rows'=>2],
-                    ['0'=>['id'=>'1','company'=>'Company 1']],
-                    ['1'=>['id'=>'2','company'=>'Company 2']]
-                ]
+                    ['total_rows' => 2],
+                    ['0' => ['id' => '1', 'company' => 'Company 1']],
+                    ['1' => ['id' => '2', 'company' => 'Company 2']],
+                ],
             ],
             [
                 ['/-/id', '/-/company'],
                 '[{"id": "1","company": "Company 1"},{"id": "2","company": "Company 2"}]',
                 [
-                    ['id'=>'1'],
-                    ['company'=>'Company 1'],
-                    ['id'=>'2'],
-                    ['company'=>'Company 2'],
-                ]
+                    ['id' => '1'],
+                    ['company' => 'Company 1'],
+                    ['id' => '2'],
+                    ['company' => 'Company 2'],
+                ],
             ],
             [
                 ['/-/id', '/0/company'],
                 '[{"id": "1","company": "Company 1"},{"id": "2","company": "Company 2"}]',
                 [
-                    ['id'=>'1'],
-                    ['company'=>'Company 1'],
-                    ['id'=>'2'],
-                ]
-            ]
+                    ['id' => '1'],
+                    ['company' => 'Company 1'],
+                    ['id' => '2'],
+                ],
+            ],
         ];
     }
 
@@ -107,7 +107,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = $this->createParser($json, $jsonPointer);
         $this->expectException(PathNotFoundException::class);
-        $this->expectExceptionMessage("Paths '" . implode(', ', (array)$jsonPointer) . "' were not found in json stream.");
+        $this->expectExceptionMessage("Paths '".implode(', ', (array) $jsonPointer)."' were not found in json stream.");
         iterator_to_array($parser);
     }
 

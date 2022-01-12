@@ -45,8 +45,9 @@ class Parser implements \IteratorAggregate, PositionAware
     private $jsonDecoder;
 
     /**
-     * @param array|string      $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param ItemDecoder $jsonDecoder
+     * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
+     * @param ItemDecoder  $jsonDecoder
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(Traversable $lexer, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
@@ -61,9 +62,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $this->jsonPointerPaths = $this->buildJsonPointerPathsFromJsonPointers($this->jsonPointers);
     }
 
-
     /**
-     * @param array $jsonPointers
      * @throws InvalidArgumentException
      */
     private function validateJsonPointers(array $jsonPointers)
@@ -84,7 +83,6 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param array $jsonPointers
      * @throws InvalidArgumentException
      */
     private function validateJsonPointersDoNotIntersect(array $jsonPointers)
@@ -127,6 +125,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @param array $currentPath
+     *
      * @return array
      */
     private function getMatchingJsonPointerPath($currentPath)
@@ -135,6 +134,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
         if (count($this->jsonPointerPaths) === 1) {
             $this->currentJsonPointer = $matchingPointer;
+
             return current($this->jsonPointerPaths);
         }
 
@@ -181,6 +181,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @return \Generator
+     *
      * @throws PathNotFoundException
      */
     #[\ReturnTypeWillChange]
@@ -226,7 +227,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $currentPathChanged = true;
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
-                unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel+1], $stack[$currentLevel+1]);
+                unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1], $stack[$currentLevel + 1]);
             }
             if (
                 (
@@ -263,7 +264,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             $currentPathChanged = true;
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             $currentPathWildcard[$currentLevel] = $keyResult->getValue();
-                            unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel+1]);
+                            unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
                         }
                         continue 2; // a valid json chunk is not completed yet
                     }
@@ -342,8 +343,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 if (!in_array($this->currentJsonPointer, $pathsFound, true)) {
                     $pathsFound[] = $this->currentJsonPointer;
                 }
-            }
-            elseif (count($pathsFound) === count($this->jsonPointerPaths)) {
+            } elseif (count($pathsFound) === count($this->jsonPointerPaths)) {
                 $subtreeEnded = true;
                 break;
             }
@@ -398,6 +398,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @return int
+     *
      * @throws JsonMachineException
      */
     public function getPosition()

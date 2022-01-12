@@ -37,10 +37,10 @@ final class Items implements \IteratorAggregate, PositionAware
     private $debugEnabled;
 
     /**
-     * @param iterable    $bytesIterator
-     * @param array|string      $jsonPointer
-     * @param ItemDecoder $jsonDecoder
-     * @param bool        $debugEnabled
+     * @param iterable     $bytesIterator
+     * @param array|string $jsonPointer
+     * @param ItemDecoder  $jsonDecoder
+     * @param bool         $debugEnabled
      *
      * @throws Exception\InvalidArgumentException
      */
@@ -133,7 +133,8 @@ final class Items implements \IteratorAggregate, PositionAware
         return $this->parser->getPosition();
     }
 
-    public function getMatchedJsonPointer() {
+    public function getMatchedJsonPointer()
+    {
         return $this->parser->getMatchedJsonPointer();
     }
 
