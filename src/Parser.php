@@ -107,7 +107,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     return true;
                 }
 
-                $elWildcard = preg_replace('~/\d+(/|$)~', '/-$1', $el);
+                $elWildcard = $this->wildcardify($el);
 
                 return strpos($jsonPointerEl, $elWildcard) === 0;
             });
@@ -115,7 +115,7 @@ class Parser implements \IteratorAggregate, PositionAware
             if (!empty($intersectingJsonPointers)) {
                 throw new InvalidArgumentException(
                     sprintf(
-                        "JSON Pointers must not intersect: '%s' is within '%s'",
+                        "JSON Pointers must not intersect. These do: '%s', '%s'",
                         $jsonPointerEl,
                         current($intersectingJsonPointers)
                     )
@@ -364,7 +364,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     !isset($currentPath[$i])
                     || (
                         $currentPath[$i] !== $jsonPointerPathEl
-                        && preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== $jsonPointerPathEl
+                        && $this->wildcardify($currentPath[$i]) !== $jsonPointerPathEl
                     )
                 ) {
                     continue;
@@ -448,5 +448,14 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
+    }
+
+    /**
+     * @param $jsonPointerPart
+     * @return string|string[]|null
+     */
+    private function wildcardify(string $jsonPointerPart): string
+    {
+        return preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPart);
     }
 }

@@ -328,11 +328,26 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testIntersectingPaths()
+    /**
+     * @dataProvider dataIntersectingPaths
+     */
+    public function testIntersectingPaths($jsonPointers)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("JSON Pointers must not intersect: '/companies/-/id' is within '/companies/0/id'");
-        $this->createParser(new \ArrayObject(), ['/companies/-/id', '/companies/0/id']);
+        $this->expectExceptionMessage("JSON Pointers must not intersect. These do: '$jsonPointers[0]', '$jsonPointers[1]'");
+        $this->createParser(new \ArrayObject(), $jsonPointers);
+    }
+
+    public function dataIntersectingPaths()
+    {
+        return [
+            [['/companies/-/id', '/companies/0/id']],
+            [['/companies/-/id', '', '/companies/0/id']],
+            [['/companies/-/id', '']],
+            [['/companies/0/id', '']],
+            [['//in-empty-string-key', '/']],
+            [['/~0~1/in-escaped-key', '/~0~1']],
+        ];
     }
 
     private function createParser($json, $jsonPointer = '')
