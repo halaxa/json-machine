@@ -129,7 +129,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
     {
         $parser = $this->createParser('{}', $jsonPointer);
-        $this->assertEquals($expectedJsonPointer, $parser->getJsonPointerPath());
+        $this->assertEquals($expectedJsonPointer, $parser->getJsonPointerPaths());
     }
 
     public function dataGetJsonPointer()
