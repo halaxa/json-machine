@@ -55,7 +55,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
 
         $jsonPointers = array_values((array) $jsonPointer);
-        $this->validateJsonPointersDoNotIntersect($jsonPointers);
+        $this->validateJsonPointers($jsonPointers);
 
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
         $this->jsonPointerPaths = $this->buildJsonPointerPathsFromJsonPointers($this->jsonPointers);
@@ -66,13 +66,30 @@ class Parser implements \IteratorAggregate, PositionAware
      * @param array $jsonPointers
      * @throws InvalidArgumentException
      */
-    private function validateJsonPointersDoNotIntersect(array $jsonPointers)
+    private function validateJsonPointers(array $jsonPointers)
+    {
+        $this->validateFormat($jsonPointers);
+        $this->validateJsonPointersDoNotIntersect($jsonPointers);
+    }
+
+    private function validateFormat(array $jsonPointers)
     {
         foreach ($jsonPointers as $jsonPointerEl) {
             if (preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointerEl) === 0) {
-                throw new InvalidArgumentException(sprintf("Given value '%s' of \$jsonPointer is not valid JSON Pointer", $jsonPointerEl));
+                throw new InvalidArgumentException(
+                    sprintf("Given value '%s' of \$jsonPointer is not valid JSON Pointer", $jsonPointerEl)
+                );
             }
+        }
+    }
 
+    /**
+     * @param array $jsonPointers
+     * @throws InvalidArgumentException
+     */
+    private function validateJsonPointersDoNotIntersect(array $jsonPointers)
+    {
+        foreach ($jsonPointers as $jsonPointerEl) {
             $intersectingJsonPointers = array_filter($jsonPointers, static function ($el) use ($jsonPointerEl) {
                 if ($jsonPointerEl === $el) {
                     return false;
@@ -88,7 +105,13 @@ class Parser implements \IteratorAggregate, PositionAware
             });
 
             if (!empty($intersectingJsonPointers)) {
-                throw new InvalidArgumentException(sprintf("JSON Pointers must not intersect: '%s' is within '%s'", $jsonPointerEl, current($intersectingJsonPointers)));
+                throw new InvalidArgumentException(
+                    sprintf(
+                        "JSON Pointers must not intersect: '%s' is within '%s'",
+                        $jsonPointerEl,
+                        current($intersectingJsonPointers)
+                    )
+                );
             }
         }
     }
