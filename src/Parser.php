@@ -124,62 +124,6 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param array $currentPath
-     *
-     * @return array
-     */
-    private function getMatchingJsonPointerPath($currentPath)
-    {
-        $matchingPointer = key($this->jsonPointerPaths);
-
-        if (count($this->jsonPointerPaths) === 1) {
-            $this->currentJsonPointer = $matchingPointer;
-
-            return current($this->jsonPointerPaths);
-        }
-
-        $currentPathLength = count($currentPath);
-        $matchLength = -1;
-
-        foreach ($this->jsonPointerPaths as $jsonPointer => $jsonPointerPath) {
-            $matchingParts = [];
-
-            foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
-                if (
-                    !isset($currentPath[$i])
-                    || (
-                        $currentPath[$i] !== $jsonPointerPathEl
-                        && preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== $jsonPointerPathEl
-                    )
-                ) {
-                    continue;
-                }
-
-                $matchingParts[$i] = $jsonPointerPathEl;
-            }
-
-            if (empty($matchingParts)) {
-                continue;
-            }
-
-            $currentMatchLength = count($matchingParts);
-
-            if ($currentMatchLength > $matchLength) {
-                $matchingPointer = $jsonPointer;
-                $matchLength = $currentMatchLength;
-            }
-
-            if ($matchLength === $currentPathLength) {
-                break;
-            }
-        }
-
-        $this->currentJsonPointer = $matchingPointer;
-
-        return $this->jsonPointerPaths[$matchingPointer];
-    }
-
-    /**
      * @return \Generator
      *
      * @throws PathNotFoundException
@@ -362,6 +306,84 @@ class Parser implements \IteratorAggregate, PositionAware
         }
     }
 
+    private function tokenTypes()
+    {
+        return [
+            'n' => self::SCALAR_CONST,
+            't' => self::SCALAR_CONST,
+            'f' => self::SCALAR_CONST,
+            '-' => self::SCALAR_CONST,
+            '0' => self::SCALAR_CONST,
+            '1' => self::SCALAR_CONST,
+            '2' => self::SCALAR_CONST,
+            '3' => self::SCALAR_CONST,
+            '4' => self::SCALAR_CONST,
+            '5' => self::SCALAR_CONST,
+            '6' => self::SCALAR_CONST,
+            '7' => self::SCALAR_CONST,
+            '8' => self::SCALAR_CONST,
+            '9' => self::SCALAR_CONST,
+            '"' => self::SCALAR_STRING,
+            '{' => self::OBJECT_START,
+            '}' => self::OBJECT_END,
+            '[' => self::ARRAY_START,
+            ']' => self::ARRAY_END,
+            ',' => self::COMMA,
+            ':' => self::COLON,
+        ];
+    }
+
+    private function getMatchingJsonPointerPath(array $currentPath): array
+    {
+        $matchingPointer = key($this->jsonPointerPaths);
+
+        if (count($this->jsonPointerPaths) === 1) {
+            $this->currentJsonPointer = $matchingPointer;
+
+            return current($this->jsonPointerPaths);
+        }
+
+        $currentPathLength = count($currentPath);
+        $matchLength = -1;
+
+        foreach ($this->jsonPointerPaths as $jsonPointer => $jsonPointerPath) {
+            $matchingParts = [];
+
+            foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
+                if (
+                    !isset($currentPath[$i])
+                    || (
+                        $currentPath[$i] !== $jsonPointerPathEl
+                        && preg_replace('~/\d+(/|$)~', '/-$1', $currentPath[$i]) !== $jsonPointerPathEl
+                    )
+                ) {
+                    continue;
+                }
+
+                $matchingParts[$i] = $jsonPointerPathEl;
+            }
+
+            if (empty($matchingParts)) {
+                continue;
+            }
+
+            $currentMatchLength = count($matchingParts);
+
+            if ($currentMatchLength > $matchLength) {
+                $matchingPointer = $jsonPointer;
+                $matchLength = $currentMatchLength;
+            }
+
+            if ($matchLength === $currentPathLength) {
+                break;
+            }
+        }
+
+        $this->currentJsonPointer = $matchingPointer;
+
+        return $this->jsonPointerPaths[$matchingPointer];
+    }
+
     /**
      * @return array
      */
@@ -408,32 +430,5 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
-    }
-
-    private function tokenTypes()
-    {
-        return [
-            'n' => self::SCALAR_CONST,
-            't' => self::SCALAR_CONST,
-            'f' => self::SCALAR_CONST,
-            '-' => self::SCALAR_CONST,
-            '0' => self::SCALAR_CONST,
-            '1' => self::SCALAR_CONST,
-            '2' => self::SCALAR_CONST,
-            '3' => self::SCALAR_CONST,
-            '4' => self::SCALAR_CONST,
-            '5' => self::SCALAR_CONST,
-            '6' => self::SCALAR_CONST,
-            '7' => self::SCALAR_CONST,
-            '8' => self::SCALAR_CONST,
-            '9' => self::SCALAR_CONST,
-            '"' => self::SCALAR_STRING,
-            '{' => self::OBJECT_START,
-            '}' => self::OBJECT_END,
-            '[' => self::ARRAY_START,
-            ']' => self::ARRAY_END,
-            ',' => self::COMMA,
-            ':' => self::COLON,
-        ];
     }
 }
