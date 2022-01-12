@@ -98,7 +98,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private function validateJsonPointersDoNotIntersect(array $jsonPointers)
     {
         foreach ($jsonPointers as $jsonPointerEl) {
-            $intersectingJsonPointers = array_filter($jsonPointers, static function ($el) use ($jsonPointerEl) {
+            $intersectingJsonPointers = array_filter($jsonPointers, function ($el) use ($jsonPointerEl) {
                 if ($jsonPointerEl === $el) {
                     return false;
                 }
@@ -126,8 +126,8 @@ class Parser implements \IteratorAggregate, PositionAware
 
     private function buildJsonPointerPathsFromJsonPointers(array $jsonPointers): array
     {
-        return array_map(static function ($el) {
-            return array_slice(array_map(static function ($jsonPointerPart) {
+        return array_map(function ($el) {
+            return array_slice(array_map(function ($jsonPointerPart) {
                 return str_replace(['~1', '~0'], ['/', '~'], $jsonPointerPart);
             }, explode('/', $el)), 1);
         }, $jsonPointers);
