@@ -68,6 +68,9 @@ class IteratorLexerPOC implements \Iterator
 
     public function next()
     {
+        $this->currentToken = '';
+var_dump([$this->tokenQueue, $this->chunkIndex, $this->chunkLength, $this->chunk]);
+
         if ($this->tokenQueue) {
             $this->currentToken = array_shift($this->tokenQueue);
             ++$this->currentTokenKey;
@@ -77,7 +80,7 @@ class IteratorLexerPOC implements \Iterator
         for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
         {
             $byte = $this->chunk[$this->chunkIndex];
-
+var_dump($byte);
             if ($this->escaping) {
                 $this->escaping = false;
                 $this->tokenBuffer .= $byte;
@@ -125,7 +128,7 @@ class IteratorLexerPOC implements \Iterator
 
     public function valid()
     {
-        return $this->tokenQueue != [];
+        return $this->currentToken !== '';
     }
 
 
