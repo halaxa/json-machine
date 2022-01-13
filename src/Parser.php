@@ -58,79 +58,22 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function __construct(Traversable $lexer, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
     {
+        $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
+
         $this->lexer = $lexer;
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
-
-        $jsonPointers = array_values((array) $jsonPointer);
         $this->singleJsonPointer = (count($jsonPointers) === 1);
-        $this->validateJsonPointers($jsonPointers);
-
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
-        $this->jsonPointerPaths = $this->buildJsonPointerPathsFromJsonPointers($this->jsonPointers);
+        $this->jsonPointerPaths = $this->buildJsonPointerPaths();
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
-    private function validateJsonPointers(array $jsonPointers)
-    {
-        $this->validateFormat($jsonPointers);
-
-        if (!$this->singleJsonPointer) {
-            $this->validateJsonPointersDoNotIntersect($jsonPointers);
-        }
-    }
-
-    private function validateFormat(array $jsonPointers)
-    {
-        foreach ($jsonPointers as $jsonPointerEl) {
-            if (preg_match('_^(/(([^/~])|(~[01]))*)*$_', $jsonPointerEl) === 0) {
-                throw new InvalidArgumentException(
-                    sprintf("Given value '%s' of \$jsonPointer is not valid JSON Pointer", $jsonPointerEl)
-                );
-            }
-        }
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    private function validateJsonPointersDoNotIntersect(array $jsonPointers)
-    {
-        foreach ($jsonPointers as $jsonPointerEl) {
-            $intersectingJsonPointers = array_filter($jsonPointers, function ($el) use ($jsonPointerEl) {
-                if ($jsonPointerEl === $el) {
-                    return false;
-                }
-
-                if (strpos($jsonPointerEl, $el) === 0) {
-                    return true;
-                }
-
-                $elWildcard = $this->wildcardify($el);
-
-                return strpos($jsonPointerEl, $elWildcard) === 0;
-            });
-
-            if (!empty($intersectingJsonPointers)) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        "JSON Pointers must not intersect. These do: '%s', '%s'",
-                        $jsonPointerEl,
-                        current($intersectingJsonPointers)
-                    )
-                );
-            }
-        }
-    }
-
-    private function buildJsonPointerPathsFromJsonPointers(array $jsonPointers): array
+    private function buildJsonPointerPaths(): array
     {
         return array_map(function ($el) {
             return array_slice(array_map(function ($jsonPointerPart) {
                 return str_replace(['~1', '~0'], ['/', '~'], $jsonPointerPart);
             }, explode('/', $el)), 1);
-        }, $jsonPointers);
+        }, $this->jsonPointers);
     }
 
     /**
@@ -364,7 +307,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     !isset($currentPath[$i])
                     || (
                         $currentPath[$i] !== $jsonPointerPathEl
-                        && $this->wildcardify($currentPath[$i]) !== $jsonPointerPathEl
+                        && ValidJsonPointers::wildcardify($currentPath[$i]) !== $jsonPointerPathEl
                     )
                 ) {
                     continue;
@@ -450,12 +393,4 @@ class Parser implements \IteratorAggregate, PositionAware
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
     }
 
-    /**
-     * @param $jsonPointerPart
-     * @return string|string[]|null
-     */
-    private function wildcardify(string $jsonPointerPart): string
-    {
-        return preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPart);
-    }
 }

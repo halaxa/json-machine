@@ -10,6 +10,7 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
+use JsonMachine\ValidJsonPointers;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -144,27 +145,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataThrowsOnMalformedJsonPointer
-     *
-     * @param string $jsonPointer
-     */
-    public function testThrowsOnMalformedJsonPointer($jsonPointer)
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new Parser(new \ArrayObject(), $jsonPointer);
-    }
-
-    public function dataThrowsOnMalformedJsonPointer()
-    {
-        return [
-            ['apple'],
-            ['/apple/~'],
-            ['apple/pie'],
-            ['apple/pie/'],
-            [' /apple/pie/'],
-        ];
-    }
 
     /**
      * @dataProvider dataSyntaxError
@@ -326,28 +306,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->assertSame($expectedKey, $key);
             $this->assertSame($expectedValues[$i++], $value);
         }
-    }
-
-    /**
-     * @dataProvider dataIntersectingPaths
-     */
-    public function testIntersectingPaths($jsonPointers)
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("JSON Pointers must not intersect. These do: '$jsonPointers[0]', '$jsonPointers[1]'");
-        $this->createParser(new \ArrayObject(), $jsonPointers);
-    }
-
-    public function dataIntersectingPaths()
-    {
-        return [
-            [['/companies/-/id', '/companies/0/id']],
-            [['/companies/-/id', '', '/companies/0/id']],
-            [['/companies/-/id', '']],
-            [['/companies/0/id', '']],
-            [['//in-empty-string-key', '/']],
-            [['/~0~1/in-escaped-key', '/~0~1']],
-        ];
     }
 
     private function createParser($json, $jsonPointer = '')
