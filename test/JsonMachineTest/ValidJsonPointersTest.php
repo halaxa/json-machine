@@ -3,13 +3,13 @@
 namespace JsonMachineTest;
 
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\Parser;
 use JsonMachine\ValidJsonPointers;
 
 class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @dataProvider dataIntersectingPaths
+     *
      * @param $jsonPointers
      * @param ParserTest $parserTest
      */
@@ -32,13 +32,12 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-
     /**
      * @dataProvider dataThrowsOnMalformedJsonPointer
      *
      * @param string $jsonPointer
      */
-    public function testThrowsOnMalformedJsonPointer($jsonPointer)
+    public function testThrowsOnMalformedJsonPointer(array $jsonPointer)
     {
         $this->expectException(InvalidArgumentException::class);
         (new ValidJsonPointers($jsonPointer))->toArray();
@@ -56,7 +55,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
                 '/valid',
                 '/valid/-',
                 'inv/alid',
-            ]]
+            ]],
         ];
     }
 }

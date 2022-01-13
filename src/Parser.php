@@ -293,6 +293,7 @@ class Parser implements \IteratorAggregate, PositionAware
         if (count($this->jsonPointerPaths) === 1) {
             $this->jsonPointer = $matchingPointer;
             $this->jsonPointerPath = $this->jsonPointerPaths[$matchingPointer];
+
             return $this->jsonPointerPath;
         }
 
@@ -334,6 +335,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->jsonPointer = $matchingPointer;
         $this->jsonPointerPath = $this->jsonPointerPaths[$matchingPointer];
+
         return $this->jsonPointerPath;
     }
 
@@ -392,5 +394,4 @@ class Parser implements \IteratorAggregate, PositionAware
 
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
     }
-
 }

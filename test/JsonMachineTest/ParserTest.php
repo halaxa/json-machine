@@ -2,7 +2,6 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
@@ -10,7 +9,6 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
-use JsonMachine\ValidJsonPointers;
 
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
@@ -144,7 +142,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             [['/apple/pie', '/banana'], ['/apple/pie' => ['apple', 'pie'], '/banana' => ['banana']]],
         ];
     }
-
 
     /**
      * @dataProvider dataSyntaxError

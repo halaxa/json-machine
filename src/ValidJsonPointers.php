@@ -1,8 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
+declare(strict_types=1);
 
 namespace JsonMachine;
-
 
 use JsonMachine\Exception\InvalidArgumentException;
 
@@ -19,7 +19,7 @@ final class ValidJsonPointers
 
     public function toArray(): array
     {
-        if ( ! $this->validated) {
+        if (! $this->validated) {
             $this->validate();
         }
 
@@ -83,13 +83,10 @@ final class ValidJsonPointers
     }
 
     /**
-     * @param string $jsonPointerPart
      * @return string|string[]|null
      */
     public static function wildcardify(string $jsonPointerPart): string
     {
         return preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPart);
     }
-
-
 }
