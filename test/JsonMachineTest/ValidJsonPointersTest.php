@@ -34,8 +34,6 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider dataThrowsOnMalformedJsonPointer
-     *
-     * @param string $jsonPointer
      */
     public function testThrowsOnMalformedJsonPointer(array $jsonPointer)
     {
