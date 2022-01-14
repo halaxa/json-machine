@@ -70,7 +70,7 @@ final class ValidJsonPointers
                 return strpos($jsonPointerEl, $elWildcard) === 0;
             });
 
-            if (!empty($intersectingJsonPointers)) {
+            if ($intersectingJsonPointers) {
                 throw new InvalidArgumentException(
                     sprintf(
                         "JSON Pointers must not intersect. These do: '%s', '%s'",
