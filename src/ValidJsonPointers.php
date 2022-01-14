@@ -87,6 +87,6 @@ final class ValidJsonPointers
      */
     public static function wildcardify(string $jsonPointerPart): string
     {
-        return preg_replace('~/\d+(/|$)~', '/-$1', $jsonPointerPart);
+        return preg_replace('~/\d+(/|$)~S', '/-$1', $jsonPointerPart);
     }
 }
