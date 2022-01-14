@@ -14,7 +14,7 @@ final class ValidJsonPointers
 
     public function __construct(array $jsonPointers)
     {
-        $this->jsonPointers = $jsonPointers;
+        $this->jsonPointers = array_values($jsonPointers);
     }
 
     public function toArray(): array
@@ -55,36 +55,28 @@ final class ValidJsonPointers
      */
     private function validateJsonPointersDoNotIntersect()
     {
-        foreach ($this->jsonPointers as $jsonPointerEl) {
-            $intersectingJsonPointers = array_filter($this->jsonPointers, function ($el) use ($jsonPointerEl) {
-                if ($jsonPointerEl === $el) {
-                    return false;
+        foreach ($this->jsonPointers as $keyA => $jsonPointerA) {
+            foreach ($this->jsonPointers as $keyB => $jsonPointerB) {
+                if ($keyA === $keyB) {
+                    continue;
                 }
-
-                if (strpos($jsonPointerEl, $el) === 0) {
-                    return true;
+                if ($jsonPointerA === $jsonPointerB
+                    || 0 === strpos($jsonPointerA, $jsonPointerB)
+                    || 0 === strpos($jsonPointerA, self::wildcardify($jsonPointerB))
+                ) {
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            "JSON Pointers must not intersect. At least these two do: '%s', '%s'",
+                            $jsonPointerA,
+                            $jsonPointerB
+                        )
+                    );
                 }
-
-                $elWildcard = self::wildcardify($el);
-
-                return strpos($jsonPointerEl, $elWildcard) === 0;
-            });
-
-            if ($intersectingJsonPointers) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        "JSON Pointers must not intersect. These do: '%s', '%s'",
-                        $jsonPointerEl,
-                        current($intersectingJsonPointers)
-                    )
-                );
             }
         }
     }
 
-    /**
-     * @return string|string[]|null
-     */
+
     public static function wildcardify(string $jsonPointerPart): string
     {
         return preg_replace('~/\d+(/|$)~S', '/-$1', $jsonPointerPart);

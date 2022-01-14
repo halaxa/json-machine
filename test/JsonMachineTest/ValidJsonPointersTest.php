@@ -16,7 +16,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
     public function testIntersectingPaths($jsonPointers)
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("JSON Pointers must not intersect. These do: '$jsonPointers[0]', '$jsonPointers[1]'");
+        $this->expectExceptionMessage("'$jsonPointers[0]', '$jsonPointers[1]'");
         (new ValidJsonPointers($jsonPointers))->toArray();
     }
 
@@ -38,6 +38,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
     public function testThrowsOnMalformedJsonPointer(array $jsonPointer)
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('not valid');
         (new ValidJsonPointers($jsonPointer))->toArray();
     }
 
@@ -55,5 +56,12 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
                 'inv/alid',
             ]],
         ];
+    }
+
+    public function testDuplicatePaths()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("'/one', '/one'");
+        (new ValidJsonPointers(['/one', '/one']))->toArray();
     }
 }
