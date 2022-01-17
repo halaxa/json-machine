@@ -133,14 +133,14 @@ final class Items implements \IteratorAggregate, PositionAware
         return $this->parser->getPosition();
     }
 
-    public function getJsonPointer()
+    public function getCurrentJsonPointer(): string
     {
-        return $this->parser->getJsonPointer();
+        return $this->parser->getCurrentJsonPointer();
     }
 
-    public function getJsonPointerPath()
+    public function getMatchedJsonPointer(): string
     {
-        return $this->parser->getJsonPointerPath();
+        return $this->parser->getMatchedJsonPointer();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace JsonMachineTest;
 
+use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxError;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
@@ -121,17 +122,17 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataGetJsonPointer
+     * @dataProvider dataGetJsonPointerPath
      *
      * @param string $jsonPointer
      */
-    public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointer)
+    public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointerPath)
     {
         $parser = $this->createParser('{}', $jsonPointer);
-        $this->assertEquals($expectedJsonPointer, $parser->getJsonPointerPaths());
+        $this->assertEquals($expectedJsonPointerPath, $parser->getJsonPointerPaths());
     }
 
-    public function dataGetJsonPointer()
+    public function dataGetJsonPointerPath()
     {
         return [
             ['/', ['/' => ['']]],
@@ -317,5 +318,62 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         foreach ($items as $item) {
             $this->assertEquals((object) ['key' => 'value'], $item);
         }
+    }
+
+    public function dataGetJsonPointer()
+    {
+        return [
+            ['/~0', '{"~":{"c":1,"d":2}}', ['/~0', '/~0']],
+            ['/~1', '{"/":{"c":1,"d":2}}', ['/~1', '/~1']],
+            ['/0', '[{"c":1,"d":2}, [null]]', ['/0', '/0']],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['/0', '/0', '/1', '/1']],
+        ];
+    }
+
+    /**
+     * @dataProvider dataGetJsonPointer
+     *
+     * @param string $jsonPointer
+     * @param string $json
+     * @param string $expectedJsonPointer
+     */
+    public function testGetJsonPointer($jsonPointer, $json, $expectedJsonPointer)
+    {
+        $parser = $this->createParser($json, $jsonPointer);
+
+        $i = 0;
+
+        foreach ($parser as $value) {
+            $this->assertEquals($expectedJsonPointer[$i++] ?? '', $parser->getCurrentJsonPointer());
+            $this->assertEquals($jsonPointer, $parser->getMatchedJsonPointer());
+        }
+    }
+
+    /**
+     * @dataProvider dataGetJsonPointer
+     *
+     * @param string $jsonPointer
+     * @param string $json
+     */
+    public function testGetCurrentJsonPointer($jsonPointer, $json)
+    {
+        $this->expectException(JsonMachineException::class);
+        $this->expectExceptionMessage('getCurrentJsonPointer() must not be called outside of a loop');
+        $parser = $this->createParser($json, $jsonPointer);
+        $parser->getCurrentJsonPointer();
+    }
+
+    /**
+     * @dataProvider dataGetJsonPointer
+     *
+     * @param string $jsonPointer
+     * @param string $json
+     */
+    public function testGetMatchedJsonPointer($jsonPointer, $json)
+    {
+        $this->expectException(JsonMachineException::class);
+        $this->expectExceptionMessage('getMatchedJsonPointer() must not be called outside of a loop');
+        $parser = $this->createParser($json, $jsonPointer);
+        $parser->getMatchedJsonPointer();
     }
 }
