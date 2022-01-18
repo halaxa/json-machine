@@ -357,6 +357,11 @@ class Parser implements \IteratorAggregate, PositionAware
         return $this->jsonPointer;
     }
 
+    public function getJsonPointers(): array
+    {
+        return $this->jsonPointers;
+    }
+
     public function getCurrentJsonPointer(): string
     {
         if (!isset($this->currentJsonPath) || !is_array($this->currentJsonPath)) {
