@@ -17,6 +17,9 @@ final class ValidJsonPointers
         $this->jsonPointers = array_values($jsonPointers);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function toArray(): array
     {
         if (! $this->validated) {
