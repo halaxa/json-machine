@@ -368,9 +368,11 @@ class Parser implements \IteratorAggregate, PositionAware
             throw new JsonMachineException('getCurrentJsonPointer() must not be called outside of a loop');
         }
 
-        return '/'.implode('/', array_map(function ($jsonPointerPart) {
+        $currentJsonPointer = implode('/', array_map(function ($jsonPointerPart) {
             return str_replace(['~', '/'], ['~0', '~1'], $jsonPointerPart);
         }, $this->currentJsonPath));
+
+        return ($currentJsonPointer !== '') ? '/'.$currentJsonPointer : '';
     }
 
     public function getMatchedJsonPointer(): string
