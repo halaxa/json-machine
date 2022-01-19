@@ -32,23 +32,23 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Traversable */
     private $lexer;
 
-    /** @var array */
-    private $jsonPointerPaths;
+    /** @var ItemDecoder */
+    private $jsonDecoder;
 
     /** @var string */
     private $matchedJsonPointer;
 
     /** @var array */
-    private $currentJsonPath;
+    private $paths;
+
+    /** @var array */
+    private $currentPath;
 
     /** @var array */
     private $jsonPointers;
 
     /** @var bool */
-    private $singleJsonPointer;
-
-    /** @var ItemDecoder */
-    private $jsonDecoder;
+    private $isSingleJsonPointer;
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
@@ -62,18 +62,16 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->lexer = $lexer;
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
-        $this->singleJsonPointer = (count($jsonPointers) === 1);
+        $this->isSingleJsonPointer = (count($jsonPointers) === 1);
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
-        $this->jsonPointerPaths = $this->buildJsonPointerPaths();
+        $this->paths = $this->buildPaths($this->jsonPointers);
     }
 
-    private function buildJsonPointerPaths(): array
+    private function buildPaths(array $jsonPointers): array
     {
-        return array_map(function ($el) {
-            return array_slice(array_map(function ($jsonPointerPart) {
-                return str_replace(['~1', '~0'], ['/', '~'], $jsonPointerPart);
-            }, explode('/', $el)), 1);
-        }, $this->jsonPointers);
+        return array_map(function ($jsonPointer) {
+            return self::jsonPointerToPath($jsonPointer);
+        }, $jsonPointers);
     }
 
     /**
@@ -90,7 +88,7 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         $iteratorStruct = null;
-        $currentPath = &$this->currentJsonPath;
+        $currentPath = &$this->currentPath;
         $currentPath = [];
         $currentPathWildcard = [];
         $pointersFound = [];
@@ -122,7 +120,7 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
-                $currentPathChanged = ! $this->singleJsonPointer;
+                $currentPathChanged = ! $this->isSingleJsonPointer;
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/S', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
                 unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1], $stack[$currentLevel + 1]);
@@ -159,7 +157,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             if ( ! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }
-                            $currentPathChanged = ! $this->singleJsonPointer;
+                            $currentPathChanged = ! $this->isSingleJsonPointer;
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             $currentPathWildcard[$currentLevel] = $keyResult->getValue();
                             unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
@@ -259,7 +257,7 @@ class Parser implements \IteratorAggregate, PositionAware
             throw new PathNotFoundException(sprintf("Paths '%s' were not found in json stream.", implode(', ', array_diff($this->jsonPointers, $pointersFound))));
         }
 
-        unset($this->matchedJsonPointer, $this->currentJsonPath);
+        unset($this->matchedJsonPointer, $this->currentPath);
     }
 
     private function tokenTypes()
@@ -291,26 +289,26 @@ class Parser implements \IteratorAggregate, PositionAware
 
     private function getMatchingJsonPointerPath(): array
     {
-        $matchingPointer = key($this->jsonPointerPaths);
+        $matchingPointer = key($this->paths);
 
-        if (count($this->jsonPointerPaths) === 1) {
+        if (count($this->paths) === 1) {
             $this->matchedJsonPointer = $matchingPointer;
 
-            return $this->jsonPointerPaths[$matchingPointer];
+            return $this->paths[$matchingPointer];
         }
 
-        $currentPathLength = count($this->currentJsonPath);
+        $currentPathLength = count($this->currentPath);
         $matchLength = -1;
 
-        foreach ($this->jsonPointerPaths as $jsonPointer => $jsonPointerPath) {
+        foreach ($this->paths as $jsonPointer => $jsonPointerPath) {
             $matchingParts = [];
 
             foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
                 if (
-                    ! isset($this->currentJsonPath[$i])
+                    ! isset($this->currentPath[$i])
                     || (
-                        $this->currentJsonPath[$i] !== $jsonPointerPathEl
-                        && ValidJsonPointers::wildcardify($this->currentJsonPath[$i]) !== $jsonPointerPathEl
+                        $this->currentPath[$i] !== $jsonPointerPathEl
+                        && ValidJsonPointers::wildcardify($this->currentPath[$i]) !== $jsonPointerPathEl
                     )
                 ) {
                     continue;
@@ -337,7 +335,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->matchedJsonPointer = $matchingPointer;
 
-        return $this->jsonPointerPaths[$matchingPointer];
+        return $this->paths[$matchingPointer];
     }
 
     /**
@@ -345,7 +343,7 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function getJsonPointerPaths(): array
     {
-        return $this->jsonPointerPaths;
+        return $this->paths;
     }
 
     /**
@@ -366,17 +364,11 @@ class Parser implements \IteratorAggregate, PositionAware
 
     public function getCurrentJsonPointer(): string
     {
-        if ( ! isset($this->currentJsonPath) || ! is_array($this->currentJsonPath)) {
+        if ( ! isset($this->currentPath) || ! is_array($this->currentPath)) {
             throw new JsonMachineException('getCurrentJsonPointer() must not be called outside of a loop');
         }
 
-        $currentJsonPointer = array_map(function ($jsonPointerPart) {
-            return str_replace(['~', '/'], ['~0', '~1'], $jsonPointerPart);
-        }, $this->currentJsonPath);
-
-        array_unshift($currentJsonPointer, '');
-
-        return implode('/', $currentJsonPointer);
+        return self::pathToJsonPointer($this->currentPath);
     }
 
     public function getMatchedJsonPointer(): string
@@ -410,5 +402,23 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
+    }
+
+    private static function jsonPointerToPath(string $jsonPointer): array
+    {
+        return array_slice(array_map(function ($jsonPointerPart) {
+            return str_replace(['~1', '~0'], ['/', '~'], $jsonPointerPart);
+        }, explode('/', $jsonPointer)), 1);
+    }
+
+    private static function pathToJsonPointer(array $valueAddress): string
+    {
+        $encodedParts = array_map(function ($addressPart) {
+            return str_replace(['~', '/'], ['~0', '~1'], $addressPart);
+        }, $valueAddress);
+
+        array_unshift($encodedParts, '');
+
+        return implode('/', $encodedParts);
     }
 }
