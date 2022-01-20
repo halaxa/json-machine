@@ -357,9 +357,11 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function getJsonPointer(): string
     {
-        $jsonPointers = $this->jsonPointers;
+        if ( ! $this->hasSingleJsonPointer) {
+            throw new JsonMachineException('Call getJsonPointers() when you provide more than one.');
+        }
 
-        return array_pop($jsonPointers);
+        return reset($this->jsonPointers);
     }
 
     public function getJsonPointers(): array

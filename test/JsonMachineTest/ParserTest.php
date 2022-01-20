@@ -363,4 +363,26 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser = $this->createParser('[]');
         $parser->getMatchedJsonPointer();
     }
+
+    public function testGetJsonPointer()
+    {
+        $parser = $this->createParser('{}', ['/one']);
+
+        $this->assertSame('/one', $parser->getJsonPointer());
+    }
+
+    public function testGetJsonPointerReturnsDefaultJsonPointer()
+    {
+        $parser = $this->createParser('{}');
+
+        $this->assertSame('', $parser->getJsonPointer());
+    }
+
+    public function testGetJsonPointerThrowsOnMultipleJsonPointers()
+    {
+        $this->expectException(JsonMachineException::class);
+        $this->expectExceptionMessage('Call getJsonPointers() when you provide more than one.');
+        $parser = $this->createParser('{}', ['/one', '/two']);
+        $parser->getJsonPointer();
+    }
 }
