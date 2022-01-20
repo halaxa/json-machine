@@ -48,7 +48,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private $jsonPointers;
 
     /** @var bool */
-    private $isSingleJsonPointer;
+    private $hasSingleJsonPointer;
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
@@ -62,7 +62,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->lexer = $lexer;
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
-        $this->isSingleJsonPointer = (count($jsonPointers) === 1);
+        $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
         $this->paths = $this->buildPaths($this->jsonPointers);
     }
@@ -120,7 +120,7 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
-                $currentPathChanged = ! $this->isSingleJsonPointer;
+                $currentPathChanged = ! $this->hasSingleJsonPointer;
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/S', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
                 unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1], $stack[$currentLevel + 1]);
@@ -157,7 +157,7 @@ class Parser implements \IteratorAggregate, PositionAware
                             if ( ! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }
-                            $currentPathChanged = ! $this->isSingleJsonPointer;
+                            $currentPathChanged = ! $this->hasSingleJsonPointer;
                             $currentPath[$currentLevel] = $keyResult->getValue();
                             $currentPathWildcard[$currentLevel] = $keyResult->getValue();
                             unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
