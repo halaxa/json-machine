@@ -8,10 +8,11 @@ $finder = PhpCsFixer\Finder::create()
 $config = new PhpCsFixer\Config();
 return $config->setRules([
     '@Symfony' => true,
+    'not_operator_with_space' => true,
     'yoda_style' => false,
     'single_line_throw' => false,
     'unary_operator_spaces' => false,
     'visibility_required' => false,
 ])
     ->setFinder($finder)
-    ;
+;
