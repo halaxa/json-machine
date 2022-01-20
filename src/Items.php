@@ -160,7 +160,7 @@ final class Items implements \IteratorAggregate, PositionAware
         }
 
         if (class_exists($type) || interface_exists($type)) {
-            if (! $value instanceof $type) {
+            if ( ! $value instanceof $type) {
                 throw new InvalidArgumentException(
                     sprintf(
                         "Option '$name' must be an instance of $type, %s given.",

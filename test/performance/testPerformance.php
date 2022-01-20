@@ -34,7 +34,7 @@ echo 'File size: '.round($fileSizeMb, 2),' MB'.PHP_EOL;
 foreach ($decoders as $name => $decoder) {
     $start = microtime(true);
     $result = $decoder($tmpJsonFileName);
-    if (! $result instanceof \Traversable && ! is_array($result)) {
+    if ( ! $result instanceof \Traversable && ! is_array($result)) {
         $textResult = 'Decoding error';
     } else {
         foreach ($result as $key => $item) {

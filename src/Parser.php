@@ -119,7 +119,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $this->error('Unexpected symbol', $token);
             }
             $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
-            if (! $inObject && $isValue && $currentLevel < $iteratorLevel) {
+            if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
                 if ($jsonPointerPath[$currentLevel] === '-') {
                     $currentPath[$currentLevel] = '-';
                 } else {
@@ -152,7 +152,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         } elseif ($currentLevel < $iteratorLevel) {
                             $key = $token;
                             $keyResult = $this->jsonDecoder->decodeInternalKey($token);
-                            if (! $keyResult->isOk()) {
+                            if ( ! $keyResult->isOk()) {
                                 $this->error($keyResult->getErrorMessage(), $token);
                             }
                             $currentPath[$currentLevel] = $keyResult->getValue();
@@ -218,14 +218,14 @@ class Parser implements \IteratorAggregate, PositionAware
             if ($jsonBuffer !== '') {
                 $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
                 $jsonBuffer = '';
-                if (! $valueResult->isOk()) {
+                if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
                 if ($iteratorStruct === '[') {
                     yield $valueResult->getValue();
                 } else {
                     $keyResult = $this->jsonDecoder->decodeKey($key);
-                    if (! $keyResult->isOk()) {
+                    if ( ! $keyResult->isOk()) {
                         $this->error($keyResult->getErrorMessage(), $key);
                     }
                     yield $keyResult->getValue() => $valueResult->getValue();
@@ -233,7 +233,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 }
                 unset($valueResult);
             }
-            if (! $pathFound && $currentPath === $jsonPointerPath) {
+            if ( ! $pathFound && $currentPath === $jsonPointerPath) {
                 $pathFound = true;
             }
             if ($pathFound && $currentPath !== $jsonPointerPath) {
@@ -250,7 +250,7 @@ class Parser implements \IteratorAggregate, PositionAware
             $this->error('JSON string ended unexpectedly', $token, UnexpectedEndSyntaxErrorException::class);
         }
 
-        if (! $pathFound) {
+        if ( ! $pathFound) {
             throw new PathNotFoundException("Path '{$this->jsonPointer}' was not found in json stream.");
         }
     }
