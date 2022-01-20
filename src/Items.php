@@ -153,26 +153,29 @@ final class Items implements \IteratorAggregate, PositionAware
      *
      * @throws InvalidArgumentException
      */
-    private static function normalizeOptions(array $options)
+    private static function normalizeOptions(array $options): array
     {
-        $mergedOptions = array_merge([
-            'pointer' => '',
-            'decoder' => null,
-            'debug' => false,
-        ], $options);
+        $pointerKey = isset($options['pointers']) ? 'pointers' : 'pointer';
+        $pointerType = ($pointerKey === 'pointers') ? 'array' : 'string';
 
-        self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
-        self::optionMustBeType('decoder', $mergedOptions['decoder'], ItemDecoder::class);
-        self::optionMustBeType('debug', $mergedOptions['debug'], 'boolean');
+        self::optionMustBeType($options, $pointerKey, $pointerType);
+        self::optionMustBeType($options, 'decoder', ItemDecoder::class);
+        self::optionMustBeType($options, 'debug', 'boolean');
 
-        return $mergedOptions;
+        return [
+            'pointer' => $options[$pointerKey] ?? '',
+            'decoder' => $options['decoder'] ?? new ExtJsonDecoder(),
+            'debug' => $options['debug'] ?? false,
+        ];
     }
 
-    private static function optionMustBeType($name, $value, $type)
+    private static function optionMustBeType(array $options, string $name, string $type)
     {
-        if ($value === null) {
+        if ( ! isset($options[$name])) {
             return;
         }
+
+        $value = $options[$name];
 
         if (class_exists($type) || interface_exists($type)) {
             if ( ! $value instanceof $type) {
