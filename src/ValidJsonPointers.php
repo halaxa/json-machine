@@ -22,7 +22,7 @@ final class ValidJsonPointers
      */
     public function toArray(): array
     {
-        if (! $this->validated) {
+        if ( ! $this->validated) {
             $this->validate();
         }
 
