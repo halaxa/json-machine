@@ -339,10 +339,15 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @see \JsonMachineTest\ParserTest::testGetJsonPointerPath()
+     * @deprecated This method was revealing internal implementation and is not useful for anything anyway.
      */
     public function getJsonPointerPaths(): array
     {
+        @trigger_error(
+            'This method was revealing internal implementation and is not useful for anything anyway.',
+            E_USER_DEPRECATED
+        );
+
         return $this->paths;
     }
 
