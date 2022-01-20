@@ -320,7 +320,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataGetJsonPointer()
+    /**
+     * @dataProvider dataGetCurrentAndMatchedJsonPointer
+     */
+    public function testGetCurrentAndMatchedJsonPointer(string $jsonPointer, string $json, array $expectedJsonPointers)
+    {
+        $parser = $this->createParser($json, $jsonPointer);
+
+        $i = 0;
+
+        foreach ($parser as $value) {
+            $this->assertEquals($expectedJsonPointers[$i++] ?? '', $parser->getCurrentJsonPointer());
+            $this->assertEquals($jsonPointer, $parser->getMatchedJsonPointer());
+        }
+    }
+
+    public function dataGetCurrentAndMatchedJsonPointer()
     {
         return [
             ['', '{"c":1,"d":2}', ['', '']],
@@ -333,50 +348,19 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @dataProvider dataGetJsonPointer
-     *
-     * @param string $jsonPointer
-     * @param string $json
-     * @param string $expectedJsonPointer
-     */
-    public function testGetJsonPointer($jsonPointer, $json, $expectedJsonPointer)
-    {
-        $parser = $this->createParser($json, $jsonPointer);
-
-        $i = 0;
-
-        foreach ($parser as $value) {
-            $this->assertEquals($expectedJsonPointer[$i++] ?? '', $parser->getCurrentJsonPointer());
-            $this->assertEquals($jsonPointer, $parser->getMatchedJsonPointer());
-        }
-    }
-
-    /**
-     * @dataProvider dataGetJsonPointer
-     *
-     * @param string $jsonPointer
-     * @param string $json
-     */
-    public function testGetCurrentJsonPointer($jsonPointer, $json)
+    public function testGetCurrentJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
         $this->expectExceptionMessage('getCurrentJsonPointer() must not be called outside of a loop');
-        $parser = $this->createParser($json, $jsonPointer);
+        $parser = $this->createParser('[]');
         $parser->getCurrentJsonPointer();
     }
 
-    /**
-     * @dataProvider dataGetJsonPointer
-     *
-     * @param string $jsonPointer
-     * @param string $json
-     */
-    public function testGetMatchedJsonPointer($jsonPointer, $json)
+    public function testGetMatchedJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
         $this->expectExceptionMessage('getMatchedJsonPointer() must not be called outside of a loop');
-        $parser = $this->createParser($json, $jsonPointer);
+        $parser = $this->createParser('[]');
         $parser->getMatchedJsonPointer();
     }
 }
