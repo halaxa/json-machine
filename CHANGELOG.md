@@ -10,6 +10,11 @@
 - Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
 - `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
 
+### Added
+- Multiple JSON Pointers can be specified as an array in `pointer` option. See README.
+- New methods available during iteration: `Items::getCurrentJsonPointer()` and `Items::getMatchedJsonPointer()`
+to track where you are. See README.
+
 <br>
 <br>
 
