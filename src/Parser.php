@@ -257,7 +257,8 @@ class Parser implements \IteratorAggregate, PositionAware
             throw new PathNotFoundException(sprintf("Paths '%s' were not found in json stream.", implode(', ', array_diff($this->jsonPointers, $pointersFound))));
         }
 
-        unset($this->matchedJsonPointer, $this->currentPath);
+        $this->matchedJsonPointer = null;
+        $this->currentPath = null;
     }
 
     private function tokenTypes()
@@ -371,7 +372,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     public function getCurrentJsonPointer(): string
     {
-        if ( ! isset($this->currentPath) || ! is_array($this->currentPath)) {
+        if ($this->currentPath === null) {
             throw new JsonMachineException('getCurrentJsonPointer() must not be called outside of a loop');
         }
 
@@ -380,7 +381,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     public function getMatchedJsonPointer(): string
     {
-        if ( ! isset($this->matchedJsonPointer)) {
+        if ($this->matchedJsonPointer === null) {
             throw new JsonMachineException('getMatchedJsonPointer() must not be called outside of a loop');
         }
 
