@@ -342,14 +342,14 @@ class Parser implements \IteratorAggregate, PositionAware
     /**
      * @deprecated this method was revealing internal implementation and is not useful for anything anyway
      */
-    public function getJsonPointerPaths(): array
+    public function getJsonPointerPath()
     {
         @trigger_error(
             'This method was revealing internal implementation and is not useful for anything anyway.',
             E_USER_DEPRECATED
         );
 
-        return $this->paths;
+        return reset($this->paths);
     }
 
     /**
