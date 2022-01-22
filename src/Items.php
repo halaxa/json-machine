@@ -38,7 +38,7 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @param iterable $bytesIterator
-     * @param array $options
+     *
      * @throws InvalidArgumentException
      */
     public function __construct($bytesIterator, array $options = [])

@@ -339,7 +339,7 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @deprecated This method was revealing internal implementation and is not useful for anything anyway.
+     * @deprecated this method was revealing internal implementation and is not useful for anything anyway
      */
     public function getJsonPointerPaths(): array
     {

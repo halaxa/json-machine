@@ -59,4 +59,6 @@ class ItemsOptionsTest extends TestCase
     }
 }
 
-class InvalidValue {}
+class InvalidValue
+{
+}
