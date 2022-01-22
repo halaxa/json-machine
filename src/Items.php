@@ -37,21 +37,20 @@ final class Items implements \IteratorAggregate, PositionAware
     private $debugEnabled;
 
     /**
-     * @param iterable     $bytesIterator
-     * @param array|string $jsonPointer
-     * @param ItemDecoder  $jsonDecoder
-     * @param bool         $debugEnabled
-     *
-     * @throws Exception\InvalidArgumentException
+     * @param iterable $bytesIterator
+     * @param array $options
+     * @throws InvalidArgumentException
      */
-    public function __construct($bytesIterator, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $debugEnabled = false)
+    public function __construct($bytesIterator, array $options = [])
     {
-        $this->bytesIterator = $bytesIterator;
-        $this->jsonPointer = $jsonPointer;
-        $this->jsonDecoder = $jsonDecoder;
-        $this->debugEnabled = $debugEnabled;
+        $options = new ItemsOptions($options);
 
-        if ($debugEnabled) {
+        $this->bytesIterator = $bytesIterator;
+        $this->jsonPointer = $options['pointer'];
+        $this->jsonDecoder = $options['decoder'];
+        $this->debugEnabled = $options['debug'];
+
+        if ($this->debugEnabled) {
             $lexerClass = DebugLexer::class;
         } else {
             $lexerClass = Lexer::class;
@@ -75,9 +74,7 @@ final class Items implements \IteratorAggregate, PositionAware
      */
     public static function fromString($string, array $options = [])
     {
-        $opts = self::normalizeOptions($options);
-
-        return new self(new StringChunks($string), $opts['pointer'], $opts['decoder'], $opts['debug']);
+        return new self(new StringChunks($string), $options);
     }
 
     /**
@@ -89,9 +86,7 @@ final class Items implements \IteratorAggregate, PositionAware
      */
     public static function fromFile($file, array $options = [])
     {
-        $opts = self::normalizeOptions($options);
-
-        return new self(new FileChunks($file), $opts['pointer'], $opts['decoder'], $opts['debug']);
+        return new self(new FileChunks($file), $options);
     }
 
     /**
@@ -103,9 +98,7 @@ final class Items implements \IteratorAggregate, PositionAware
      */
     public static function fromStream($stream, array $options = [])
     {
-        $opts = self::normalizeOptions($options);
-
-        return new self(new StreamChunks($stream), $opts['pointer'], $opts['decoder'], $opts['debug']);
+        return new self(new StreamChunks($stream), $options);
     }
 
     /**
@@ -117,9 +110,7 @@ final class Items implements \IteratorAggregate, PositionAware
      */
     public static function fromIterable($iterable, array $options = [])
     {
-        $opts = self::normalizeOptions($options);
-
-        return new self($iterable, $opts['pointer'], $opts['decoder'], $opts['debug']);
+        return new self($iterable, $options);
     }
 
     #[\ReturnTypeWillChange]
@@ -146,51 +137,6 @@ final class Items implements \IteratorAggregate, PositionAware
     public function getMatchedJsonPointer(): string
     {
         return $this->parser->getMatchedJsonPointer();
-    }
-
-    /**
-     * @return array{pointer: string, decoder: ItemDecoder, debug: bool}
-     *
-     * @throws InvalidArgumentException
-     */
-    private static function normalizeOptions(array $options)
-    {
-        $mergedOptions = array_merge([
-            'pointer' => '',
-            'decoder' => null,
-            'debug' => false,
-        ], $options);
-
-        self::optionMustBeType('pointer', $mergedOptions['pointer'], 'string');
-        self::optionMustBeType('decoder', $mergedOptions['decoder'], ItemDecoder::class);
-        self::optionMustBeType('debug', $mergedOptions['debug'], 'boolean');
-
-        return $mergedOptions;
-    }
-
-    private static function optionMustBeType($name, $value, $type)
-    {
-        if ($value === null) {
-            return;
-        }
-
-        if (class_exists($type) || interface_exists($type)) {
-            if ( ! $value instanceof $type) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        "Option '$name' must be an instance of $type, %s given.",
-                        is_object($value) ? gettype($value) : get_class($value)
-                    )
-                );
-            }
-        } elseif (gettype($value) !== $type) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    "Option '$name' must be $type, %s given.",
-                    gettype($value)
-                )
-            );
-        }
     }
 
     /**
