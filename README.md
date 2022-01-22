@@ -290,7 +290,7 @@ It is also possible to parse multiple subtrees using multiple JSON Pointers. Con
 }
 ``` 
 To iterate over all berries and citrus fruits, use the JSON pointers `["/berries", "/citrus"]`. The order of pointers
-does not matter. Items will be iterated in the order of appearance in the document.
+does not matter. The items will be iterated in the order of appearance in the document.
 ```php
 <?php
 
