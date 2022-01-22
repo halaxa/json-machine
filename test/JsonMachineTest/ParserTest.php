@@ -354,7 +354,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetCurrentJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('getCurrentJsonPointer() must not be called outside of a loop');
+        $this->expectExceptionMessage('must be called inside a loop');
         $parser = $this->createParser('[]');
         $parser->getCurrentJsonPointer();
     }
@@ -362,7 +362,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetMatchedJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('getMatchedJsonPointer() must not be called outside of a loop');
+        $this->expectExceptionMessage('must be called inside a loop');
         $parser = $this->createParser('[]');
         $parser->getMatchedJsonPointer();
     }
@@ -384,7 +384,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetJsonPointerThrowsOnMultipleJsonPointers()
     {
         $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('Call getJsonPointers() when you provide more than one.');
+        $this->expectExceptionMessage('getJsonPointers()');
         $parser = $this->createParser('{}', ['/one', '/two']);
         $parser->getJsonPointer();
     }

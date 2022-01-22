@@ -359,7 +359,9 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getJsonPointer()
     {
         if ( ! $this->hasSingleJsonPointer) {
-            throw new JsonMachineException('Call getJsonPointers() when you provide more than one.');
+            throw new JsonMachineException(
+                'This instance has multiple JSON Pointers. Call getJsonPointers() to access them.'
+            );
         }
 
         return reset($this->jsonPointers);
@@ -373,7 +375,7 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getCurrentJsonPointer(): string
     {
         if ($this->currentPath === null) {
-            throw new JsonMachineException('getCurrentJsonPointer() must not be called outside of a loop');
+            throw new JsonMachineException(__METHOD__ . ' must be called inside a loop');
         }
 
         return self::pathToJsonPointer($this->currentPath);
@@ -382,7 +384,7 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getMatchedJsonPointer(): string
     {
         if ($this->matchedJsonPointer === null) {
-            throw new JsonMachineException('getMatchedJsonPointer() must not be called outside of a loop');
+            throw new JsonMachineException(__METHOD__ . ' must be called inside a loop');
         }
 
         return $this->matchedJsonPointer;
