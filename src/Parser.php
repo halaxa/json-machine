@@ -375,7 +375,7 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getCurrentJsonPointer(): string
     {
         if ($this->currentPath === null) {
-            throw new JsonMachineException(__METHOD__ . ' must be called inside a loop');
+            throw new JsonMachineException(__METHOD__.' must be called inside a loop');
         }
 
         return self::pathToJsonPointer($this->currentPath);
@@ -384,7 +384,7 @@ class Parser implements \IteratorAggregate, PositionAware
     public function getMatchedJsonPointer(): string
     {
         if ($this->matchedJsonPointer === null) {
-            throw new JsonMachineException(__METHOD__ . ' must be called inside a loop');
+            throw new JsonMachineException(__METHOD__.' must be called inside a loop');
         }
 
         return $this->matchedJsonPointer;

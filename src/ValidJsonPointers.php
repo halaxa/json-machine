@@ -85,7 +85,7 @@ final class ValidJsonPointers
     }
 
     /**
-     * https://github.com/symfony/polyfill/blob/v1.24.0/src/Php80/Php80.php
+     * @see https://github.com/symfony/polyfill/blob/v1.24.0/src/Php80/Php80.php
      */
     public static function str_contains(string $haystack, string $needle): bool
     {
