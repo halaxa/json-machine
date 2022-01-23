@@ -64,8 +64,8 @@ final class ValidJsonPointers
                     continue;
                 }
                 if ($jsonPointerA === $jsonPointerB
-                    || 0 === strpos($jsonPointerA, $jsonPointerB)
-                    || 0 === strpos($jsonPointerA, self::wildcardify($jsonPointerB))
+                    || self::str_contains($jsonPointerA, $jsonPointerB)
+                    || self::str_contains($jsonPointerA, self::wildcardify($jsonPointerB))
                 ) {
                     throw new InvalidArgumentException(
                         sprintf(
@@ -82,5 +82,13 @@ final class ValidJsonPointers
     public static function wildcardify(string $jsonPointerPart): string
     {
         return preg_replace('~/\d+(/|$)~S', '/-$1', $jsonPointerPart);
+    }
+
+    /**
+     * https://github.com/symfony/polyfill/blob/v1.24.0/src/Php80/Php80.php
+     */
+    public static function str_contains(string $haystack, string $needle): bool
+    {
+        return '' === $needle || false !== strpos($haystack, $needle);
     }
 }
