@@ -26,7 +26,7 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: tests-all cs ## Run all necessary stuff before commit.
+build: tests-all cs-check ## Run all necessary stuff before commit.
 
 
 tests: CMD=composer tests -- $(ARGS)
@@ -42,8 +42,8 @@ tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via 
 	done
 
 
-cs: CMD=composer cs
-cs: docker-run ## Check code style
+cs-check: CMD=composer cs-check
+cs-check: docker-run ## Check code style
 
 
 cs-fix: CMD=composer cs-fix
