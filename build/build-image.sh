@@ -11,12 +11,6 @@ XDEBUG_VERSION=$2
 FROM_IMAGE="php:$PHP_VERSION-cli-alpine"
 CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
-if [ "$2" = "--pull" ]
-then
-  set -x
-  docker pull "$FROM_IMAGE"
-  exit
-fi
 
 docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
 

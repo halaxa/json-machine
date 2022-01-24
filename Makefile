@@ -56,11 +56,3 @@ performance-tests: docker-run ## Run performance tests
 
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
 	@$(call DOCKER_RUN,$(LATEST_PHP),$(CMD))
-
-
-docker-pull: ## Pull the most recent vanilla images for all supported PHP versions
-	@for version in $(PHP_VERSIONS); do \
-		printf "$$SEP"; \
-		build/build-image.sh $$(printf $$version | awk '{print $$1;}') --pull; \
-		SEP="\n"; \
-	done
