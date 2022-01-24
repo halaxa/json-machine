@@ -1,4 +1,4 @@
-name: `make build`
+name: "`make build`"
 
 on:
   push:
