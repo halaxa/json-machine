@@ -35,7 +35,7 @@ tests: docker-run ## Run tests on the latest supported PHP version. Pass args to
 
 tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via ARGS=""
 	@for version in $(PHP_VERSIONS); do \
-  		set -e \
+		set -e \
 		printf "$$SEP"; \
 		$(call DOCKER_RUN,$$version,composer tests -- $(ARGS)); \
 		SEP="\n\n"; \
