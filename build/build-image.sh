@@ -2,7 +2,9 @@
 
 set -e
 
-PHP_VERSION=$1
+PHP_MINOR=$1
+PHP_VERSION=$(wget -qO- "https://www.php.net/releases/?json&version=$PHP_MINOR" \
+  | grep -Po "(?<=\")[0-9]+.[0-9]+.[0-9]+(?=\")")
 XDEBUG_VERSION=$2
 
 
