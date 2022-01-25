@@ -322,21 +322,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataGetCurrentAndMatchedJsonPointer
+     * @dataProvider dataGetCurrentJsonPointer
      */
-    public function testGetCurrentAndMatchedJsonPointer(string $jsonPointer, string $json, array $expectedJsonPointers)
+    public function testGetCurrentJsonPointer($jsonPointer, string $json, array $currentJsonPointers)
     {
         $parser = $this->createParser($json, $jsonPointer);
 
         $i = 0;
 
         foreach ($parser as $value) {
-            $this->assertEquals($expectedJsonPointers[$i++] ?? '', $parser->getCurrentJsonPointer());
-            $this->assertEquals($jsonPointer, $parser->getMatchedJsonPointer());
+            $this->assertEquals($currentJsonPointers[$i++], $parser->getCurrentJsonPointer());
         }
     }
 
-    public function dataGetCurrentAndMatchedJsonPointer()
+    public function dataGetCurrentJsonPointer()
     {
         return [
             ['', '{"c":1,"d":2}', ['', '']],
@@ -348,6 +347,45 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['/~1/c', '{"/":{"c":[1,2],"d":2}}', ['/~1/c', '/~1/c']],
             ['/0', '[{"c":1,"d":2}, [null]]', ['/0', '/0']],
             ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['/0', '/0', '/1', '/1']],
+            [
+                ['/two', '/four'],
+                '{"one": [1,11], "two": [2,22], "three": [3,33], "four": [4,44]}',
+                ['/two', '/two', '/four', '/four'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataGetMatchedJsonPointer
+     */
+    public function testGetMatchedJsonPointer($jsonPointer, string $json, array $matchedJsonPointers)
+    {
+        $parser = $this->createParser($json, $jsonPointer);
+
+        $i = 0;
+
+        foreach ($parser as $value) {
+            $this->assertEquals($matchedJsonPointers[$i++], $parser->getMatchedJsonPointer());
+        }
+    }
+
+    public function dataGetMatchedJsonPointer()
+    {
+        return [
+            ['', '{"c":1,"d":2}', ['', '']],
+            ['/', '{"":{"c":1,"d":2}}', ['/', '/']],
+            ['/~0', '{"~":{"c":1,"d":2}}', ['/~0', '/~0']],
+            ['/~1', '{"/":{"c":1,"d":2}}', ['/~1', '/~1']],
+            ['/~01', '{"~1":{"c":1,"d":2}}', ['/~01', '/~01']],
+            ['/~00', '{"~0":{"c":1,"d":2}}', ['/~00', '/~00']],
+            ['/~1/c', '{"/":{"c":[1,2],"d":2}}', ['/~1/c', '/~1/c']],
+            ['/0', '[{"c":1,"d":2}, [null]]', ['/0', '/0']],
+            ['/-', '[{"one": 1,"two": 2},{"three": 3,"four": 4}]', ['/-', '/-', '/-', '/-']],
+            [
+                ['/two', '/four'],
+                '{"one": [1,11], "two": [2,22], "three": [3,33], "four": [4,44]}',
+                ['/two', '/two', '/four', '/four'],
+            ],
         ];
     }
 
