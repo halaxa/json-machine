@@ -352,6 +352,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 '{"one": [1,11], "two": [2,22], "three": [3,33], "four": [4,44]}',
                 ['/two', '/two', '/four', '/four'],
             ],
+            [
+                ['/-/two', '/-/one'],
+                '[{"one": 1, "two": 2}, {"one": 1, "two": 2}]',
+                ['/0/one', '/0/two', '/1/one', '/1/two'],
+            ],
         ];
     }
 
@@ -385,6 +390,11 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 ['/two', '/four'],
                 '{"one": [1,11], "two": [2,22], "three": [3,33], "four": [4,44]}',
                 ['/two', '/two', '/four', '/four'],
+            ],
+            [
+                ['/-/two', '/-/one'],
+                '[{"one": 1, "two": 2}, {"one": 1, "two": 2}]',
+                ['/-/one', '/-/two', '/-/one', '/-/two'],
             ],
         ];
     }
