@@ -5,7 +5,7 @@
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
 for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
-[![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://app.travis-ci.com/github/halaxa/json-machine/branches)
+[![Build Status](https://github.com/halaxa/json-machine/actions/workflows/makefile.yml/badge.svg)](https://github.com/halaxa/json-machine/actions)
 [![Latest Stable Version](https://img.shields.io/badge/stable-0.8.0-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
 [![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
 
@@ -565,6 +565,8 @@ of the build process such as tests.
 [Install Docker](https://docs.docker.com/install/) and run `make` in the project dir on your host machine
 to see available dev tools/commands. You can run all the steps of the build process separately as well
 as the whole build process at once. Make basically runs composer dev scripts inside containers in the background.
+
+`make build`: Runs complete build. The same command is run via GitHub Actions CI.
 
 
 

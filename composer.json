@@ -10,7 +10,7 @@
     ],
     "scripts": {
         "tests": "build/composer-update.sh && vendor/bin/phpunit",
-        "cs": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose",
+        "cs-check": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose",
         "cs-fix": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --verbose",
         "performance-tests": "php -n test/performance/testPerformance.php"
     },
