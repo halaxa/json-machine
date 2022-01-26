@@ -421,11 +421,11 @@ class Parser implements \IteratorAggregate, PositionAware
         }, explode('/', $jsonPointer)), 1);
     }
 
-    private static function pathToJsonPointer(array $valueAddress): string
+    private static function pathToJsonPointer(array $path): string
     {
         $encodedParts = array_map(function ($addressPart) {
             return str_replace(['~', '/'], ['~0', '~1'], $addressPart);
-        }, $valueAddress);
+        }, $path);
 
         array_unshift($encodedParts, '');
 

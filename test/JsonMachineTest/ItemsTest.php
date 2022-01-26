@@ -80,4 +80,51 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         $iterator->next();
         $this->assertFalse($iterator->valid());
     }
+
+    public function testIsDebugEnabled()
+    {
+        $items = $iterator = Items::fromString('{}');
+        $this->assertFalse($items->isDebugEnabled());
+
+        $items = $iterator = Items::fromString('{}', ['debug' => true]);
+        $this->assertTrue($items->isDebugEnabled());
+    }
+
+    public function testGetCurrentJsonPointer()
+    {
+        $items = $iterator = Items::fromString(
+            '[{"two": 2, "one": 1}]',
+            ['pointer' => ['/-/one', '/-/two']]
+        );
+        $iterator = $items->getIterator();
+
+        $iterator->rewind();
+        $iterator->current();
+
+        $this->assertSame('/0/two', $items->getCurrentJsonPointer());
+
+        $iterator->next();
+        $iterator->current();
+
+        $this->assertSame('/0/one', $items->getCurrentJsonPointer());
+    }
+
+    public function testGetMatchedJsonPointer()
+    {
+        $items = $iterator = Items::fromString(
+            '[{"two": 2, "one": 1}]',
+            ['pointer' => ['/-/one', '/-/two']]
+        );
+        $iterator = $items->getIterator();
+
+        $iterator->rewind();
+        $iterator->current();
+
+        $this->assertSame('/-/two', $items->getMatchedJsonPointer());
+
+        $iterator->next();
+        $iterator->current();
+
+        $this->assertSame('/-/one', $items->getMatchedJsonPointer());
+    }
 }
