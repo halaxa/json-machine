@@ -15,9 +15,9 @@
 - `JsonMachine\Parser::getJsonPointerPath()`
 
 ### Added
-- Multiple JSON Pointers can be specified as an array in `pointer` option. See README.
+- Multiple JSON Pointers can be specified as an array in `pointer` option. See README. Thanks @fwolfsjaeger. 
 - New methods available during iteration: `Items::getCurrentJsonPointer()` and `Items::getMatchedJsonPointer()`
-to track where you are. See README.
+to track where you are. See README. Thanks @fwolfsjaeger.
 
 <br>
 <br>
