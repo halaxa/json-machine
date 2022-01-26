@@ -127,4 +127,11 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('/-/one', $items->getMatchedJsonPointer());
     }
+
+    public function testGetJsonPointers()
+    {
+        $items = Items::fromString('[]', ['pointer' => ['/one', '/two']]);
+
+        $this->assertSame(['/one', '/two'], $items->getJsonPointers());
+    }
 }
