@@ -353,11 +353,15 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @deprecated
-     * @see Parser::getMatchedJsonPointer()
+     * @deprecated use Parser::getJsonPointers() instead
      */
     public function getJsonPointer()
     {
+        @trigger_error(
+            'Since Parser now supports multiple JSON Pointers, use Parser::getJsonPointers() instead.',
+            E_USER_DEPRECATED
+        );
+
         if ( ! $this->hasSingleJsonPointer) {
             throw new JsonMachineException(
                 'This instance has multiple JSON Pointers. Call getJsonPointers() to access them.'
