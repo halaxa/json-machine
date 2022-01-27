@@ -26,16 +26,16 @@ class ItemsOptionsTest extends TestCase
     }
 
     /**
-     * @dataProvider dataOptionNames
+     * @dataProvider defaultOptionNames
      */
-    public function testThrowsOnInvalidOptionType($option)
+    public function testThrowsOnInvalidOptionType($optionName)
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new ItemsOptions([$option => new InvalidValue()]);
+        new ItemsOptions([$optionName => new InvalidValue()]);
     }
 
-    public function dataOptionNames()
+    public function defaultOptionNames()
     {
         foreach ($this->defaultOptions() as $name => $ignore) {
             yield [$name];

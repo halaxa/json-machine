@@ -8,7 +8,7 @@ use JsonMachine\ValidJsonPointers;
 class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider dataIntersectingPaths
+     * @dataProvider data_testThrowsOnIntersectingPaths
      *
      * @param $jsonPointers
      * @param ParserTest $parserTest
@@ -20,7 +20,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
         (new ValidJsonPointers($jsonPointers))->toArray();
     }
 
-    public function dataIntersectingPaths()
+    public function data_testThrowsOnIntersectingPaths()
     {
         return [
             [['/companies/-/id', '/companies/0/id']],
@@ -33,7 +33,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataThrowsOnMalformedJsonPointer
+     * @dataProvider data_testThrowsOnMalformedJsonPointer
      */
     public function testThrowsOnMalformedJsonPointer(array $jsonPointer)
     {
@@ -42,7 +42,7 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
         (new ValidJsonPointers($jsonPointer))->toArray();
     }
 
-    public function dataThrowsOnMalformedJsonPointer()
+    public function data_testThrowsOnMalformedJsonPointer()
     {
         return [
             [['apple']],

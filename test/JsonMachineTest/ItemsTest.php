@@ -8,7 +8,7 @@ use JsonMachine\JsonDecoder\PassThruDecoder;
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider dataFactories
+     * @dataProvider data_testFactories
      */
     public function testFactories($expected, $methodName, ...$args)
     {
@@ -31,7 +31,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataFactories()
+    public function data_testFactories()
     {
         $extJsonResult = ['key' => 'value'];
         $passThruResult = ['key' => '"value"'];

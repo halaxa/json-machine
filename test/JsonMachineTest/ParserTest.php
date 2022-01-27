@@ -14,7 +14,7 @@ use JsonMachine\StringChunks;
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider dataSyntax
+     * @dataProvider data_testSyntax
      *
      * @param string $jsonPointer
      * @param string $json
@@ -30,7 +30,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedResult, $result);
     }
 
-    public function dataSyntax()
+    public function data_testSyntax()
     {
         return [
             ['', '{}', []],
@@ -100,7 +100,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataThrowsOnNotFoundJsonPointer
+     * @dataProvider data_testThrowsOnNotFoundJsonPointer
      *
      * @param string $json
      * @param string $jsonPointer
@@ -113,7 +113,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         iterator_to_array($parser);
     }
 
-    public function dataThrowsOnNotFoundJsonPointer()
+    public function data_testThrowsOnNotFoundJsonPointer()
     {
         return [
             'non existing pointer' => ['{}', '/not/found'],
@@ -124,7 +124,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataGetJsonPointerPath
+     * @dataProvider data_testGetJsonPointerPath
      *
      * @param string $jsonPointer
      */
@@ -134,7 +134,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedJsonPointerPath, $parser->getJsonPointerPath());
     }
 
-    public function dataGetJsonPointerPath()
+    public function data_testGetJsonPointerPath()
     {
         return [
             ['/', ['']],
@@ -146,7 +146,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataSyntaxError
+     * @dataProvider data_testSyntaxError
      *
      * @param string $malformedJson
      */
@@ -157,7 +157,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         iterator_to_array($this->createParser($malformedJson));
     }
 
-    public function dataSyntaxError()
+    public function data_testSyntaxError()
     {
         return [
             ['[}'],
@@ -184,7 +184,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataUnexpectedEndError
+     * @dataProvider data_testUnexpectedEndError
      *
      * @param string $malformedJson
      */
@@ -195,7 +195,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         iterator_to_array($this->createParser($malformedJson));
     }
 
-    public function dataUnexpectedEndError()
+    public function data_testUnexpectedEndError()
     {
         return [
             ['['],
@@ -322,7 +322,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataGetCurrentJsonPointer
+     * @dataProvider data_testGetCurrentJsonPointer
      */
     public function testGetCurrentJsonPointer($jsonPointer, string $json, array $currentJsonPointers)
     {
@@ -335,7 +335,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataGetCurrentJsonPointer()
+    public function data_testGetCurrentJsonPointer()
     {
         return [
             ['', '{"c":1,"d":2}', ['', '']],
@@ -361,7 +361,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataGetMatchedJsonPointer
+     * @dataProvider data_testGetMatchedJsonPointer
      */
     public function testGetMatchedJsonPointer($jsonPointer, string $json, array $matchedJsonPointers)
     {
@@ -374,7 +374,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataGetMatchedJsonPointer()
+    public function data_testGetMatchedJsonPointer()
     {
         return [
             ['', '{"c":1,"d":2}', ['', '']],
