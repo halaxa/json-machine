@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 $client = new \GuzzleHttp\Client();
 $response = $client->request('GET', 'https://httpbin.org/anything?key=value');
