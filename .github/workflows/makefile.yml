@@ -29,4 +29,4 @@ jobs:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         composer global require php-coveralls/php-coveralls
-        $(composer global config bin-dir --absolute --quiet)/php-coveralls --coverage_clover=clover.xml -v
+        $(composer global config bin-dir --absolute --quiet)/php-coveralls --json_path=/tmp/coverage.json --coverage_clover=clover.xml -v
