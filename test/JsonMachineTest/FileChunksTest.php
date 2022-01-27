@@ -4,6 +4,9 @@ namespace JsonMachineTest;
 
 use JsonMachine\FileChunks;
 
+/**
+ * @covers \JsonMachine\FileChunks
+ */
 class FileChunksTest extends \PHPUnit_Framework_TestCase
 {
     /**

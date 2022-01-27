@@ -5,6 +5,9 @@ namespace JsonMachineTest;
 use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 
+/**
+ * @covers \JsonMachine\Items
+ */
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {
     /**

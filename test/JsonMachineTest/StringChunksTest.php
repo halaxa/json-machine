@@ -4,6 +4,9 @@ namespace JsonMachineTest;
 
 use JsonMachine\StringChunks;
 
+/**
+ * @covers \JsonMachine\StringChunks
+ */
 class StringChunksTest extends \PHPUnit_Framework_TestCase
 {
     /**

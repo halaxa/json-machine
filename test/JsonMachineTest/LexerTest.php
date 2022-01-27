@@ -8,6 +8,10 @@ use JsonMachine\Lexer;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
+/**
+ * @covers \JsonMachine\Lexer
+ * @covers \JsonMachine\DebugLexer
+ */
 class LexerTest extends \PHPUnit_Framework_TestCase
 {
     public function bothDebugModes()

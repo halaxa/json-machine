@@ -6,6 +6,10 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\ExtJsonDecoder
+ * @covers \JsonMachine\JsonDecoder\PassThruDecoder
+ */
 class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
 {
     /**

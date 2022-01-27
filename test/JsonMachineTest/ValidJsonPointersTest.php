@@ -5,6 +5,9 @@ namespace JsonMachineTest;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\ValidJsonPointers;
 
+/**
+ * @covers \JsonMachine\ValidJsonPointers
+ */
 class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
 {
     /**

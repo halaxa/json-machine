@@ -10,6 +10,9 @@ use JsonMachine\JsonDecoder\InvalidResult;
 use JsonMachine\JsonDecoder\ValidResult;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\ErrorWrappingDecoder
+ */
 class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
 {
     /**

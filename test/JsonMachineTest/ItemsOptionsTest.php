@@ -7,6 +7,9 @@ use JsonMachine\ItemsOptions;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \JsonMachine\ItemsOptions
+ */
 class ItemsOptionsTest extends TestCase
 {
     public function testReturnsAllOptionsWithDefaultValues()

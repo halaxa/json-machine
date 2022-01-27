@@ -11,6 +11,9 @@ use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 
+/**
+ * @covers \JsonMachine\Parser
+ */
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
