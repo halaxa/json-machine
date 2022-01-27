@@ -23,3 +23,9 @@ jobs:
 
     - name: Code coverage report
       run: make tests-coverage
+
+    - name: Send coverage report to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: clover.xml
