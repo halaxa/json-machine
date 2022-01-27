@@ -9,6 +9,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * @covers \JsonMachine\JsonDecoder\ExtJsonDecoder
  * @covers \JsonMachine\JsonDecoder\PassThruDecoder
+ * @covers \JsonMachine\JsonDecoder\ExtJsonDecoding
  */
 class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
 {
