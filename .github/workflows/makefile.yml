@@ -20,3 +20,6 @@ jobs:
 
     - name: Complete Makefile build
       run: make build
+
+    - name: Code coverage report
+      run: make tests-coverage

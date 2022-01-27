@@ -1,6 +1,8 @@
 .DEFAULT_GOAL := help
 .PHONY: *
+
 LATEST_PHP := 8.0 3.1.1
+COVERAGE_PHP := 7.4 3.1.1
 
 define PHP_VERSIONS
 "7.0 2.7.2"\
@@ -30,7 +32,12 @@ build: tests-all cs-check ## Run all necessary stuff before commit.
 
 
 tests: CMD=composer tests -- $(ARGS)
-tests: docker-run ## Run tests on the latest supported PHP version. Pass args to phpunit via ARGS=""
+tests: docker-run ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
+
+
+tests-coverage: CMD=composer tests-coverage -- $(ARGS)
+tests-coverage: ## Runs tests and creates ./clover.xml. Pass args to phpunit via ARGS=""
+	@$(call DOCKER_RUN,$(COVERAGE_PHP),$(CMD))
 
 
 tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via ARGS=""
