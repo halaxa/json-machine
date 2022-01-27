@@ -361,13 +361,13 @@ popular http clients which support streaming responses:
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
 `Items::fromStream` function, and you're set up. See working
-[GuzzleHttp example](src/examples/guzzleHttp.php).
+[GuzzleHttp example](examples/guzzleHttp.php).
 
 <a name="symfony-httpclient"></a>
 ### Symfony HttpClient
 A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
 based on iterators, the integration with Symfony HttpClient is very simple. See
-[HttpClient example](src/examples/symfonyHttpClient.php).
+[HttpClient example](examples/symfonyHttpClient.php).
 
 
 <a name="tracking-parsing-progress"></a>

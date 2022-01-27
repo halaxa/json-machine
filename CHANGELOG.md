@@ -112,7 +112,7 @@ However **built-in decoders depend on it** so it must be present if you use them
 - Throws `UnexpectedEndSyntaxErrorException` on an unexpected end of JSON structure (thanks @gabimem)
 - Function `httpClientChunks()` is **deprecated** so that compatibility with Symfony HttpClient
 is not on the shoulders of JSON Machine maintainer. The code is simple and everyone can make their own
-function and maintain it. The code was moved to [examples](src/examples/symfonyHttpClient.php).
+function and maintain it. The code was moved to [examples](examples/symfonyHttpClient.php).
 - Function `objects()` is **deprecated**. The way `objects()` works is that it casts decoded arrays
 to objects. It brings some unnecessary overhead and risks on huge datasets.
 Alternative is to use `ExtJsonDecoder` which decodes items as objects by default (same as `json_decode`).
