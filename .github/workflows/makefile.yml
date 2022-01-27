@@ -25,7 +25,7 @@ jobs:
       run: make tests-coverage
 
     - name: Send coverage report to Coveralls
-    - uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v2
       with:
         files: clover.xml
         verbose: true
