@@ -25,11 +25,7 @@ jobs:
       run: make tests-coverage
 
     - name: Send coverage report to Coveralls
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        composer global require php-coveralls/php-coveralls
-        $(composer global config bin-dir --absolute --quiet)/php-coveralls \
-          --json_path=/tmp/coverage.json \
-          --coverage_clover=clover.xml -v \
-          --root_dir=.
+    - uses: codecov/codecov-action@v2
+      with:
+        files: clover.xml
+        verbose: true
