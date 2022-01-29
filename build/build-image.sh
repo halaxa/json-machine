@@ -2,19 +2,15 @@
 
 set -e
 
-PHP_VERSION=$1
+PHP_MINOR=$1
+PHP_VERSION=$(wget -qO- "https://www.php.net/releases/?json&version=$PHP_MINOR" \
+  | grep -Po "(?<=\")[0-9]+.[0-9]+.[0-9]+(?=\")")
 XDEBUG_VERSION=$2
 
 
 FROM_IMAGE="php:$PHP_VERSION-cli-alpine"
 CONTAINER_NAME="json-machine-php-$PHP_VERSION"
 
-if [ "$2" = "--pull" ]
-then
-  set -x
-  docker pull "$FROM_IMAGE"
-  exit
-fi
 
 docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "$CONTAINER_NAME"
 

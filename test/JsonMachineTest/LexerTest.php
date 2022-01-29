@@ -4,10 +4,15 @@ namespace JsonMachineTest;
 
 use JsonMachine\DebugLexer;
 use JsonMachine\IteratorLexerPOC;
+use JsonMachine\FileChunks;
 use JsonMachine\Lexer;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 
+/**
+ * @covers \JsonMachine\Lexer
+ * @covers \JsonMachine\DebugLexer
+ */
 class LexerTest extends \PHPUnit_Framework_TestCase
 {
     public function bothDebugModes()
@@ -147,7 +152,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $formattedJsonFilePath
-     * @dataProvider dataProvidesLocationalData
+     * @dataProvider jsonFilesWithDifferentLineEndings
      */
     public function testProvidesLocationalDataWhenDebugEnabled($formattedJsonFilePath)
     {
@@ -167,13 +172,11 @@ class LexerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $formattedJsonFilePath
-     * @dataProvider dataProvidesLocationalData
+     * @dataProvider jsonFilesWithDifferentLineEndings
      */
-    public function testProvidesLocationalDataWhenDebugDisabled($formattedJsonFilePath)
+    public function testProvidesLocationalDataWhenDebugDisabled(string $jsonFilePath)
     {
-        $json = file_get_contents($formattedJsonFilePath);
-        $lexer = new Lexer(new StringChunks($json));
+        $lexer = new Lexer(new FileChunks($jsonFilePath));
         $expectedTokens = $this->expectedTokens();
         $i = 0;
 
@@ -187,7 +190,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataProvidesLocationalData()
+    public function jsonFilesWithDifferentLineEndings()
     {
         return [
             'cr new lines' => [__DIR__.'/formatted-cr.json'],

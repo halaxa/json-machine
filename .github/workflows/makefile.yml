@@ -1,0 +1,31 @@
+name: "`make build`"
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      # Ignore the failure of a step and avoid terminating the job.
+      continue-on-error: true
+
+    - name: Complete Makefile build
+      run: make build
+
+    - name: Code coverage report
+      run: make tests-coverage
+
+    - name: Send coverage report to codecov
+      uses: codecov/codecov-action@v2
+      with:
+        files: clover.xml
+        verbose: true

@@ -6,10 +6,15 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\ExtJsonDecoder
+ * @covers \JsonMachine\JsonDecoder\PassThruDecoder
+ * @covers \JsonMachine\JsonDecoder\ExtJsonDecoding
+ */
 class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider dataPassesOptionsToJsonDecode
+     * @dataProvider data_testPassesOptionsToJsonDecode
      */
     public function testPassesOptionsToJsonDecode($className, $methodName)
     {
@@ -39,7 +44,7 @@ class ExtJsonDecodersTest extends PHPUnit_Framework_TestCase
         $this->assertSame('123123123123123123123', $bigintResult->getValue());
     }
 
-    public function dataPassesOptionsToJsonDecode()
+    public function data_testPassesOptionsToJsonDecode()
     {
         return [
             [PassThruDecoder::class, 'decodeKey'],

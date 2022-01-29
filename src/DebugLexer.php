@@ -53,10 +53,10 @@ class DebugLexer implements \IteratorAggregate, PositionAware
             for ($i = 0; $i < $bytesLength; ++$i) {
                 $byte = $bytes[$i];
                 if ($inString) {
-                    if ($byte == '"' && !$escaping) {
+                    if ($byte == '"' && ! $escaping) {
                         $inString = false;
                     }
-                    $escaping = ($byte == '\\' && !$escaping);
+                    $escaping = ($byte == '\\' && ! $escaping);
                     $tokenBuffer .= $byte;
                     ++$tokenWidth;
                     continue;

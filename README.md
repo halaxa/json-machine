@@ -5,9 +5,10 @@
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
 for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
 
-[![Build Status](https://travis-ci.com/halaxa/json-machine.svg?branch=master)](https://app.travis-ci.com/github/halaxa/json-machine/branches)
-[![Latest Stable Version](https://img.shields.io/badge/stable-0.8.0-blueviolet)](https://packagist.org/packages/halaxa/json-machine)
-[![Monthly Downloads](https://poser.pugx.org/halaxa/json-machine/d/monthly)](https://packagist.org/packages/halaxa/json-machine)
+[![Build Status](https://github.com/halaxa/json-machine/actions/workflows/makefile.yml/badge.svg)](https://github.com/halaxa/json-machine/actions)
+[![codecov](https://img.shields.io/codecov/c/gh/halaxa/json-machine?label=phpunit%20%40covers)](https://codecov.io/gh/halaxa/json-machine)
+[![Latest Stable Version](https://img.shields.io/github/v/release/halaxa/json-machine?color=blueviolet&include_prereleases&logoColor=white)](https://packagist.org/packages/halaxa/json-machine)
+[![Monthly Downloads](https://img.shields.io/packagist/dt/halaxa/json-machine?color=%23f28d1a)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
 
@@ -18,6 +19,7 @@ for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optiona
   + [Parsing a subtree](#parsing-a-subtree)
   + [Parsing nested values in arrays](#parsing-nested-values)
   + [Parsing a single scalar value](#getting-scalar-values)
+  + [Parsing multiple subtrees](#parsing-multiple-subtrees)
   + [What is JSON Pointer anyway?](#json-pointer)
 * [Options](#options)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
@@ -63,8 +65,11 @@ foreach ($users as $id => $user) {
 }
 ```
 
-Random access like `$users[42]` or counting results like `count($users)` **is not possible** by design.
-Use above-mentioned `foreach` and find the item or count the collection there.
+Random access like `$users[42]` is not yet possible.
+Use above-mentioned `foreach` and find the item or use [JSON Pointer](#parsing-a-subtree).
+
+Count the items via [`iterator_count($users)`](https://www.php.net/manual/en/function.iterator-count.php).
+Remember it will still have to internally iterate the whole thing to get the count and thus will take about the same time.
 
 Requires `ext-json` if used out of the box. See [Decoders](#decoders).
 
@@ -189,6 +194,28 @@ Example:
 
 To iterate over all colors of the fruits, use the JSON Pointer `"/results/-/color"`.
 
+```php
+<?php
+
+use \JsonMachine\Items;
+
+$fruits = Items::fromFile('fruitsArray.json', ['pointer' => '/results/-/color']);
+
+foreach ($fruits as $key => $value) {
+    // 1st iteration:
+    $key == 'color';
+    $value == 'red';
+    $fruits->getMatchedJsonPointer() == '/results/-/color';
+    $fruits->getCurrentJsonPointer() == '/results/0/color';
+
+    // 2nd iteration:
+    $key == 'color';
+    $value == 'yellow';
+    $fruits->getMatchedJsonPointer() == '/results/-/color';
+    $fruits->getCurrentJsonPointer() == '/results/1/color';
+}
+```
+
 <a name="getting-scalar-values"></a>
 ### Parsing a single scalar value
 You can parse a single scalar value anywhere in the document the same way as a collection. Consider this example:
@@ -233,6 +260,66 @@ $lastModified = iterator_to_array($fruits)['lastModified'];
 ```
 Single scalar value access supports array indices in JSON Pointer as well.
 
+<a name="parsing-multiple-subtrees"></a>
+### Parsing multiple subtrees
+
+It is also possible to parse multiple subtrees using multiple JSON Pointers. Consider this example:
+```json
+// fruits.json
+{
+    "lastModified": "2012-12-12",
+    "berries": [
+        {
+          "name": "strawberry", // not a berry, but whatever ...
+          "color": "red"
+        },
+        {
+          "name": "raspberry", // the same ...
+          "color": "red"
+        }
+    ],
+    "citruses": [
+      {
+          "name": "orange",
+          "color": "orange"
+      },
+      {
+          "name": "lime",
+          "color": "green"
+      }
+    ]
+}
+``` 
+To iterate over all berries and citrus fruits, use the JSON pointers `["/berries", "/citrus"]`. The order of pointers
+does not matter. The items will be iterated in the order of appearance in the document.
+```php
+<?php
+
+use \JsonMachine\Items;
+
+$fruits = Items::fromFile('fruits.json', [
+    'pointer' => ['/berries', '/citruses']
+]);
+
+foreach ($fruits as $key => $value) {
+    // 1st iteration:
+    $value == ["name" => "strawberry", "color" => "red"];
+    $fruits->getCurrentJsonPointer() == '/berries';
+
+    // 2nd iteration:
+    $value == ["name" => "raspberry", "color" => "red"];
+    $fruits->getCurrentJsonPointer() == '/berries';
+
+    // 3rd iteration:
+    $value == ["name" => "orange", "color" => "orange"];
+    $fruits->getCurrentJsonPointer() == '/citruses';
+
+    // 4th iteration:
+    $value == ["name" => "lime", "color" => "green"];
+    $fruits->getCurrentJsonPointer() == '/citruses';
+}
+```
+
 <a name="json-pointer"></a>
 ### What is JSON Pointer anyway?
 It's a way of addressing one item in JSON document. See the [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
@@ -275,13 +362,13 @@ popular http clients which support streaming responses:
 Guzzle uses its own streams, but they can be converted back to PHP streams by calling
 `\GuzzleHttp\Psr7\StreamWrapper::getResource()`. Pass the result of this function to
 `Items::fromStream` function, and you're set up. See working
-[GuzzleHttp example](src/examples/guzzleHttp.php).
+[GuzzleHttp example](examples/guzzleHttp.php).
 
 <a name="symfony-httpclient"></a>
 ### Symfony HttpClient
 A stream response of Symfony HttpClient works as iterator. And because JSON Machine is
 based on iterators, the integration with Symfony HttpClient is very simple. See
-[HttpClient example](src/examples/symfonyHttpClient.php).
+[HttpClient example](examples/symfonyHttpClient.php).
 
 
 <a name="tracking-parsing-progress"></a>
@@ -479,6 +566,8 @@ of the build process such as tests.
 [Install Docker](https://docs.docker.com/install/) and run `make` in the project dir on your host machine
 to see available dev tools/commands. You can run all the steps of the build process separately as well
 as the whole build process at once. Make basically runs composer dev scripts inside containers in the background.
+
+`make build`: Runs complete build. The same command is run via GitHub Actions CI.
 
 
 

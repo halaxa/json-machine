@@ -8,6 +8,16 @@
 
 ### Changed
 - Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
+- `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
+
+### Deprecated
+- `JsonMachine\Parser::getJsonPointer()`
+- `JsonMachine\Parser::getJsonPointerPath()`
+
+### Added
+- Multiple JSON Pointers can be specified as an array in `pointer` option. See README. Thanks @fwolfsjaeger. 
+- New methods available during iteration: `Items::getCurrentJsonPointer()` and `Items::getMatchedJsonPointer()`
+to track where you are. See README. Thanks @fwolfsjaeger.
 
 <br>
 <br>
@@ -102,7 +112,7 @@ However **built-in decoders depend on it** so it must be present if you use them
 - Throws `UnexpectedEndSyntaxErrorException` on an unexpected end of JSON structure (thanks @gabimem)
 - Function `httpClientChunks()` is **deprecated** so that compatibility with Symfony HttpClient
 is not on the shoulders of JSON Machine maintainer. The code is simple and everyone can make their own
-function and maintain it. The code was moved to [examples](src/examples/symfonyHttpClient.php).
+function and maintain it. The code was moved to [examples](examples/symfonyHttpClient.php).
 - Function `objects()` is **deprecated**. The way `objects()` works is that it casts decoded arrays
 to objects. It brings some unnecessary overhead and risks on huge datasets.
 Alternative is to use `ExtJsonDecoder` which decodes items as objects by default (same as `json_decode`).

@@ -5,10 +5,13 @@ namespace JsonMachineTest;
 use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 
+/**
+ * @covers \JsonMachine\Items
+ */
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @dataProvider dataFactories
+     * @dataProvider data_testFactories
      */
     public function testFactories($expected, $methodName, ...$args)
     {
@@ -31,7 +34,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function dataFactories()
+    public function data_testFactories()
     {
         $extJsonResult = ['key' => 'value'];
         $passThruResult = ['key' => '"value"'];
@@ -79,5 +82,59 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['key2', 2], [$iterator->key(), $iterator->current()]);
         $iterator->next();
         $this->assertFalse($iterator->valid());
+    }
+
+    public function testIsDebugEnabled()
+    {
+        $items = $iterator = Items::fromString('{}');
+        $this->assertFalse($items->isDebugEnabled());
+
+        $items = $iterator = Items::fromString('{}', ['debug' => true]);
+        $this->assertTrue($items->isDebugEnabled());
+    }
+
+    public function testGetCurrentJsonPointer()
+    {
+        $items = $iterator = Items::fromString(
+            '[{"two": 2, "one": 1}]',
+            ['pointer' => ['/-/one', '/-/two']]
+        );
+        $iterator = $items->getIterator();
+
+        $iterator->rewind();
+        $iterator->current();
+
+        $this->assertSame('/0/two', $items->getCurrentJsonPointer());
+
+        $iterator->next();
+        $iterator->current();
+
+        $this->assertSame('/0/one', $items->getCurrentJsonPointer());
+    }
+
+    public function testGetMatchedJsonPointer()
+    {
+        $items = $iterator = Items::fromString(
+            '[{"two": 2, "one": 1}]',
+            ['pointer' => ['/-/one', '/-/two']]
+        );
+        $iterator = $items->getIterator();
+
+        $iterator->rewind();
+        $iterator->current();
+
+        $this->assertSame('/-/two', $items->getMatchedJsonPointer());
+
+        $iterator->next();
+        $iterator->current();
+
+        $this->assertSame('/-/one', $items->getMatchedJsonPointer());
+    }
+
+    public function testGetJsonPointers()
+    {
+        $items = Items::fromString('[]', ['pointer' => ['/one', '/two']]);
+
+        $this->assertSame(['/one', '/two'], $items->getJsonPointers());
     }
 }
