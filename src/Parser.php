@@ -153,14 +153,11 @@ class Parser implements \IteratorAggregate, PositionAware
                             $key = $token;
                         } elseif ($currentLevel < $iteratorLevel) {
                             $key = $token;
-                            $keyResult = $this->jsonDecoder->decodeInternalKey($token);
-                            if ( ! $keyResult->isOk()) {
-                                $this->error($keyResult->getErrorMessage(), $token);
-                            }
+                            $referenceToken = substr($token, 1, -1);
                             $currentPathChanged = ! $this->hasSingleJsonPointer;
-                            $currentPath[$currentLevel] = $keyResult->getValue();
-                            $currentPathWildcard[$currentLevel] = $keyResult->getValue();
-                            unset($keyResult, $currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
+                            $currentPath[$currentLevel] = $referenceToken;
+                            $currentPathWildcard[$currentLevel] = $referenceToken;
+                            unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
                         }
                         continue 2; // a valid json chunk is not completed yet
                     }

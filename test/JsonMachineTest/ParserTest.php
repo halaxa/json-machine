@@ -410,12 +410,30 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->getCurrentJsonPointer();
     }
 
+    public function testGetCurrentJsonPointerReturnsLiteralJsonPointer()
+    {
+        $parser = $this->createParser('{"\"key\\\\":"value"}', ['/\"key\\\\']);
+
+        foreach ($parser as $key => $item) {
+            $this->assertSame('/\"key\\\\', $parser->getCurrentJsonPointer());
+        }
+    }
+
     public function testGetMatchedJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
         $this->expectExceptionMessage('must be called inside a loop');
         $parser = $this->createParser('[]');
         $parser->getMatchedJsonPointer();
+    }
+
+    public function testGetMatchedJsonPointerReturnsLiteralMatch()
+    {
+        $parser = $this->createParser('{"\"key\\\\":"value"}', ['/\"key\\\\']);
+
+        foreach ($parser as $key => $item) {
+            $this->assertSame('/\"key\\\\', $parser->getMatchedJsonPointer());
+        }
     }
 
     public function testGetJsonPointer()
@@ -447,5 +465,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->createParser('{}');
         $this->assertSame([''], $parser->getJsonPointers());
+    }
+
+    public function testJsonPointerReferenceTokenMatchesJsonMemberNameLiterally()
+    {
+        $parser = $this->createParser('{"\\"key":"value"}', ['/\\"key']);
+
+        foreach ($parser as $key => $item) {
+            $this->assertSame('"key', $key);
+            $this->assertSame('value', $item);
+        }
     }
 }

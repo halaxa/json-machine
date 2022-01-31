@@ -324,20 +324,22 @@ foreach ($fruits as $key => $value) {
 ### What is JSON Pointer anyway?
 It's a way of addressing one item in JSON document. See the [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
 It's very handy, because sometimes the JSON structure goes deeper, and you want to iterate a subtree,
-not the main level. So you just specify the pointer to the JSON array or object you want to iterate and off you go.
+not the main level. So you just specify the pointer to the JSON array or object (or even to a scalar value) you want to iterate and off you go.
 When the parser hits the collection you specified, iteration begins. You can pass it as `pointer` option in all
 `Items::from*` functions. If you specify a pointer to a non-existent position in the document, an exception is thrown.
-It can be used to access scalar values as well.
+It can be used to access scalar values as well. **JSON Pointer itself must be a valid JSON string**. Literal comparison
+of reference tokens (the parts between slashes) is performed against the JSON document keys/member names.
 
 Some examples:
 
-| JSON Pointer value    | Will iterate through                                                                                        |
-|-----------------------|-------------------------------------------------------------------------------------------------------------|
-| `""` (empty string - default) | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level)              |
-| `"/result/items"`     | `{"result":{"items":["this","array","will","be","iterated"]}}`                                           |
-| `"/0/items"`          | `[{"items":["this","array","will","be","iterated"]}]` (supports array indices)                           |
-| `"/results/-/status"` | `{"results":[{"status": "iterated"}, {"status": "also iterated"}]}` (a hyphen instead of an array index) |
-| `"/"` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5)) | `{"":["this","array","will","be","iterated"]}` |
+| JSON Pointer value       | Will iterate through                                                                                      |
+|--------------------------|-----------------------------------------------------------------------------------------------------------|
+| (empty string - default) | `["this", "array"]` or `{"a": "this", "b": "object"}` will be iterated (main level)                       |
+| `/result/items`          | `{"result": {"items": ["this", "array", "will", "be", "iterated"]}}`                                      |
+| `/0/items`               | `[{"items": ["this", "array", "will", "be", "iterated"]}]` (supports array indices)                       |
+| `/results/-/status`      | `{"results": [{"status": "iterated"}, {"status": "also iterated"}]}` (a hyphen as an array index wildcard)|
+| `/` (gotcha! - a slash followed by an empty string, see the [spec](https://tools.ietf.org/html/rfc6901#section-5)) | `{"":["this","array","will","be","iterated"]}` |
+| `/quotes\"`              | `{"quotes\"": ["this", "array", "will", "be", "iterated"]}`                                               |
 
 
 <a name="options"></a>
