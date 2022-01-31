@@ -9,7 +9,7 @@
 ### Changed
 - Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
 - `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
-- JSON Pointer parts between slashes (reference tokens) must be valid encoded JSON strings to be RFC compliant.
+- JSON Pointer parts between slashes (reference tokens) must be valid encoded JSON strings to be [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901) compliant.
 You will have to change your JSON Pointers if you match against keys with escape sequences.
 ```diff
 Items::fromString(
