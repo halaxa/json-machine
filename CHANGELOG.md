@@ -18,6 +18,8 @@ Items::fromString(
 +   ['pointer' => '/quotes\"']
 );
 ```
+- Method `ItemDecoder::decodeInternalKey()` was deleted as well as related `ValidStringResult`.
+They are not used anymore as described in previous point.
 
 ### Deprecated
 - `JsonMachine\Parser::getJsonPointer()`

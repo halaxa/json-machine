@@ -24,9 +24,4 @@ class StubDecoder implements ItemDecoder
     {
         return $this->decodedValue;
     }
-
-    public function decodeInternalKey($jsonScalarKey)
-    {
-        return $this->decodedKey;
-    }
 }

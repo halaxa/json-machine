@@ -33,9 +33,4 @@ class ErrorWrappingDecoder implements ItemDecoder
 
         return $result;
     }
-
-    public function decodeInternalKey($jsonScalarKey)
-    {
-        return $this->innerDecoder->decodeInternalKey($jsonScalarKey);
-    }
 }

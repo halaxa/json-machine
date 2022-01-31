@@ -36,15 +36,4 @@ trait ExtJsonDecoding
 
         return new ValidResult($decoded);
     }
-
-    public function decodeInternalKey($jsonScalarKey)
-    {
-        // inlined
-        $decoded = json_decode($jsonScalarKey, $this->assoc, $this->depth, $this->options);
-        if ($decoded === null && $jsonScalarKey !== 'null') {
-            return new InvalidResult(json_last_error_msg());
-        }
-
-        return new ValidStringResult($decoded);
-    }
 }
