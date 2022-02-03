@@ -22,9 +22,9 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
     {
         $innerDecoder = new StubDecoder($case['result']);
         $decoder = new ErrorWrappingDecoder($innerDecoder);
-        
+
         $result = $decoder->decode('"json"');
-        
+
         $this->assertTrue($result->isOk());
         $this->assertEquals($case['wrappedResult'], $result);
     }

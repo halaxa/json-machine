@@ -3,7 +3,6 @@
 namespace JsonMachineTest\JsonDecoder;
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonDecoder\PassThruDecoder;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -38,12 +37,5 @@ class ExtJsonDecoderTest extends PHPUnit_Framework_TestCase
         $bigintDecoder = new ExtJsonDecoder(null, 1, JSON_BIGINT_AS_STRING);
         $bigintResult = $bigintDecoder->decode('123123123123123123123');
         $this->assertSame('123123123123123123123', $bigintResult->getValue());
-    }
-
-    public function testPassThruDecode()
-    {
-        $passThruDecoder = new PassThruDecoder();
-        $passThruResult = $passThruDecoder->decode('["json"]');
-        $this->assertSame('["json"]', $passThruResult->getValue());
     }
 }
