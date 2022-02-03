@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest\JsonDecoder;
 
 use JsonMachine\JsonDecoder\PassThruDecoder;

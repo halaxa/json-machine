@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine;
 
 class TokensWithDebugging implements \IteratorAggregate, PositionAware

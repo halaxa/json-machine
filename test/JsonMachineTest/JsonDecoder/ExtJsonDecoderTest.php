@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest\JsonDecoder;
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
@@ -51,7 +53,7 @@ class ExtJsonDecoderTest extends PHPUnit_Framework_TestCase
 
     public function testPassesPassesBigIntOptionToJsonDecode()
     {
-        $bigintDecoder = new ExtJsonDecoder(null, 1, JSON_BIGINT_AS_STRING);
+        $bigintDecoder = new ExtJsonDecoder(false, 1, JSON_BIGINT_AS_STRING);
         $bigintResult = $bigintDecoder->decode('123123123123123123123');
         $this->assertSame('123123123123123123123', $bigintResult->getValue());
     }
