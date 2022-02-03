@@ -2,11 +2,11 @@
 
 namespace JsonMachineTest;
 
-use JsonMachine\TokensWithDebugging;
 use JsonMachine\FileChunks;
-use JsonMachine\Tokens;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
+use JsonMachine\Tokens;
+use JsonMachine\TokensWithDebugging;
 
 /**
  * @covers \JsonMachine\Tokens

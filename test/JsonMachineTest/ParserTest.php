@@ -7,9 +7,9 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Tokens;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
+use JsonMachine\Tokens;
 
 /**
  * @covers \JsonMachine\Parser
