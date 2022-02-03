@@ -4,7 +4,7 @@ namespace JsonMachineTest;
 
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
-use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Lexer;
@@ -155,7 +155,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testSyntaxError($malformedJson)
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
 
         iterator_to_array($this->createParser($malformedJson));
     }

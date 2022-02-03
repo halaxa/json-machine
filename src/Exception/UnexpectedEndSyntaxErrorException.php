@@ -2,6 +2,6 @@
 
 namespace JsonMachine\Exception;
 
-class UnexpectedEndSyntaxErrorException extends SyntaxError
+class UnexpectedEndSyntaxErrorException extends SyntaxErrorException
 {
 }

@@ -5,7 +5,7 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
-use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\ItemDecoder;
@@ -396,7 +396,7 @@ class Parser implements \IteratorAggregate, PositionAware
      * @param string $token
      * @param string $exception
      */
-    private function error($msg, $token, $exception = SyntaxError::class)
+    private function error($msg, $token, $exception = SyntaxErrorException::class)
     {
         throw new $exception($msg." '".$token."'", $this->lexer->getPosition());
     }
