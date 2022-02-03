@@ -1,0 +1,24 @@
+<?php
+
+namespace JsonMachineTest\JsonDecoder;
+
+use JsonMachine\JsonDecoder\ValidResult;
+use PHPUnit\Framework\TestCase;
+
+class ValidResultTest extends TestCase
+{
+
+    public function testGetValue()
+    {
+        $result = new ValidResult('Value X');
+
+        $this->assertSame('Value X', $result->getValue());
+    }
+
+    public function testIsOk()
+    {
+        $result = new ValidResult('X');
+
+        $this->assertTrue($result->isOk());
+    }
+}
