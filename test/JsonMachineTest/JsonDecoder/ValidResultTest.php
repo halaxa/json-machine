@@ -5,9 +5,11 @@ namespace JsonMachineTest\JsonDecoder;
 use JsonMachine\JsonDecoder\ValidResult;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\ValidResult
+ */
 class ValidResultTest extends TestCase
 {
-
     public function testGetValue()
     {
         $result = new ValidResult('Value X');

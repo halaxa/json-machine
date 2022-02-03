@@ -5,6 +5,9 @@ namespace JsonMachineTest\Exception;
 use JsonMachine\Exception\SyntaxErrorException;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \JsonMachine\Exception\SyntaxErrorException
+ */
 class SyntaxErrorExceptionTest extends TestCase
 {
     public function testMessageContainsDataFromConstructor()

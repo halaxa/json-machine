@@ -13,6 +13,7 @@ return $config->setRules([
     'single_line_throw' => false,
     'unary_operator_spaces' => false,
     'visibility_required' => false,
+    'php_unit_test_class_requires_covers' => true,
 ])
     ->setFinder($finder)
 ;

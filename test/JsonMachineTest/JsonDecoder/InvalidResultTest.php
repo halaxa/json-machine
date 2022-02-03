@@ -5,6 +5,9 @@ namespace JsonMachineTest\JsonDecoder;
 use JsonMachine\JsonDecoder\InvalidResult;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\InvalidResult
+ */
 class InvalidResultTest extends TestCase
 {
     public function testGetErrorMessage()

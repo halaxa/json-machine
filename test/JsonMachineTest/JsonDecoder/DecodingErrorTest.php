@@ -5,9 +5,11 @@ namespace JsonMachineTest\JsonDecoder;
 use JsonMachine\JsonDecoder\DecodingError;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \JsonMachine\JsonDecoder\DecodingError
+ */
 class DecodingErrorTest extends TestCase
 {
-
     public function testGetMalformedJson()
     {
         $decodingError = new DecodingError('"json\"', null);
