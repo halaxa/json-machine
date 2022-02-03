@@ -2,7 +2,7 @@
 
 namespace JsonMachine;
 
-class DebugLexer implements \IteratorAggregate, PositionAware
+class TokensWithDebugging implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;

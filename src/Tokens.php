@@ -4,7 +4,7 @@ namespace JsonMachine;
 
 use Generator;
 
-class Lexer implements \IteratorAggregate, PositionAware
+class Tokens implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;

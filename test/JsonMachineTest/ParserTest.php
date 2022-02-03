@@ -7,7 +7,7 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Lexer;
+use JsonMachine\Tokens;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 
@@ -312,12 +312,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
+        return new Parser(new Tokens(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
     }
 
     public function testDefaultDecodingStructureIsObject()
     {
-        $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
+        $items = new Parser(new Tokens(new StringChunks('[{"key": "value"}]')));
 
         foreach ($items as $item) {
             $this->assertEquals((object) ['key' => 'value'], $item);

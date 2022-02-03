@@ -21,6 +21,9 @@ Items::fromString(
 - Method `ItemDecoder::decodeInternalKey()` was deleted as well as related `ValidStringResult`.
 They are not used anymore as described in previous point.
 - `PassThruDecoder` does not decode keys anymore. Both the key and the value are raw JSON.
+- `Lexer` renamed to `Tokens`
+- `DebugLexer` renamed to `TokensWithDebugging`
+- `SyntaxError` renamed to `SyntaxErrorException`
 
 ### Deprecated
 - `JsonMachine\Parser::getJsonPointer()`

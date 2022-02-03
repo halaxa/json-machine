@@ -30,7 +30,7 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
     /** @var Traversable */
-    private $lexer;
+    private $tokens;
 
     /** @var ItemDecoder */
     private $jsonDecoder;
@@ -56,11 +56,11 @@ class Parser implements \IteratorAggregate, PositionAware
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $lexer, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
     {
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
-        $this->lexer = $lexer;
+        $this->tokens = $tokens;
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
         $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
@@ -106,9 +106,9 @@ class Parser implements \IteratorAggregate, PositionAware
         $iteratorLevel = 0;
 
         // local variables for faster name lookups
-        $lexer = $this->lexer;
+        $tokens = $this->tokens;
 
-        foreach ($lexer as $token) {
+        foreach ($tokens as $token) {
             if ($currentPathChanged) {
                 $currentPathChanged = false;
                 $jsonPointerPath = $this->getMatchingJsonPointerPath();
@@ -398,7 +398,7 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function error($msg, $token, $exception = SyntaxErrorException::class)
     {
-        throw new $exception($msg." '".$token."'", $this->lexer->getPosition());
+        throw new $exception($msg." '".$token."'", $this->tokens->getPosition());
     }
 
     /**
@@ -408,11 +408,11 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function getPosition()
     {
-        if ($this->lexer instanceof PositionAware) {
-            return $this->lexer->getPosition();
+        if ($this->tokens instanceof PositionAware) {
+            return $this->tokens->getPosition();
         }
 
-        throw new JsonMachineException('Provided lexer must implement PositionAware to call getPosition on it.');
+        throw new JsonMachineException('Provided tokens iterable must implement PositionAware to call getPosition on it.');
     }
 
     private static function jsonPointerToPath(string $jsonPointer): array
