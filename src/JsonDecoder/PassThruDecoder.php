@@ -4,9 +4,7 @@ namespace JsonMachine\JsonDecoder;
 
 class PassThruDecoder implements ItemDecoder
 {
-    use ExtJsonDecoding;
-
-    public function decodeValue($jsonValue)
+    public function decode($jsonValue)
     {
         return new ValidResult($jsonValue);
     }

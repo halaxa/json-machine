@@ -37,7 +37,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
     public function data_testFactories()
     {
         $extJsonResult = ['key' => 'value'];
-        $passThruResult = ['key' => '"value"'];
+        $passThruResult = ['"key"' => '"value"'];
         $ptDecoder = new PassThruDecoder();
 
         foreach ([true, false] as $debug) {

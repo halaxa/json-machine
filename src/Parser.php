@@ -215,7 +215,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 continue; // a valid json chunk is not completed yet
             }
             if ($jsonBuffer !== '') {
-                $valueResult = $this->jsonDecoder->decodeValue($jsonBuffer);
+                $valueResult = $this->jsonDecoder->decode($jsonBuffer);
                 $jsonBuffer = '';
                 if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
@@ -223,7 +223,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 if ($iteratorStruct === '[') {
                     yield $valueResult->getValue();
                 } else {
-                    $keyResult = $this->jsonDecoder->decodeKey($key);
+                    $keyResult = $this->jsonDecoder->decode($key);
                     if ( ! $keyResult->isOk()) {
                         $this->error($keyResult->getErrorMessage(), $key);
                     }

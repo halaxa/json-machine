@@ -14,19 +14,9 @@ class ErrorWrappingDecoder implements ItemDecoder
         $this->innerDecoder = $innerDecoder;
     }
 
-    public function decodeKey($jsonScalarKey)
+    public function decode($jsonValue)
     {
-        $result = $this->innerDecoder->decodeKey($jsonScalarKey);
-        if ( ! $result->isOk()) {
-            return new ValidResult(new DecodingError($jsonScalarKey, $result->getErrorMessage()));
-        }
-
-        return $result;
-    }
-
-    public function decodeValue($jsonValue)
-    {
-        $result = $this->innerDecoder->decodeValue($jsonValue);
+        $result = $this->innerDecoder->decode($jsonValue);
         if ( ! $result->isOk()) {
             return new ValidResult(new DecodingError($jsonValue, $result->getErrorMessage()));
         }

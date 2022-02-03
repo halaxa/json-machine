@@ -5,16 +5,9 @@ namespace JsonMachine\JsonDecoder;
 interface ItemDecoder
 {
     /**
-     * Decodes keys which are directly yielded to the user.
+     * Decodes composite or scalar JSON values which are directly yielded to the user.
      *
      * @return InvalidResult|ValidResult
      */
-    public function decodeKey($jsonScalarKey);
-
-    /**
-     * Decodes composite or scalar values which are directly yielded to the user.
-     *
-     * @return InvalidResult|ValidResult
-     */
-    public function decodeValue($jsonValue);
+    public function decode($jsonValue);
 }
