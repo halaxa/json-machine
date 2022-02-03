@@ -1,14 +1,14 @@
 # Changelog
 
 ## master
+
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.
 - Removed deprecated `JsonMachine` entrypoint class.
 - Removed deprecated `Decoder` interface.
 
 ### Changed
-- Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
-- `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
+#### Simplified decoding
 - JSON Pointer parts between slashes (reference tokens) must be valid encoded JSON strings to be [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901) compliant.
 It means that no internal key decoding is performed anymore. You will have to change your JSON Pointers if you match against keys with escape sequences.
 ```diff
@@ -20,10 +20,14 @@ Items::fromString(
 ```
 - Method `ItemDecoder::decodeInternalKey()` was deleted as well as related `ValidStringResult`.
 They are not used anymore as described in previous point.
-- `PassThruDecoder` does not decode keys anymore. Both the key and the value are raw JSON.
+- `PassThruDecoder` does not decode keys anymore. Both the key and the value yielded are raw JSON now.
+
+#### Other
+- Default decoding structure of `Parser` is object. (You won't notice that unless you use `Parser` class directly)
+- `SyntaxError` renamed to `SyntaxErrorException`
+- `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
 - `Lexer` renamed to `Tokens`
 - `DebugLexer` renamed to `TokensWithDebugging`
-- `SyntaxError` renamed to `SyntaxErrorException`
 
 ### Deprecated
 - `JsonMachine\Parser::getJsonPointer()`
