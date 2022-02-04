@@ -338,38 +338,6 @@ class Parser implements \IteratorAggregate, PositionAware
         return $this->paths[$matchingPointer];
     }
 
-    /**
-     * @deprecated this method was revealing internal implementation and is not useful for anything anyway
-     */
-    public function getJsonPointerPath()
-    {
-        @trigger_error(
-            'This method was revealing internal implementation and is not useful for anything anyway.',
-            E_USER_DEPRECATED
-        );
-
-        return reset($this->paths);
-    }
-
-    /**
-     * @deprecated use Parser::getJsonPointers() instead
-     */
-    public function getJsonPointer()
-    {
-        @trigger_error(
-            'Since Parser now supports multiple JSON Pointers, use Parser::getJsonPointers() instead.',
-            E_USER_DEPRECATED
-        );
-
-        if ( ! $this->hasSingleJsonPointer) {
-            throw new JsonMachineException(
-                'This instance has multiple JSON Pointers. Call getJsonPointers() to access them.'
-            );
-        }
-
-        return reset($this->jsonPointers);
-    }
-
     public function getJsonPointers(): array
     {
         return array_values($this->jsonPointers);

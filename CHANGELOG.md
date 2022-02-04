@@ -15,8 +15,10 @@ Nothing yet
 ## 1.0.0 - 2022-02-04
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.
-- Removed deprecated `JsonMachine` entrypoint class.
-- Removed deprecated `Decoder` interface.
+- Removed deprecated `JsonMachine` entrypoint class. Use `Items` instead.
+- Removed deprecated `Decoder` interface. Use `ItemDecoder` instead.
+- Removed `Parser::getJsonPointer()`. Use `Parser::getJsonPointers()`/`Items::getJsonPointers()` instead.
+- Removed `Parser::getJsonPointerPath()`. No replacement. Was not useful for anything other than testing and exposed internal implementation.
 
 ### Changed
 #### Simplified and fixed decoding
@@ -39,10 +41,6 @@ They are not used anymore as described in previous point.
 - `Items::__construct` accepts the options array instead of separate arguments. (You won't notice that unless you instantiate `Items` class directly)
 - `Lexer` renamed to `Tokens`
 - `DebugLexer` renamed to `TokensWithDebugging`
-
-### Deprecated
-- `JsonMachine\Parser::getJsonPointer()`
-- `JsonMachine\Parser::getJsonPointerPath()`
 
 ### Added
 - Multiple JSON Pointers can be specified as an array in `pointer` option. See README. Thanks @fwolfsjaeger. 
@@ -146,9 +144,9 @@ Alternative is to use `ExtJsonDecoder` which decodes items as objects by default
 <?php
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Items;
+use JsonMachine\JsonMachine;
 
-$jsonMachine = Items::fromFile('path/to.json', '', new ExtJsonDecoder);
+$jsonMachine = JsonMachine::fromFile('path/to.json', '', new ExtJsonDecoder);
 ```
 Therefore no additional casting is required.
 - Invalid json object keys will now throw and won't be ignored anymore.

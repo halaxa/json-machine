@@ -130,28 +130,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider data_testGetJsonPointerPath
-     *
-     * @param string $jsonPointer
-     */
-    public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointerPath)
-    {
-        $parser = $this->createParser('{}', $jsonPointer);
-        $this->assertEquals($expectedJsonPointerPath, $parser->getJsonPointerPath());
-    }
-
-    public function data_testGetJsonPointerPath()
-    {
-        return [
-            ['/', ['']],
-            ['////', ['', '', '', '']],
-            ['/apple', ['apple']],
-            ['/apple/pie', ['apple', 'pie']],
-            ['/0/1   ', [0, '1   ']],
-        ];
-    }
-
-    /**
      * @dataProvider data_testSyntaxError
      *
      * @param string $malformedJson
@@ -437,28 +415,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         foreach ($parser as $key => $item) {
             $this->assertSame('/\"key\\\\', $parser->getMatchedJsonPointer());
         }
-    }
-
-    public function testGetJsonPointer()
-    {
-        $parser = $this->createParser('{}', ['/one']);
-
-        $this->assertSame('/one', $parser->getJsonPointer());
-    }
-
-    public function testGetJsonPointerReturnsDefaultJsonPointer()
-    {
-        $parser = $this->createParser('{}');
-
-        $this->assertSame('', $parser->getJsonPointer());
-    }
-
-    public function testGetJsonPointerThrowsOnMultipleJsonPointers()
-    {
-        $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('getJsonPointers()');
-        $parser = $this->createParser('{}', ['/one', '/two']);
-        $parser->getJsonPointer();
     }
 
     public function testGetJsonPointers()
