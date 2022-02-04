@@ -168,8 +168,6 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expectedToken[1], $tokens->getLine(), 'line failed with expected token #'.$i);
             $this->assertEquals($expectedToken[2], $tokens->getColumn(), 'column failed with expected token #'.$i);
         }
-
-        $this->assertEquals(strlen($jsonFileContents), $tokens->getPosition());
     }
 
     /**
@@ -189,8 +187,29 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(1, $tokens->getLine(), 'line failed with expected token #'.$i);
             $this->assertEquals(0, $tokens->getColumn(), 'column failed with expected token #'.$i);
         }
+    }
 
-        $this->assertEquals(0, $tokens->getPosition());
+    public function testGetPositionWthDebugging()
+    {
+        $tokens = new TokensWithDebugging(['[   1, "two", false ]']);
+        $expectedPosition = [1, 5, 6, 12, 13, 19, 21];
+
+        $this->assertSame(0, $tokens->getPosition());
+        foreach ($tokens as $index => $item) {
+            $this->assertSame($expectedPosition[$index], $tokens->getPosition(), "index:$index, item:$item");
+        }
+        $this->assertSame(21, $tokens->getPosition());
+    }
+
+    public function testGetPositionNoDebugging()
+    {
+        $tokens = new Tokens(['[   1, "two", false ]']);
+
+        $this->assertSame(0, $tokens->getPosition());
+        foreach ($tokens as $index => $item) {
+            $this->assertSame(0, $tokens->getPosition(), "index:$index, item:$item");
+        }
+        $this->assertSame(0, $tokens->getPosition());
     }
 
     public function jsonFilesWithDifferentLineEndings()

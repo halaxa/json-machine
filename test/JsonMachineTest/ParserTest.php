@@ -12,6 +12,7 @@ use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
+use JsonMachine\TokensWithDebugging;
 
 /**
  * @covers \JsonMachine\Parser
@@ -477,5 +478,36 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->assertSame('"key', $key);
             $this->assertSame('value', $item);
         }
+    }
+
+    public function testGetPositionReturnsCorrectPositionWithDebugEnabled()
+    {
+        $parser = new Parser(new TokensWithDebugging(['[   1, "two", false ]']));
+        $expectedPosition = [5, 12, 19];
+
+        $this->assertSame(0, $parser->getPosition());
+        foreach ($parser as $index => $item) {
+            $this->assertSame($expectedPosition[$index], $parser->getPosition(), "index:$index, item:$item");
+        }
+        $this->assertSame(21, $parser->getPosition());
+    }
+
+    public function testGetPositionReturns0WithDebugDisabled()
+    {
+        $parser = new Parser(new Tokens(['[   1, "two", false ]']));
+
+        $this->assertSame(0, $parser->getPosition());
+        foreach ($parser as $index => $item) {
+            $this->assertSame(0, $parser->getPosition());
+        }
+        $this->assertSame(0, $parser->getPosition());
+    }
+
+    public function testGetPositionThrowsIfTokensDoNotSupportGetPosition()
+    {
+        $parser = new Parser(new \ArrayObject());
+
+        $this->expectException(JsonMachineException::class);
+        $parser->getPosition();
     }
 }

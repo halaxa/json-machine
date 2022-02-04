@@ -76,7 +76,7 @@ class TokensWithDebugging implements \IteratorAggregate, PositionAware
                         $tokenWidth = 0;
                     }
                     if ($$byte) { // is not whitespace
-                        $this->position = $position + $i;
+                        $this->position = $position + $i + 1;
                         $this->column = $column;
                         $this->line = $line;
                         yield $byte;
