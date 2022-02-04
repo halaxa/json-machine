@@ -38,6 +38,10 @@ They are not used anymore as described in previous point.
 - New methods available during iteration: `Items::getCurrentJsonPointer()` and `Items::getMatchedJsonPointer()`
 to track where you are. See README. Thanks @fwolfsjaeger.
 
+### Fixed
+- Incorrect position information of `TokensWithDebugging::getPosition()`. Was constantly off by 1-2 bytes.
+
+
 <br>
 <br>
 
