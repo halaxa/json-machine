@@ -46,7 +46,7 @@ class TokensWithDebugging implements \IteratorAggregate, PositionAware
         $escaping = false;
         $tokenWidth = 0;
         $ignoreLF = false;
-        $position = 1;
+        $position = 0;
         $line = 1;
         $column = 0;
 
@@ -105,8 +105,9 @@ class TokensWithDebugging implements \IteratorAggregate, PositionAware
             }
             $position += $i;
         }
+        $this->position = $position;
+
         if ($tokenBuffer != '') {
-            $this->position = $position;
             $this->column = $column;
             yield $tokenBuffer;
         }

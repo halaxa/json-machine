@@ -151,13 +151,12 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $formattedJsonFilePath
      * @dataProvider jsonFilesWithDifferentLineEndings
      */
-    public function testProvidesLocationalDataWhenDebugEnabled($formattedJsonFilePath)
+    public function testProvidesLocationalDataWhenDebugEnabled(string $jsonFilePath)
     {
-        $json = file_get_contents($formattedJsonFilePath);
-        $tokens = new TokensWithDebugging(new StringChunks($json));
+        $jsonFileContents = file_get_contents($jsonFilePath);
+        $tokens = new TokensWithDebugging(new StringChunks($jsonFileContents));
         $expectedTokens = $this->expectedTokens();
         $i = 0;
 
@@ -169,6 +168,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expectedToken[1], $tokens->getLine(), 'line failed with expected token #'.$i);
             $this->assertEquals($expectedToken[2], $tokens->getColumn(), 'column failed with expected token #'.$i);
         }
+
+        $this->assertEquals(strlen($jsonFileContents), $tokens->getPosition());
     }
 
     /**
@@ -187,8 +188,9 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expectedToken[0], $token, 'token failed with expected token #'.$i);
             $this->assertEquals(1, $tokens->getLine(), 'line failed with expected token #'.$i);
             $this->assertEquals(0, $tokens->getColumn(), 'column failed with expected token #'.$i);
-            $this->assertEquals(0, $tokens->getPosition());
         }
+
+        $this->assertEquals(0, $tokens->getPosition());
     }
 
     public function jsonFilesWithDifferentLineEndings()
