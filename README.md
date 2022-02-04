@@ -411,10 +411,10 @@ and make your own.
 - **`ExtJsonDecoder`** - **Default.** Uses `json_decode` to decode keys and values.
 Constructor has the same parameters as `json_decode`.
 
-- **`PassThruDecoder`** - uses `json_decode` to decode keys but returns values as pure JSON strings.
+- **`PassThruDecoder`** - Does no decoding. Both keys and values are produced as pure JSON strings.
 Useful when you want to parse a JSON item with something else directly in the foreach
-and don't want to implement `JsonMachine\JsonDecoder\ItemDecoder`.
-Constructor has the same parameters as `json_decode`.
+and don't want to implement `JsonMachine\JsonDecoder\ItemDecoder`. Since `1.0.0` does not use `json_decode`.
+
 Example:
 ```php
 <?php
