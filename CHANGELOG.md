@@ -1,15 +1,26 @@
 # Changelog
 
-## master
+All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+<br>
+
+## master
+Nothing yet
+
+<br>
+
+## 1.0.0 - 2022-02-04
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.
 - Removed deprecated `JsonMachine` entrypoint class.
 - Removed deprecated `Decoder` interface.
 
 ### Changed
-#### Simplified decoding
-- JSON Pointer parts between slashes (reference tokens) must be valid encoded JSON strings to be [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901) compliant.
+#### Simplified and fixed decoding
+- JSON Pointer parts between slashes (a.k.a reference tokens) must be valid encoded JSON strings to be [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901) compliant.
 It means that no internal key decoding is performed anymore. You will have to change your JSON Pointers if you match against keys with escape sequences.
 ```diff
 Items::fromString(
@@ -41,8 +52,6 @@ to track where you are. See README. Thanks @fwolfsjaeger.
 ### Fixed
 - Incorrect position information of `TokensWithDebugging::getPosition()`. Was constantly off by 1-2 bytes.
 
-
-<br>
 <br>
 
 ## 0.8.0
@@ -63,7 +72,7 @@ https://stackoverflow.com/questions/63706550
 - `Items` uses `options` in its factory methods instead of growing number of many parameters. See **Options** in README.
 - `Items` introduces new `debug` option. See **Options** in README.
 - Noticeable performance improvements. What took 10 seconds in `0.7.*` takes **about** 7 seconds in `0.8.0`.
-<br>
+
 <br>
 
 ## 0.7.1
@@ -72,20 +81,17 @@ https://stackoverflow.com/questions/63706550
 - DEV: Build system switched to composer scripts and Makefile
 
 <br>
-<br>
 
 ## 0.7.0
 ### New features
 - Use a `-` in json pointer as a wildcard for an array index. Example: `/users/-/id`. Thanks @cerbero90
 
 <br>
-<br>
 
 ## 0.6.1
 ### Fixed bugs
 - Empty dict at the end of an item was causing Syntax error in the next item. Reason: closing `}` did not set object key expectation to `false`. (#41 via PR #42).
 
-<br>
 <br>
 
 ## 0.6.0
@@ -99,7 +105,6 @@ https://stackoverflow.com/questions/63706550
 ### BC breaks
 - A json pointer that matches scalar value does not throw anymore, but the scalar value is yielded in foreach.
 
-<br>
 <br>
 
 ## 0.5.0
@@ -115,13 +120,11 @@ These are internal classes, and you probably won't notice the change
 unless you use them directly for some reason.
 
 <br>
-<br>
 
 ## 0.4.1
 ### New features
 - Tracking of parsing progress
 
-<br>
 <br>
 
 ## 0.4.0
