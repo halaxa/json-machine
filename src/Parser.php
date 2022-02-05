@@ -114,10 +114,10 @@ class Parser implements \IteratorAggregate, PositionAware
                 $iteratorLevel = count($jsonPointerPath);
             }
             $tokenType = $tokenTypes[$token[0]];
-            if (0 === ($tokenType & $expectedType)) {
+            if (0 == ($tokenType & $expectedType)) {
                 $this->error('Unexpected symbol', $token);
             }
-            $isValue = ($tokenType | 23) === 23; // 23 = self::ANY_VALUE
+            $isValue = ($tokenType | 23) == 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPathChanged = ! $this->hasSingleJsonPointer;
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
@@ -126,16 +126,16 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             if (
                 (
-                    $jsonPointerPath === $currentPath
-                    || $jsonPointerPath === $currentPathWildcard
+                    $jsonPointerPath == $currentPath
+                    || $jsonPointerPath == $currentPathWildcard
                 )
                 && (
                     $currentLevel > $iteratorLevel
                     || (
                         ! $objectKeyExpected
                         && (
-                            ($currentLevel === $iteratorLevel && $isValue)
-                            || ($currentLevel + 1 === $iteratorLevel && ($tokenType | 3) === 3) // 3 = self::SCALAR_VALUE
+                            ($currentLevel == $iteratorLevel && $isValue)
+                            || ($currentLevel + 1 == $iteratorLevel && ($tokenType | 3) == 3) // 3 = self::SCALAR_VALUE
                         )
                     )
                 )
@@ -148,7 +148,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     if ($objectKeyExpected) {
                         $objectKeyExpected = false;
                         $expectedType = 128; // 128 = self::COLON
-                        if ($currentLevel === $iteratorLevel) {
+                        if ($currentLevel == $iteratorLevel) {
                             $key = $token;
                         } elseif ($currentLevel < $iteratorLevel) {
                             $key = $token;
@@ -201,7 +201,7 @@ class Parser implements \IteratorAggregate, PositionAware
                     // no break
                 case ']':
                     --$currentLevel;
-                    $inObject = $stack[$currentLevel] === '{';
+                    $inObject = $stack[$currentLevel] == '{';
                     // no break
                 default:
                     if ($inObject) {
@@ -219,7 +219,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
-                if ($iteratorStruct === '[') {
+                if ($iteratorStruct == '[') {
                     yield $valueResult->getValue();
                 } else {
                     $keyResult = $this->jsonDecoder->decode($key);
@@ -231,11 +231,11 @@ class Parser implements \IteratorAggregate, PositionAware
                 }
                 unset($valueResult);
             }
-            if ($jsonPointerPath === $currentPath || $jsonPointerPath === $currentPathWildcard) {
+            if ($jsonPointerPath == $currentPath || $jsonPointerPath == $currentPathWildcard) {
                 if ( ! in_array($this->matchedJsonPointer, $pointersFound, true)) {
                     $pointersFound[] = $this->matchedJsonPointer;
                 }
-            } elseif (count($pointersFound) === count($this->jsonPointers)) {
+            } elseif (count($pointersFound) == count($this->jsonPointers)) {
                 $subtreeEnded = true;
                 break;
             }
