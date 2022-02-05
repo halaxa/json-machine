@@ -86,7 +86,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 - Speed. Performance critical code contains no unnecessary function calls, no regular expressions
 and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
-- Thoroughly tested. More than 100 tests and 700 assertions.
+- Thoroughly tested. More than 200 tests and 1000 assertions.
 
 <a name="parsing-json-documents"></a>
 ## Parsing JSON documents
