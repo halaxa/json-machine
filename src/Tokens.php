@@ -114,13 +114,14 @@ class Tokens implements \IteratorAggregate, PositionAware
     {
         $insignificantBytes = [];
         foreach (range(0, 255) as $ord) {
-            if (!in_array(
+            if ( ! in_array(
                 chr($ord),
                 ['\\', '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
             )) {
                 $insignificantBytes[chr($ord)] = true;
             }
         }
+
         return $insignificantBytes;
     }
 
