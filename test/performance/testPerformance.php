@@ -10,7 +10,7 @@ if (in_array('xdebug', get_loaded_extensions())) {
     trigger_error('Xdebug enabled. Results may be affected.', E_USER_WARNING);
 }
 
-ini_set('memory_limit', -1); // for json_decode use case
+ini_set('memory_limit', '-1'); // for json_decode use case
 
 $decoders = [
     'Items::fromFile()' => function ($file) {
