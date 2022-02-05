@@ -84,10 +84,7 @@ class Parser implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        // expand token types to local variables for the fastest lookup
-        foreach ($this->tokenTypes() as $firstByte => $type) {
-            ${$firstByte} = $type;
-        }
+        $tokenTypes = $this->tokenTypes();
 
         $iteratorStruct = null;
         $currentPath = &$this->currentPath;
@@ -116,7 +113,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $jsonPointerPath = $this->getMatchingJsonPointerPath();
                 $iteratorLevel = count($jsonPointerPath);
             }
-            $tokenType = ${$token[0]};
+            $tokenType = $tokenTypes[$token[0]];
             if (0 === ($tokenType & $expectedType)) {
                 $this->error('Unexpected symbol', $token);
             }
