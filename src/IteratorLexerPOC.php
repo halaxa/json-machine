@@ -14,7 +14,7 @@ class IteratorLexerPOC implements \Iterator
     private $tokenBoundaries = [];
 
     /** @var array  */
-    private $nonSignificantBytes = [];
+    private $jsonInsignificantBytes = [];
 
 
     /** @var array */
@@ -52,24 +52,26 @@ class IteratorLexerPOC implements \Iterator
     public function __construct(Iterator $jsonChunks)
     {
         $this->jsonChunks = $jsonChunks;
+        $this->tokenBoundaries = $this->mapOfBoundaryBytes();
+        $this->jsonInsignificantBytes = $this->jsonInsignificantBytes();
     }
 
 
     public function rewind()
     {
-        $this->tokenBoundaries = $this->mapOfBoundaryBytes();
-        $this->nonSignificantBytes = $this->mapOfAllBytes();
-
-        if ($this->advanceToNextJsonChunk()) {
-            $this->next();
-        }
+        $this->advanceToNextJsonChunk(true);
+        $this->next();
     }
 
 
     public function next()
     {
         $this->currentToken = '';
-var_dump([$this->tokenQueue, $this->chunkIndex, $this->chunkLength, $this->chunk]);
+//var_dump([$this->tokenQueue, $this->chunkIndex, $this->chunkLength, $this->chunk]);
+
+        if ($this->chunkIndex == $this->chunkLength) {
+            $this->advanceToNextJsonChunk(false);
+        }
 
         if ($this->tokenQueue) {
             $this->currentToken = array_shift($this->tokenQueue);
@@ -80,14 +82,14 @@ var_dump([$this->tokenQueue, $this->chunkIndex, $this->chunkLength, $this->chunk
         for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
         {
             $byte = $this->chunk[$this->chunkIndex];
-var_dump($byte);
+//var_dump($byte);
             if ($this->escaping) {
                 $this->escaping = false;
                 $this->tokenBuffer .= $byte;
                 continue;
             }
 
-            if ($this->nonSignificantBytes[$byte]) {
+            if ($this->jsonInsignificantBytes[$byte]) {
                 $this->tokenBuffer .= $byte;
                 continue;
             }
@@ -110,6 +112,7 @@ var_dump($byte);
                 if ($this->tokenQueue) {
                     $this->currentToken = array_shift($this->tokenQueue);
                     ++$this->currentTokenKey;
+                    ++$this->chunkIndex;
                     return;
                 }
             } else {
@@ -120,8 +123,10 @@ var_dump($byte);
             }
         }
 
-        if (! $this->advanceToNextJsonChunk()) {
+        if ( ! $this->advanceToNextJsonChunk(false)) {
             $this->flushTokenBuffer();
+        } else {
+            $this->next();
         }
     }
 
@@ -168,7 +173,7 @@ var_dump($byte);
     }
 
 
-    private function mapOfAllBytes(): array
+    private function jsonInsignificantBytes(): array
     {
         $allBytes = [];
         foreach (range(0, 255) as $ord) {
@@ -182,21 +187,20 @@ var_dump($byte);
     }
 
 
-    private function advanceToNextJsonChunk(): bool
+    private function advanceToNextJsonChunk(bool $rewind): bool
     {
-        if ($this->currentTokenKey > -1) {
-            $this->jsonChunks->next();
-        } else {
+        if ($rewind) {
             $this->jsonChunks->rewind();
+        } else {
+            $this->jsonChunks->next();
         }
-
         $valid = $this->jsonChunks->valid();
 
         if ($valid) {
             $this->chunk = $this->jsonChunks->current();
             $this->chunkLength = strlen($this->chunk);
             $this->chunkIndex = 0;
-            $this->jsonChunks->key();
+//            $this->jsonChunks->key();
         }
 
         return $valid;
