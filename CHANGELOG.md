@@ -12,6 +12,13 @@ Nothing yet
 
 <br>
 
+## 1.0.1 - 2022-02-06
+### Fixed
+- Broken command `make performance-tests`
+- Slight performance improvements
+
+<br>
+
 ## 1.0.0 - 2022-02-04
 ### Removed
 - Removed deprecated functions `objects()` and `httpClientChunks()`.

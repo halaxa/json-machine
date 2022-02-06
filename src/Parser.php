@@ -297,28 +297,28 @@ class Parser implements \IteratorAggregate, PositionAware
         $currentPathLength = count($this->currentPath);
         $matchLength = -1;
 
-        foreach ($this->paths as $jsonPointer => $jsonPointerPath) {
-            $matchingParts = [];
+        foreach ($this->paths as $jsonPointer => $path) {
+            $matchingReferenceTokens = [];
 
-            foreach ($jsonPointerPath as $i => $jsonPointerPathEl) {
+            foreach ($path as $i => $referenceToken) {
                 if (
                     ! isset($this->currentPath[$i])
                     || (
-                        $this->currentPath[$i] !== $jsonPointerPathEl
-                        && ValidJsonPointers::wildcardify($this->currentPath[$i]) !== $jsonPointerPathEl
+                        $this->currentPath[$i] !== $referenceToken
+                        && ValidJsonPointers::wildcardify($this->currentPath[$i]) !== $referenceToken
                     )
                 ) {
                     continue;
                 }
 
-                $matchingParts[$i] = $jsonPointerPathEl;
+                $matchingReferenceTokens[$i] = $referenceToken;
             }
 
-            if (empty($matchingParts)) {
+            if (empty($matchingReferenceTokens)) {
                 continue;
             }
 
-            $currentMatchLength = count($matchingParts);
+            $currentMatchLength = count($matchingReferenceTokens);
 
             if ($currentMatchLength > $matchLength) {
                 $matchingPointer = $jsonPointer;
