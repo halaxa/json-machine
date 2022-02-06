@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest;
 
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
-use JsonMachine\Exception\SyntaxError;
+use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Lexer;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
+use JsonMachine\Tokens;
+use JsonMachine\TokensWithDebugging;
 
 /**
  * @covers \JsonMachine\Parser
@@ -127,35 +130,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider data_testGetJsonPointerPath
-     *
-     * @param string $jsonPointer
-     */
-    public function testGetJsonPointerPath($jsonPointer, array $expectedJsonPointerPath)
-    {
-        $parser = $this->createParser('{}', $jsonPointer);
-        $this->assertEquals($expectedJsonPointerPath, $parser->getJsonPointerPath());
-    }
-
-    public function data_testGetJsonPointerPath()
-    {
-        return [
-            ['/', ['']],
-            ['////', ['', '', '', '']],
-            ['/apple', ['apple']],
-            ['/apple/pie', ['apple', 'pie']],
-            ['/0/1   ', [0, '1   ']],
-        ];
-    }
-
-    /**
      * @dataProvider data_testSyntaxError
      *
      * @param string $malformedJson
      */
     public function testSyntaxError($malformedJson)
     {
-        $this->expectException(SyntaxError::class);
+        $this->expectException(SyntaxErrorException::class);
 
         iterator_to_array($this->createParser($malformedJson));
     }
@@ -312,12 +293,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new Parser(new Lexer(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
+        return new Parser(new Tokens(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
     }
 
     public function testDefaultDecodingStructureIsObject()
     {
-        $items = new Parser(new Lexer(new StringChunks('[{"key": "value"}]')));
+        $items = new Parser(new Tokens(new StringChunks('[{"key": "value"}]')));
 
         foreach ($items as $item) {
             $this->assertEquals((object) ['key' => 'value'], $item);
@@ -410,6 +391,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->getCurrentJsonPointer();
     }
 
+    public function testGetCurrentJsonPointerReturnsLiteralJsonPointer()
+    {
+        $parser = $this->createParser('{"\"key\\\\":"value"}', ['/\"key\\\\']);
+
+        foreach ($parser as $key => $item) {
+            $this->assertSame('/\"key\\\\', $parser->getCurrentJsonPointer());
+        }
+    }
+
     public function testGetMatchedJsonPointerThrowsWhenCalledOutsideOfALoop()
     {
         $this->expectException(JsonMachineException::class);
@@ -418,26 +408,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->getMatchedJsonPointer();
     }
 
-    public function testGetJsonPointer()
+    public function testGetMatchedJsonPointerReturnsLiteralMatch()
     {
-        $parser = $this->createParser('{}', ['/one']);
+        $parser = $this->createParser('{"\"key\\\\":"value"}', ['/\"key\\\\']);
 
-        $this->assertSame('/one', $parser->getJsonPointer());
-    }
-
-    public function testGetJsonPointerReturnsDefaultJsonPointer()
-    {
-        $parser = $this->createParser('{}');
-
-        $this->assertSame('', $parser->getJsonPointer());
-    }
-
-    public function testGetJsonPointerThrowsOnMultipleJsonPointers()
-    {
-        $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('getJsonPointers()');
-        $parser = $this->createParser('{}', ['/one', '/two']);
-        $parser->getJsonPointer();
+        foreach ($parser as $key => $item) {
+            $this->assertSame('/\"key\\\\', $parser->getMatchedJsonPointer());
+        }
     }
 
     public function testGetJsonPointers()
@@ -447,5 +424,46 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->createParser('{}');
         $this->assertSame([''], $parser->getJsonPointers());
+    }
+
+    public function testJsonPointerReferenceTokenMatchesJsonMemberNameLiterally()
+    {
+        $parser = $this->createParser('{"\\"key":"value"}', ['/\\"key']);
+
+        foreach ($parser as $key => $item) {
+            $this->assertSame('"key', $key);
+            $this->assertSame('value', $item);
+        }
+    }
+
+    public function testGetPositionReturnsCorrectPositionWithDebugEnabled()
+    {
+        $parser = new Parser(new TokensWithDebugging(['[   1, "two", false ]']));
+        $expectedPosition = [5, 12, 19];
+
+        $this->assertSame(0, $parser->getPosition());
+        foreach ($parser as $index => $item) {
+            $this->assertSame($expectedPosition[$index], $parser->getPosition(), "index:$index, item:$item");
+        }
+        $this->assertSame(21, $parser->getPosition());
+    }
+
+    public function testGetPositionReturns0WithDebugDisabled()
+    {
+        $parser = new Parser(new Tokens(['[   1, "two", false ]']));
+
+        $this->assertSame(0, $parser->getPosition());
+        foreach ($parser as $index => $item) {
+            $this->assertSame(0, $parser->getPosition());
+        }
+        $this->assertSame(0, $parser->getPosition());
+    }
+
+    public function testGetPositionThrowsIfTokensDoNotSupportGetPosition()
+    {
+        $parser = new Parser(new \ArrayObject());
+
+        $this->expectException(JsonMachineException::class);
+        $parser->getPosition();
     }
 }

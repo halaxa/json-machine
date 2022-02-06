@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine;
 
-class DebugLexer implements \IteratorAggregate, PositionAware
+class TokensWithDebugging implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;
@@ -44,7 +46,7 @@ class DebugLexer implements \IteratorAggregate, PositionAware
         $escaping = false;
         $tokenWidth = 0;
         $ignoreLF = false;
-        $position = 1;
+        $position = 0;
         $line = 1;
         $column = 0;
 
@@ -74,7 +76,7 @@ class DebugLexer implements \IteratorAggregate, PositionAware
                         $tokenWidth = 0;
                     }
                     if ($$byte) { // is not whitespace
-                        $this->position = $position + $i;
+                        $this->position = $position + $i + 1;
                         $this->column = $column;
                         $this->line = $line;
                         yield $byte;
@@ -103,8 +105,9 @@ class DebugLexer implements \IteratorAggregate, PositionAware
             }
             $position += $i;
         }
+        $this->position = $position;
+
         if ($tokenBuffer != '') {
-            $this->position = $position;
             $this->column = $column;
             yield $tokenBuffer;
         }

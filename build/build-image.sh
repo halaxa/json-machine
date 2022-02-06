@@ -3,8 +3,11 @@
 set -e
 
 PHP_MINOR=$1
-PHP_VERSION=$(wget -qO- "https://www.php.net/releases/?json&version=$PHP_MINOR" \
-  | grep -Po "(?<=\")[0-9]+.[0-9]+.[0-9]+(?=\")")
+PHP_VERSION=$( (wget -qO- "https://hub.docker.com/v2/repositories/library/php/tags?page_size=100&name=$PHP_MINOR" \
+  | grep -Po "[0-9]+\.[0-9]+\.[0-9]+(?=-)" \
+    || echo "$PHP_MINOR") \
+  | head -1 \
+)
 XDEBUG_VERSION=$2
 
 

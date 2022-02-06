@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine\JsonDecoder;
 
 class ErrorWrappingDecoder implements ItemDecoder
@@ -14,28 +16,13 @@ class ErrorWrappingDecoder implements ItemDecoder
         $this->innerDecoder = $innerDecoder;
     }
 
-    public function decodeKey($jsonScalarKey)
+    public function decode($jsonValue)
     {
-        $result = $this->innerDecoder->decodeKey($jsonScalarKey);
-        if ( ! $result->isOk()) {
-            return new ValidResult(new DecodingError($jsonScalarKey, $result->getErrorMessage()));
-        }
-
-        return $result;
-    }
-
-    public function decodeValue($jsonValue)
-    {
-        $result = $this->innerDecoder->decodeValue($jsonValue);
+        $result = $this->innerDecoder->decode($jsonValue);
         if ( ! $result->isOk()) {
             return new ValidResult(new DecodingError($jsonValue, $result->getErrorMessage()));
         }
 
         return $result;
-    }
-
-    public function decodeInternalKey($jsonScalarKey)
-    {
-        return $this->innerDecoder->decodeInternalKey($jsonScalarKey);
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine;
 
 use Generator;
 
-class Lexer implements \IteratorAggregate, PositionAware
+class Tokens implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;
@@ -23,16 +25,7 @@ class Lexer implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        // init the map of JSON-structure (in)significant bytes as local variable variables for the fastest lookup
-        foreach (range(0, 255) as $ord) {
-            if ( ! in_array(
-                chr($ord),
-                ['\\', '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
-            )) {
-                ${chr($ord)} = true;
-            }
-        }
-
+        $insignificantBytes = $this->insignificantBytes();
         $tokenBoundaries = $this->tokenBoundaries();
         $colonCommaBracket = $this->colonCommaBracketTokenBoundaries();
 
@@ -51,7 +44,7 @@ class Lexer implements \IteratorAggregate, PositionAware
                     continue;
                 }
 
-                if (isset($$byte)) { // is a JSON-structure insignificant byte
+                if (isset($insignificantBytes[$byte])) { // is a JSON-structure insignificant byte
                     $tokenBuffer .= $byte;
                     continue;
                 }
@@ -115,6 +108,21 @@ class Lexer implements \IteratorAggregate, PositionAware
             ':' => true,
             ',' => true,
         ];
+    }
+
+    private function insignificantBytes(): array
+    {
+        $insignificantBytes = [];
+        foreach (range(0, 255) as $ord) {
+            if ( ! in_array(
+                chr($ord),
+                ['\\', '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
+            )) {
+                $insignificantBytes[chr($ord)] = true;
+            }
+        }
+
+        return $insignificantBytes;
     }
 
     public function getPosition(): int

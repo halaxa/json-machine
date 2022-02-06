@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest;
 
 use JsonMachine\Items;
@@ -37,7 +39,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
     public function data_testFactories()
     {
         $extJsonResult = ['key' => 'value'];
-        $passThruResult = ['key' => '"value"'];
+        $passThruResult = ['"key"' => '"value"'];
         $ptDecoder = new PassThruDecoder();
 
         foreach ([true, false] as $debug) {
@@ -61,7 +63,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPositionDebugEnabled()
     {
-        $expectedPosition = ['key1' => 10, 'key2' => 20];
+        $expectedPosition = ['key1' => 9, 'key2' => 19];
         $items = Items::fromString('{"key1":1, "key2":2}    ', ['debug' => true]);
         foreach ($items as $key => $val) {
             $this->assertSame($expectedPosition[$key], $items->getPosition());

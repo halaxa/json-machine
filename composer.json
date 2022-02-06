@@ -11,8 +11,8 @@
     "scripts": {
         "tests": "build/composer-update.sh && vendor/bin/phpunit",
         "tests-coverage": "build/composer-update.sh && php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-clover clover.xml",
-        "cs-check": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose",
-        "cs-fix": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --verbose",
+        "cs-check": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose --allow-risky=yes",
+        "cs-fix": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --verbose --allow-risky=yes",
         "performance-tests": "php -n test/performance/testPerformance.php"
     },
     "config": {

@@ -1,32 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest\JsonDecoder;
 
 use JsonMachine\JsonDecoder\ItemDecoder;
 
 class StubDecoder implements ItemDecoder
 {
-    private $decodedKey;
-    private $decodedValue;
+    private $decoded;
 
-    public function __construct($decodedKey, $decodedValue)
+    public function __construct($decoded)
     {
-        $this->decodedKey = $decodedKey;
-        $this->decodedValue = $decodedValue;
+        $this->decoded = $decoded;
     }
 
-    public function decodeKey($jsonScalarKey)
+    public function decode($jsonValue)
     {
-        return $this->decodedKey;
-    }
-
-    public function decodeValue($jsonValue)
-    {
-        return $this->decodedValue;
-    }
-
-    public function decodeInternalKey($jsonScalarKey)
-    {
-        return $this->decodedKey;
+        return $this->decoded;
     }
 }

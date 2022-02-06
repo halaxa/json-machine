@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
@@ -14,7 +16,7 @@ final class Items implements \IteratorAggregate, PositionAware
     /**
      * @var iterable
      */
-    private $bytesIterator;
+    private $chunks;
 
     /**
      * @var string
@@ -45,20 +47,20 @@ final class Items implements \IteratorAggregate, PositionAware
     {
         $options = new ItemsOptions($options);
 
-        $this->bytesIterator = $bytesIterator;
+        $this->chunks = $bytesIterator;
         $this->jsonPointer = $options['pointer'];
         $this->jsonDecoder = $options['decoder'];
         $this->debugEnabled = $options['debug'];
 
         if ($this->debugEnabled) {
-            $lexerClass = DebugLexer::class;
+            $tokensClass = TokensWithDebugging::class;
         } else {
-            $lexerClass = Lexer::class;
+            $tokensClass = Tokens::class;
         }
 
         $this->parser = new Parser(
-            new $lexerClass(
-                $this->bytesIterator
+            new $tokensClass(
+                $this->chunks
             ),
             $this->jsonPointer,
             $this->jsonDecoder ?: new ExtJsonDecoder()
