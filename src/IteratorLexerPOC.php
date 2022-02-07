@@ -59,7 +59,7 @@ class IteratorLexerPOC implements \Iterator
 
     public function rewind()
     {
-        $this->advanceToNextJsonChunk(true);
+        $this->jsonChunksRewind();
         $this->next();
     }
 
@@ -67,10 +67,9 @@ class IteratorLexerPOC implements \Iterator
     public function next()
     {
         $this->currentToken = '';
-//var_dump([$this->tokenQueue, $this->chunkIndex, $this->chunkLength, $this->chunk]);
 
         if ($this->chunkIndex == $this->chunkLength) {
-            $this->advanceToNextJsonChunk(false);
+            $this->jsonChunksNext();
         }
 
         if ($this->tokenQueue) {
@@ -82,7 +81,7 @@ class IteratorLexerPOC implements \Iterator
         for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
         {
             $byte = $this->chunk[$this->chunkIndex];
-//var_dump($byte);
+
             if ($this->escaping) {
                 $this->escaping = false;
                 $this->tokenBuffer .= $byte;
@@ -123,7 +122,7 @@ class IteratorLexerPOC implements \Iterator
             }
         }
 
-        if ( ! $this->advanceToNextJsonChunk(false)) {
+        if ( ! $this->jsonChunksNext()) {
             $this->flushTokenBuffer();
         } else {
             $this->next();
@@ -187,20 +186,14 @@ class IteratorLexerPOC implements \Iterator
     }
 
 
-    private function advanceToNextJsonChunk(bool $rewind): bool
+    private function initCurrentChunk(): bool
     {
-        if ($rewind) {
-            $this->jsonChunks->rewind();
-        } else {
-            $this->jsonChunks->next();
-        }
         $valid = $this->jsonChunks->valid();
 
         if ($valid) {
             $this->chunk = $this->jsonChunks->current();
             $this->chunkLength = strlen($this->chunk);
             $this->chunkIndex = 0;
-//            $this->jsonChunks->key();
         }
 
         return $valid;
@@ -231,5 +224,17 @@ class IteratorLexerPOC implements \Iterator
     public function getColumn(): int
     {
         return 0;
+    }
+
+    private function jsonChunksRewind(): bool
+    {
+        $this->jsonChunks->rewind();
+        return $this->initCurrentChunk();
+    }
+
+    private function jsonChunksNext(): bool
+    {
+        $this->jsonChunks->next();
+        return $this->initCurrentChunk();
     }
 }
