@@ -100,7 +100,10 @@ class IteratorLexerPOC implements \Iterator
             }
 
             if (isset($this->tokenBoundaries[$byte])) { // if byte is any token boundary
-                $this->flushTokenBuffer();
+                if ($this->tokenBuffer != '') {
+                    $this->tokenQueue[] = $this->tokenBuffer;
+                    $this->tokenBuffer = '';
+                }
                 if ($this->tokenBoundaries[$byte]) { // if byte is not whitespace token boundary
                     $this->tokenQueue[] = $byte;
                 }
@@ -118,9 +121,7 @@ class IteratorLexerPOC implements \Iterator
             }
         }
 
-        if ( ! $this->jsonChunksNext()) {
-            $this->flushTokenBuffer();
-        } else {
+        if ($this->jsonChunksNext()) {
             $this->next();
         }
     }
@@ -170,15 +171,15 @@ class IteratorLexerPOC implements \Iterator
 
     private function jsonInsignificantBytes(): array
     {
-        $allBytes = [];
+        $bytes = [];
         foreach (range(0, 255) as $ord) {
-            $allBytes[chr($ord)] = !in_array(
+            $bytes[chr($ord)] = !in_array(
                 chr($ord),
                 ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
             );
         }
 
-        return $allBytes;
+        return $bytes;
     }
 
 
@@ -194,16 +195,6 @@ class IteratorLexerPOC implements \Iterator
 
         return $valid;
     }
-
-
-    private function flushTokenBuffer()
-    {
-        if ($this->tokenBuffer != '') {
-            $this->tokenQueue[] = $this->tokenBuffer;
-            $this->tokenBuffer = '';
-        }
-    }
-
 
     public function getPosition(): int
     {
