@@ -27,13 +27,13 @@ class IteratorLexerPOC implements \Iterator
     private $currentTokenKey = -1;
 
     /** @var string */
-    private $chunk = '';
+    private $chunk;
 
     /** @var int */
-    private $chunkLength = 0;
+    private $chunkLength;
 
     /** @var int */
-    private $chunkIndex = 0;
+    private $chunkIndex;
 
 
     /** @var bool */
