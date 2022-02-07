@@ -68,10 +68,6 @@ class IteratorLexerPOC implements \Iterator
     {
         $this->currentToken = '';
 
-        if ($this->chunkIndex == $this->chunkLength) {
-            $this->jsonChunksNext();
-        }
-
         if ($this->tokenQueue) {
             $this->currentToken = array_shift($this->tokenQueue);
             ++$this->currentTokenKey;
