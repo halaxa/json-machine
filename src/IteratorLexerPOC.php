@@ -17,8 +17,8 @@ class IteratorLexerPOC implements \Iterator
     private $jsonInsignificantBytes = [];
 
 
-    /** @var array */
-    private $tokenQueue = [];
+    /** @var string */
+    private $carryToken;
 
     /** @var string */
     private $currentToken = '';
@@ -68,14 +68,15 @@ class IteratorLexerPOC implements \Iterator
     {
         $this->currentToken = '';
 
-        if ($this->tokenQueue) {
-            $this->currentToken = array_shift($this->tokenQueue);
-            ++$this->currentTokenKey;
-            return;
-        }
-
         for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
         {
+            if ($this->carryToken != null) {
+                $this->currentToken = $this->carryToken;
+                $this->carryToken = null;
+                ++$this->currentTokenKey;
+                return;
+            }
+
             $byte = $this->chunk[$this->chunkIndex];
 
             if ($this->escaping) {
@@ -101,14 +102,13 @@ class IteratorLexerPOC implements \Iterator
 
             if (isset($this->tokenBoundaries[$byte])) { // if byte is any token boundary
                 if ($this->tokenBuffer != '') {
-                    $this->tokenQueue[] = $this->tokenBuffer;
+                    $this->currentToken = $this->tokenBuffer;
                     $this->tokenBuffer = '';
                 }
                 if ($this->tokenBoundaries[$byte]) { // if byte is not whitespace token boundary
-                    $this->tokenQueue[] = $byte;
+                    $this->carryToken = $byte;
                 }
-                if ($this->tokenQueue) {
-                    $this->currentToken = array_shift($this->tokenQueue);
+                if ($this->currentToken != '') {
                     ++$this->currentTokenKey;
                     ++$this->chunkIndex;
                     return;
@@ -123,6 +123,10 @@ class IteratorLexerPOC implements \Iterator
 
         if ($this->jsonChunksNext()) {
             $this->next();
+        } elseif ($this->carryToken) {
+            $this->currentToken = $this->carryToken;
+            $this->carryToken = null;
+            ++$this->currentTokenKey;
         }
     }
 
