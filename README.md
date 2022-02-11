@@ -543,14 +543,16 @@ json string at a time and then parse that using `Items::fromString()`... If even
 there's probably no solution yet via JSON Machine. A feature is planned which will enable you to iterate
 any structure fully recursively and strings will be served as streams.
 
-
 <a name="installation"></a>
 ## Installation
 ```bash
 composer require halaxa/json-machine
 ```
-or clone or download this repository (not recommended because of no autoloading).
-
+or clone or download this repository and add the following to your bootstrap file:
+```
+require_once('/path/to/json-machine/Autoloader.php');
+```
+The Autoloader.php file provides the same auto loading functionality as the Composer install.
 
 <a name="development"></a>
 ## Development
