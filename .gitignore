@@ -5,3 +5,4 @@ composer.lock
 phpunit.xml
 .php-cs-fixer.php
 clover.xml
+src/AutoloadStub.php
