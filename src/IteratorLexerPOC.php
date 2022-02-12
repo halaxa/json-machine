@@ -21,10 +21,10 @@ class IteratorLexerPOC implements \Iterator
     private $carryToken;
 
     /** @var string */
-    private $currentToken = '';
+    private $current = '';
 
     /** @var int */
-    private $currentTokenKey = -1;
+    private $key = -1;
 
     /** @var string */
     private $chunk;
@@ -66,14 +66,14 @@ class IteratorLexerPOC implements \Iterator
 
     public function next()
     {
-        $this->currentToken = '';
+        $this->current = '';
 
         for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
         {
             if ($this->carryToken != null) {
-                $this->currentToken = $this->carryToken;
+                $this->current = $this->carryToken;
                 $this->carryToken = null;
-                ++$this->currentTokenKey;
+                ++$this->key;
                 return;
             }
 
@@ -102,14 +102,14 @@ class IteratorLexerPOC implements \Iterator
 
             if (isset($this->tokenBoundaries[$byte])) { // if byte is any token boundary
                 if ($this->tokenBuffer != '') {
-                    $this->currentToken = $this->tokenBuffer;
+                    $this->current = $this->tokenBuffer;
                     $this->tokenBuffer = '';
                 }
                 if ($this->tokenBoundaries[$byte]) { // if byte is not whitespace token boundary
                     $this->carryToken = $byte;
                 }
-                if ($this->currentToken != '') {
-                    ++$this->currentTokenKey;
+                if ($this->current != '') {
+                    ++$this->key;
                     ++$this->chunkIndex;
                     return;
                 }
@@ -124,28 +124,28 @@ class IteratorLexerPOC implements \Iterator
         if ($this->jsonChunksNext()) {
             $this->next();
         } elseif ($this->carryToken) {
-            $this->currentToken = $this->carryToken;
+            $this->current = $this->carryToken;
             $this->carryToken = null;
-            ++$this->currentTokenKey;
+            ++$this->key;
         }
     }
 
 
     public function valid()
     {
-        return $this->currentToken !== '';
+        return $this->current !== '';
     }
 
 
     public function current()
     {
-        return $this->currentToken;
+        return $this->current;
     }
 
 
     public function key()
     {
-        return $this->currentTokenKey;
+        return $this->key;
     }
 
 
