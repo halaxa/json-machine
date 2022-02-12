@@ -545,14 +545,17 @@ any structure fully recursively and strings will be served as streams.
 
 <a name="installation"></a>
 ## Installation
+
+### Using Composer
 ```bash
 composer require halaxa/json-machine
 ```
-or clone or download this repository and add the following to your bootstrap file:
+
+### Without Composer
+Clone or download this repository and add the following to your bootstrap file:
+```php
+spl_autoload_register(require '/path/to/json-machine/autoloader.php');
 ```
-require_once('/path/to/json-machine/Autoloader.php');
-```
-The Autoloader.php file provides the same auto loading functionality as the Composer install.
 
 <a name="development"></a>
 ## Development
