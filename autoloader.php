@@ -6,7 +6,7 @@ declare(strict_types=1);
  *
  * To use this just include this file in your script and the JsonMachine namespace will be made available
  *
- * Usage: spl_autoload_register(require_once('/path/to/Autoloader.php'));
+ * Usage: spl_autoload_register(require '/path/to/json-machine/autoloader.php');
  *
  * See: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md
  *

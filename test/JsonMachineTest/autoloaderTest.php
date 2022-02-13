@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
-/**
- * @covers \JsonMachine\FileChunks
- */
 class autoloaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testAutoloaderLoadsClass()
