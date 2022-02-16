@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Added
+- Autoloading without Composer. Thanks @a-sync.
 
 <br>
 
