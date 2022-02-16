@@ -49,4 +49,6 @@ class Autoloading
     }
 }
 
+// @codeCoverageIgnoreStart
 return [Autoloading::class, 'autoloader'];
+// @codeCoverageIgnoreEnd

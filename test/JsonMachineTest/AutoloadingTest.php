@@ -9,6 +9,9 @@ namespace JsonMachineTest;
  */
 class AutoloadingTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @runInSeparateProcess
+     */
     public function testAutoloaderLoadsClass()
     {
         $dummyFile = $this->createAutoloadableClass();
@@ -26,6 +29,28 @@ class AutoloadingTest extends \PHPUnit_Framework_TestCase
         $this->registerPreviousAutoloaders($autoloadersBackup);
 
         $this->assertTrue($autoloaded);
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testIgnoresInvalidBaseNamespace()
+    {
+        $dummyFile = $this->createAutoloadableClass();
+        register_shutdown_function(function () use ($dummyFile) {
+            @unlink($dummyFile);
+        });
+
+        $autoloadersBackup = $this->unregisterCurrentAutoloaders();
+        $autoloader = require __DIR__.'/../../src/autoloader.php';
+
+        spl_autoload_register($autoloader);
+        $autoloaded = class_exists('XXXsonMachine\\AutoloadStub');
+        spl_autoload_unregister($autoloader);
+
+        $this->registerPreviousAutoloaders($autoloadersBackup);
+
+        $this->assertFalse($autoloaded);
     }
 
     private function createAutoloadableClass(): string
