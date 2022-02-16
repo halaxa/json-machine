@@ -17,7 +17,7 @@ class AutoloadingTest extends \PHPUnit_Framework_TestCase
         });
 
         $autoloadersBackup = $this->unregisterCurrentAutoloaders();
-        $autoloader = require __DIR__ . '/../../src/autoloader.php';
+        $autoloader = require __DIR__.'/../../src/autoloader.php';
 
         spl_autoload_register($autoloader);
         $autoloaded = class_exists('JsonMachine\\AutoloadStub');
