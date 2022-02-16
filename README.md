@@ -554,7 +554,7 @@ composer require halaxa/json-machine
 ### Without Composer
 Clone or download this repository and add the following to your bootstrap file:
 ```php
-spl_autoload_register(require '/path/to/json-machine/autoloader.php');
+spl_autoload_register(require '/path/to/json-machine/src/autoloader.php');
 ```
 
 <a name="development"></a>

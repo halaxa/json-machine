@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace JsonMachineTest;
 
 /**
- * @coversNothing
+ * @covers \JsonMachine\Autoloading
  */
-class autoloaderTest extends \PHPUnit_Framework_TestCase
+class AutoloadingTest extends \PHPUnit_Framework_TestCase
 {
     public function testAutoloaderLoadsClass()
     {
         $dummyFile = $this->createAutoloadableClass();
+        register_shutdown_function(function () use ($dummyFile) {
+            @unlink($dummyFile);
+        });
 
         $autoloadersBackup = $this->unregisterCurrentAutoloaders();
-        $autoloader = require __DIR__.'/../../autoloader.php';
+        $autoloader = require __DIR__ . '/../../src/autoloader.php';
 
         spl_autoload_register($autoloader);
         $autoloaded = class_exists('JsonMachine\\AutoloadStub');
@@ -23,8 +26,6 @@ class autoloaderTest extends \PHPUnit_Framework_TestCase
         $this->registerPreviousAutoloaders($autoloadersBackup);
 
         $this->assertTrue($autoloaded);
-
-        @unlink($dummyFile);
     }
 
     private function createAutoloadableClass(): string

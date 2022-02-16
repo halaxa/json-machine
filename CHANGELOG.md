@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## master
 ### Added
-- Autoloading without Composer. Thanks @a-sync
+- Autoloading without Composer. Thanks @a-sync.
 
 <br>
 
