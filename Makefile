@@ -42,10 +42,11 @@ tests-coverage: ## Runs tests and creates ./clover.xml. Pass args to phpunit via
 
 tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via ARGS=""
 	@for version in $(PHP_VERSIONS); do \
-		set -e \
-		printf "$$SEP"; \
-		$(call DOCKER_RUN,$$version,composer tests -- $(ARGS)); \
-		SEP="\n\n"; \
+		set -e; \
+		printf "PHP %s%.s\n" $$version; \
+		printf "=======\n"; \
+		$(call DOCKER_RUN,$$version,composer tests -- --colors=always $(ARGS)); \
+		printf "\n\n\n"; \
 	done
 
 
