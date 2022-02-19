@@ -61,7 +61,7 @@ cs-fix: docker-run ## Fix code style
 performance-tests: CMD=composer performance-tests
 performance-tests: docker-run ## Run performance tests
 
-release:
+release: build
 	@\
 	echo "Creating release from '$$(git branch --show-current)'"; \
 	git diff --quiet --exit-code && git diff --quiet --cached --exit-code \
@@ -86,6 +86,7 @@ release:
 	set +x; \
 	\
 	echo "Push? [ENTER to continue]"; \
+	read pass; \
 	set -x; git push --follow-tags; set +x; \
 	\
 	echo "Publish '$$version' as a Github release? [ENTER to continue]"; \
