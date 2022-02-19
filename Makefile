@@ -63,7 +63,9 @@ performance-tests: docker-run ## Run performance tests
 
 release: .env build
 	@\
-	echo "Creating release from '$$(git branch --show-current)'"; \
+	branch=$$(git branch --show-current); \
+	\
+	echo "Creating release from '$$branch'"; \
 	git diff --quiet --exit-code && git diff --quiet --cached --exit-code \
 		|| { echo "There are uncommited changes. Stopping"; exit 1; }; \
 	\
@@ -96,7 +98,7 @@ release: .env build
 	  --user "$$GITHUB_USER:$$GITHUB_TOKEN" \
 	  --request POST \
 	  --header "Accept: application/vnd.github.v3+json" \
-	  --data '{"tag_name":"$$version"}' \
+	  --data '{"tag_name":"$$version", "target_commitish": "$$branch", "name": "$$version", "body": "See [CHANGELOG](CHANGELOG.md) for changes and release notes."}' \
 	  https://api.github.com/repos/halaxa/json-machine/releases \
 	;\
 
