@@ -61,6 +61,35 @@ cs-fix: docker-run ## Fix code style
 performance-tests: CMD=composer performance-tests
 performance-tests: docker-run ## Run performance tests
 
+release:
+	@\
+	echo "Creating release from '$$(git branch --show-current)'"; \
+	git diff --quiet --exit-code && git diff --quiet --cached --exit-code \
+		|| { echo "There are uncommited changes. Stopping"; exit 1; }; \
+	\
+	echo "Type the release version:"; \
+	read version; \
+	\
+	echo "Is README updated accordingly? [ENTER to continue]"; \
+	read pass; \
+	\
+	echo "Updating CHANGELOG.md"; \
+	$(call DOCKER_RUN,$(LATEST_PHP),php build/update-changelog.php $$version CHANGELOG.md); \
+	\
+	git diff; \
+	echo "Commit and tag this? [ENTER to continue]"; \
+	read pass; \
+	\
+	set -x; \
+	git commit -am "Release $$version"; \
+	git tag -a "$$version" -m "Release $$version"; \
+	set +x; \
+	\
+	echo "Push? [ENTER to continue]"; \
+	set -x; git push --follow-tags; set +x; \
+	\
+	echo "Publish '$$version' as a Github release? [ENTER to continue]"; \
+	# release
 
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
 	@$(call DOCKER_RUN,$(LATEST_PHP),$(CMD))
