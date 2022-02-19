@@ -61,6 +61,7 @@ cs-fix: docker-run ## Fix code style
 performance-tests: CMD=composer performance-tests
 performance-tests: docker-run ## Run performance tests
 
+
 release: .env build
 	@\
 	branch=$$(git branch --show-current); \
@@ -93,14 +94,15 @@ release: .env build
 	\
 	echo "Publish '$$version' as a Github release? [ENTER to continue]"; \
 	read pass; \
-	source .env; \
+	. ./.env; \
 	curl \
 	  --user "$$GITHUB_USER:$$GITHUB_TOKEN" \
 	  --request POST \
 	  --header "Accept: application/vnd.github.v3+json" \
-	  --data '{"tag_name":"$$version", "target_commitish": "$$branch", "name": "$$version", "body": "See [CHANGELOG](CHANGELOG.md) for changes and release notes."}' \
+	  --data "{\"tag_name\":\"$$version\", \"target_commitish\": \"$$branch\", \"name\": \"$$version\", \"body\": \"See [CHANGELOG](CHANGELOG.md) for changes and release notes.\"}" \
 	  https://api.github.com/repos/halaxa/json-machine/releases \
 	;\
+
 
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
 	@$(call DOCKER_RUN,$(LATEST_PHP),$(CMD))
