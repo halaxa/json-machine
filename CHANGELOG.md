@@ -12,6 +12,12 @@ Nothing yet
 
 <br>
 
+## 1.1.0 - 2022-02-19
+### Added
+- Autoloading without Composer. Thanks @a-sync.
+
+<br>
+
 ## 1.0.1 - 2022-02-06
 ### Fixed
 - Broken command `make performance-tests`

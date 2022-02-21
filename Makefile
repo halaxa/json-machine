@@ -42,10 +42,11 @@ tests-coverage: ## Runs tests and creates ./clover.xml. Pass args to phpunit via
 
 tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via ARGS=""
 	@for version in $(PHP_VERSIONS); do \
-		set -e \
-		printf "$$SEP"; \
-		$(call DOCKER_RUN,$$version,composer tests -- $(ARGS)); \
-		SEP="\n\n"; \
+		set -e; \
+		printf "PHP %s%.s\n" $$version; \
+		printf "=======\n"; \
+		$(call DOCKER_RUN,$$version,composer tests -- --colors=always $(ARGS)); \
+		printf "\n\n\n"; \
 	done
 
 
@@ -59,6 +60,48 @@ cs-fix: docker-run ## Fix code style
 
 performance-tests: CMD=composer performance-tests
 performance-tests: docker-run ## Run performance tests
+
+
+release: .env build
+	@\
+	branch=$$(git branch --show-current); \
+	\
+	echo "Creating release from '$$branch'"; \
+	git diff --quiet --exit-code && git diff --quiet --cached --exit-code \
+		|| { echo "There are uncommited changes. Stopping"; exit 1; }; \
+	\
+	echo "Type the release version:"; \
+	read version; \
+	\
+	echo "Is README updated accordingly? [ENTER to continue]"; \
+	read pass; \
+	\
+	echo "Updating CHANGELOG.md"; \
+	$(call DOCKER_RUN,$(LATEST_PHP),php build/update-changelog.php $$version CHANGELOG.md); \
+	\
+	git diff; \
+	echo "Commit and tag this? [ENTER to continue]"; \
+	read pass; \
+	\
+	set -x; \
+	git commit -am "Release $$version"; \
+	git tag -a "$$version" -m "Release $$version"; \
+	set +x; \
+	\
+	echo "Push? [ENTER to continue]"; \
+	read pass; \
+	set -x; git push --follow-tags; set +x; \
+	\
+	echo "Publish '$$version' as a Github release? [ENTER to continue]"; \
+	read pass; \
+	. ./.env; \
+	curl \
+	  --user "$$GITHUB_USER:$$GITHUB_TOKEN" \
+	  --request POST \
+	  --header "Accept: application/vnd.github.v3+json" \
+	  --data "{\"tag_name\":\"$$version\", \"target_commitish\": \"$$branch\", \"name\": \"$$version\", \"body\": \"See [CHANGELOG](CHANGELOG.md) for changes and release notes.\"}" \
+	  https://api.github.com/repos/halaxa/json-machine/releases \
+	;\
 
 
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
