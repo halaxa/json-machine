@@ -1,16 +1,18 @@
 namespace JsonMachine;
 
 use Iterator;
-class IteratorLexerPOC implements \Iterator
+
+class ExtTokens implements \Iterator
 {
     /** @var Iterator */
     private jsonChunks;
+
     /** @var array */
     private tokenBoundaries = [];
     /** @var array  */
     private jsonInsignificantBytes = [];
     /** @var string */
-    private carryToken;
+    private carryToken = "";
     /** @var string */
     private current = "";
     /** @var int */
@@ -21,12 +23,14 @@ class IteratorLexerPOC implements \Iterator
     private chunkLength;
     /** @var int */
     private chunkIndex;
+
     /** @var bool */
     private inString = false;
     /** @var string */
     private tokenBuffer = "";
     /** @var bool */
     private escaping = false;
+
     /**
      * @param Iterator<string> $jsonChunks
      */
@@ -45,35 +49,39 @@ class IteratorLexerPOC implements \Iterator
 
     public function next()
     {
-        var byte;
+        string byte;
         let this->current = "";
-        for (; this->chunkIndex < this->chunkLength; ++this->chunkIndex) {
-            if (this->carryToken != null) {
+
+        while (this->chunkIndex < this->chunkLength) {
+            if (this->carryToken != "") {
                 let this->current = this->carryToken;
-                let this->carryToken = null;
-                ++this->key;
+                let this->carryToken = "";
+                let this->key++;
                 return;
             }
-            let byte = this->chunk[this->chunkIndex];
+            let byte = substr(this->chunk, this->chunkIndex, 1);
             if (this->escaping) {
                 let this->escaping = false;
-                let this->tokenBuffer .= byte;
+                let this->tokenBuffer = this->tokenBuffer . byte;
+                let this->chunkIndex++;
                 continue;
             }
             if (this->jsonInsignificantBytes[byte]) {
-                let this->tokenBuffer .= byte;
+                let this->tokenBuffer = this->tokenBuffer . byte;
+                let this->chunkIndex++;
                 continue;
             }
             if (this->inString) {
-                if (byte == '"') {
+                if (byte == "\"") {
                     let this->inString = false;
-                } elseif (byte == '\\') {
+                } elseif (byte == "\\") {
                     let this->escaping = true;
                 }
-                let this->tokenBuffer .= byte;
+                let this->tokenBuffer = this->tokenBuffer . byte;
+                let this->chunkIndex++;
                 continue;
             }
-            if (isset(this->tokenBoundaries[byte])) {
+            if (isset this->tokenBoundaries[byte]) {
                 // if byte is any token boundary
                 if (this->tokenBuffer != "") {
                     let this->current = this->tokenBuffer;
@@ -84,23 +92,25 @@ class IteratorLexerPOC implements \Iterator
                     let this->carryToken = byte;
                 }
                 if (this->current != "") {
-                    ++this->key;
-                    ++this->chunkIndex;
+                    let this->key++;
+                    let this->chunkIndex++;
                     return;
                 }
             } else {
-                if (byte == '"') {
+                if (byte == "\"") {
                     let this->inString = true;
                 }
-                let this->tokenBuffer .= byte;
+                let this->tokenBuffer = this->tokenBuffer . byte;
             }
+
+            let this->chunkIndex++;
         }
         if (this->jsonChunksNext()) {
             this->next();
         } elseif (this->carryToken) {
             let this->current = this->carryToken;
-            let this->carryToken = null;
-            ++this->key;
+            let this->carryToken = "";
+            let this->key++;
         }
     }
 
@@ -123,21 +133,23 @@ class IteratorLexerPOC implements \Iterator
     {
         var boundary;
         var utf8bom;
+
         let utf8bom = "﻿";
         let boundary = [];
-        let boundary[utf8bom[0]] = 0;
-        let boundary[utf8bom[1]] = 0;
-        let boundary[utf8bom[2]] = 0;
-        let boundary[' '] = 0;
+        let boundary[substr(utf8bom, 0, 1)] = 0;
+        let boundary[substr(utf8bom, 1, 1)] = 0;
+        let boundary[substr(utf8bom, 2, 1)] = 0;
+        let boundary[" "] = 0;
         let boundary["\n"] = 0;
         let boundary["\r"] = 0;
         let boundary["\t"] = 0;
-        let boundary['{'] = 1;
-        let boundary['}'] = 1;
-        let boundary['['] = 1;
-        let boundary[']'] = 1;
-        let boundary[':'] = 1;
-        let boundary[','] = 1;
+        let boundary["{"] = 1;
+        let boundary["}"] = 1;
+        let boundary["["] = 1;
+        let boundary["]"] = 1;
+        let boundary[":"] = 1;
+        let boundary[","] = 1;
+
         return boundary;
     }
 
@@ -147,8 +159,9 @@ class IteratorLexerPOC implements \Iterator
         let bytes = [];
         var ord;
 for ord in range(0, 255) {
-            let bytes[chr(ord)] = !in_array(chr(ord), ["\\", '"', "\xef", "\xbb", "\xbf", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']);
+            let bytes[chr(ord)] = !in_array(chr(ord), ["\\", "\"", "\xef", "\xbb", "\xbf", " ", "\n", "\r", "\t", "{", "}", "[", "]", ":", ","]);
         }
+
         return bytes;
     }
 

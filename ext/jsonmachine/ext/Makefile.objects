@@ -1,0 +1,48 @@
+jsonmachine.lo: /json-machine/ext/jsonmachine/ext/jsonmachine.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/jsonmachine.c -o jsonmachine.lo 
+kernel/main.lo: /json-machine/ext/jsonmachine/ext/kernel/main.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/main.c -o kernel/main.lo 
+kernel/memory.lo: /json-machine/ext/jsonmachine/ext/kernel/memory.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/memory.c -o kernel/memory.lo 
+kernel/exception.lo: /json-machine/ext/jsonmachine/ext/kernel/exception.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/exception.c -o kernel/exception.lo 
+kernel/debug.lo: /json-machine/ext/jsonmachine/ext/kernel/debug.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/debug.c -o kernel/debug.lo 
+kernel/backtrace.lo: /json-machine/ext/jsonmachine/ext/kernel/backtrace.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/backtrace.c -o kernel/backtrace.lo 
+kernel/object.lo: /json-machine/ext/jsonmachine/ext/kernel/object.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/object.c -o kernel/object.lo 
+kernel/array.lo: /json-machine/ext/jsonmachine/ext/kernel/array.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/array.c -o kernel/array.lo 
+kernel/string.lo: /json-machine/ext/jsonmachine/ext/kernel/string.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/string.c -o kernel/string.lo 
+kernel/fcall.lo: /json-machine/ext/jsonmachine/ext/kernel/fcall.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/fcall.c -o kernel/fcall.lo 
+kernel/require.lo: /json-machine/ext/jsonmachine/ext/kernel/require.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/require.c -o kernel/require.lo 
+kernel/file.lo: /json-machine/ext/jsonmachine/ext/kernel/file.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/file.c -o kernel/file.lo 
+kernel/operators.lo: /json-machine/ext/jsonmachine/ext/kernel/operators.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/operators.c -o kernel/operators.lo 
+kernel/math.lo: /json-machine/ext/jsonmachine/ext/kernel/math.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/math.c -o kernel/math.lo 
+kernel/concat.lo: /json-machine/ext/jsonmachine/ext/kernel/concat.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/concat.c -o kernel/concat.lo 
+kernel/variables.lo: /json-machine/ext/jsonmachine/ext/kernel/variables.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/variables.c -o kernel/variables.lo 
+kernel/filter.lo: /json-machine/ext/jsonmachine/ext/kernel/filter.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/filter.c -o kernel/filter.lo 
+kernel/iterator.lo: /json-machine/ext/jsonmachine/ext/kernel/iterator.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/iterator.c -o kernel/iterator.lo 
+kernel/time.lo: /json-machine/ext/jsonmachine/ext/kernel/time.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/time.c -o kernel/time.lo 
+kernel/exit.lo: /json-machine/ext/jsonmachine/ext/kernel/exit.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/kernel/exit.c -o kernel/exit.lo 
+jsonmachine/exttokens.lo: /json-machine/ext/jsonmachine/ext/jsonmachine/exttokens.zep.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/json-machine/ext/jsonmachine/ext $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /json-machine/ext/jsonmachine/ext/jsonmachine/exttokens.zep.c -o jsonmachine/exttokens.lo 
+$(phplibdir)/jsonmachine.la: ./jsonmachine.la
+	$(LIBTOOL) --mode=install cp ./jsonmachine.la $(phplibdir)
+
+./jsonmachine.la: $(shared_objects_jsonmachine) $(JSONMACHINE_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS)  -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_jsonmachine) $(JSONMACHINE_SHARED_LIBADD)
+

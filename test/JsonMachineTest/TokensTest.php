@@ -10,6 +10,7 @@ use JsonMachine\FileChunks;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
+use JsonMachine\ExtTokens;
 use JsonMachine\TokensWithDebugging;
 
 /**
@@ -24,6 +25,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
             'Iterator POC' => [IteratorLexerPOC::class],
+            'zephir ext' => [ExtTokens::class],
         ];
     }
 

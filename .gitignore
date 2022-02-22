@@ -7,3 +7,5 @@ phpunit.xml
 clover.xml
 src/AutoloadStub.php
 .env
+*~
+*.log
