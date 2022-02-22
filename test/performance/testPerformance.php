@@ -16,14 +16,11 @@ $decoders = [
     'Items::fromFile()' => function ($file) {
         return Items::fromFile($file);
     },
-    'Items::fromString()' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')));
-    },
     'Items::fromFile() - debug' => function ($file) {
         return Items::fromFile($file, ['debug' => true]);
     },
-    'Items::fromString() - debug' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
+    'Items::fromFile() - ext' => function ($file) {
+        return new \JsonMachine\Parser();
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);

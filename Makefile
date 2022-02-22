@@ -122,6 +122,7 @@ zephir:  ## Build JSON Machine's PHP extension
 			cd /json-machine/ext/jsonmachine \
 			&& zephir fullclean \
 			&& zephir build \
+			&& zephir stubs \
 			&& cd /json-machine \
 			&& vendor/bin/phpunit \
 		"

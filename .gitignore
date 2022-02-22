@@ -9,3 +9,11 @@ src/AutoloadStub.php
 .env
 *~
 *.log
+
+# ext compiling
+*.gch
+*.lo
+*.o
+*.so
+libtool
+compiled-files-sum
