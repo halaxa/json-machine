@@ -181,7 +181,7 @@ PHP_METHOD(JsonMachine_ExtTokens, next)
 		ZEPHIR_INIT_NVAR(&byte);
 		zephir_substr(&byte, &_6$$3, zephir_get_intval(&_7$$3), 1 , 0);
 		zephir_read_property(&_9$$3, this_ptr, ZEND_STRL("escaping"), PH_NOISY_CC | PH_READONLY);
-		if (zephir_is_true(&_9$$3)) {
+		if (UNEXPECTED(zephir_is_true(&_9$$3))) {
 			if (0) {
 				zephir_update_property_zval(this_ptr, ZEND_STRL("escaping"), &__$true);
 			} else {

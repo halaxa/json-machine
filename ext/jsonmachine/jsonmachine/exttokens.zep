@@ -60,7 +60,7 @@ class ExtTokens implements \Iterator
                 return;
             }
             let byte = substr(this->chunk, this->chunkIndex, 1);
-            if (this->escaping) {
+            if unlikely this->escaping {
                 let this->escaping = false;
                 let this->tokenBuffer = this->tokenBuffer . byte;
                 let this->chunkIndex++;

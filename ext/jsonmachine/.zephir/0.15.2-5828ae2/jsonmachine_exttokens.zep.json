@@ -723,7 +723,7 @@
                                 {
                                     "type": "if",
                                     "expr": {
-                                        "type": "list",
+                                        "type": "unlikely",
                                         "left": {
                                             "type": "property-access",
                                             "left": {
@@ -731,22 +731,22 @@
                                                 "value": "this",
                                                 "file": "\/json-machine\/ext\/jsonmachine\/jsonmachine\/exttokens.zep",
                                                 "line": 63,
-                                                "char": 22
+                                                "char": 30
                                             },
                                             "right": {
                                                 "type": "variable",
                                                 "value": "escaping",
                                                 "file": "\/json-machine\/ext\/jsonmachine\/jsonmachine\/exttokens.zep",
                                                 "line": 63,
-                                                "char": 31
+                                                "char": 40
                                             },
                                             "file": "\/json-machine\/ext\/jsonmachine\/jsonmachine\/exttokens.zep",
                                             "line": 63,
-                                            "char": 31
+                                            "char": 40
                                         },
                                         "file": "\/json-machine\/ext\/jsonmachine\/jsonmachine\/exttokens.zep",
                                         "line": 63,
-                                        "char": 33
+                                        "char": 40
                                     },
                                     "statements": [
                                         {

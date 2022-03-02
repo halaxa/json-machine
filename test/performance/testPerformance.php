@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use JsonMachine\ExtTokens;
+use JsonMachine\FileChunks;
 use JsonMachine\Items;
+use JsonMachine\Parser;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
@@ -20,7 +23,7 @@ $decoders = [
         return Items::fromFile($file, ['debug' => true]);
     },
     'Items::fromFile() - ext' => function ($file) {
-        return new \JsonMachine\Parser();
+        return new Parser(new ExtTokens((new FileChunks($file))->getIterator()));
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);
