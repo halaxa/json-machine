@@ -32,7 +32,8 @@
         "guzzlehttp/guzzle": "To run example with GuzzleHttp"
     },
     "autoload": {
-        "psr-4": {"JsonMachine\\": "src/"}
+        "psr-4": {"JsonMachine\\": "src/"},
+        "exclude-from-classmap": ["src/autoloader.php"]
     },
     "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
