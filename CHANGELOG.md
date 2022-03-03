@@ -12,6 +12,12 @@ Nothing yet
 
 <br>
 
+## 1.1.1 - 2022-03-03
+### Fixed
+- Fixed warning when generating autoload classmap via composer.
+
+<br>
+
 ## 1.1.0 - 2022-02-19
 ### Added
 - Autoloading without Composer. Thanks @a-sync.
