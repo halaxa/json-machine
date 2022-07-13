@@ -290,9 +290,9 @@ class Parser implements \IteratorAggregate, PositionAware
     {
         $matchingPointerByIndex = [];
 
-        foreach ($this->paths as $jsonPointer => $jsonPointerSegments) {
-            foreach ($this->currentPath as $index => $segment) {
-                if (!isset($jsonPointerSegments[$index]) || !$this->pathMatchesPointer($segment, $jsonPointerSegments[$index])) {
+        foreach ($this->paths as $jsonPointer => $referenceTokens) {
+            foreach ($this->currentPath as $index => $pathToken) {
+                if (!isset($referenceTokens[$index]) || !$this->pathMatchesPointer($pathToken, $referenceTokens[$index])) {
                     continue 2;
                 } elseif (!isset($matchingPointerByIndex[$index])) {
                     $matchingPointerByIndex[$index] = $jsonPointer;
@@ -389,18 +389,18 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * Determine whether the given path segment matches the provided JSON pointer segment
+     * Determine whether the given path reference token matches the provided JSON pointer reference token
      *
-     * @param string|int $pathSegment
-     * @param string $pointerSegment
+     * @param string|int $pathToken
+     * @param string $pointerToken
      * @return bool
      */
-    private function pathMatchesPointer($pathSegment, string $pointerSegment): bool
+    private function pathMatchesPointer($pathToken, string $pointerToken): bool
     {
-        if ($pointerSegment === (string) $pathSegment) {
+        if ($pointerToken === (string) $pathToken) {
             return true;
         }
 
-        return is_int($pathSegment) && $pointerSegment === '-';
+        return is_int($pathToken) && $pointerToken === '-';
     }
 }
