@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Added
+- PHP 8.2 support
+
+### Fixed
+- Meaningful error on invalid token. (#86)
+- Added missing return type annotation. (#84)
 
 <br>
 
