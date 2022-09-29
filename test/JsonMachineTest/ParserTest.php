@@ -474,7 +474,6 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->expectException(SyntaxErrorException::class);
 
         foreach ($parser as $index => $item) {
-
         }
     }
 }
