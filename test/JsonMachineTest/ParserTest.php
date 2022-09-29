@@ -466,4 +466,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->expectException(JsonMachineException::class);
         $parser->getPosition();
     }
+
+    public function testThrowsMeaningfulErrorOnIncorrectTokens()
+    {
+        $parser = new Parser(new Tokens(['[$P]']));
+
+        $this->expectException(SyntaxErrorException::class);
+
+        foreach ($parser as $index => $item) {
+
+        }
+    }
 }

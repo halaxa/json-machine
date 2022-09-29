@@ -259,29 +259,35 @@ class Parser implements \IteratorAggregate, PositionAware
 
     private function tokenTypes()
     {
-        return [
-            'n' => self::SCALAR_CONST,
-            't' => self::SCALAR_CONST,
-            'f' => self::SCALAR_CONST,
-            '-' => self::SCALAR_CONST,
-            '0' => self::SCALAR_CONST,
-            '1' => self::SCALAR_CONST,
-            '2' => self::SCALAR_CONST,
-            '3' => self::SCALAR_CONST,
-            '4' => self::SCALAR_CONST,
-            '5' => self::SCALAR_CONST,
-            '6' => self::SCALAR_CONST,
-            '7' => self::SCALAR_CONST,
-            '8' => self::SCALAR_CONST,
-            '9' => self::SCALAR_CONST,
-            '"' => self::SCALAR_STRING,
-            '{' => self::OBJECT_START,
-            '}' => self::OBJECT_END,
-            '[' => self::ARRAY_START,
-            ']' => self::ARRAY_END,
-            ',' => self::COMMA,
-            ':' => self::COLON,
-        ];
+        $allBytes = [];
+
+        foreach (range(0, 255) as $ord) {
+            $allBytes[chr($ord)] = 0;
+        }
+
+        $allBytes['n'] = self::SCALAR_CONST;
+        $allBytes['t'] = self::SCALAR_CONST;
+        $allBytes['f'] = self::SCALAR_CONST;
+        $allBytes['-'] = self::SCALAR_CONST;
+        $allBytes['0'] = self::SCALAR_CONST;
+        $allBytes['1'] = self::SCALAR_CONST;
+        $allBytes['2'] = self::SCALAR_CONST;
+        $allBytes['3'] = self::SCALAR_CONST;
+        $allBytes['4'] = self::SCALAR_CONST;
+        $allBytes['5'] = self::SCALAR_CONST;
+        $allBytes['6'] = self::SCALAR_CONST;
+        $allBytes['7'] = self::SCALAR_CONST;
+        $allBytes['8'] = self::SCALAR_CONST;
+        $allBytes['9'] = self::SCALAR_CONST;
+        $allBytes['"'] = self::SCALAR_STRING;
+        $allBytes['{'] = self::OBJECT_START;
+        $allBytes['}'] = self::OBJECT_END;
+        $allBytes['['] = self::ARRAY_START;
+        $allBytes[']'] = self::ARRAY_END;
+        $allBytes[','] = self::COMMA;
+        $allBytes[':'] = self::COLON;
+
+        return $allBytes;
     }
 
     private function getMatchingJsonPointerPath(): array
