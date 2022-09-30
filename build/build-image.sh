@@ -26,10 +26,12 @@ printf "
         g++ \
         libtool \
         make \
+        bash \
+        linux-headers \
     && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
     && pecl install xdebug-$XDEBUG_VERSION \
         && docker-php-ext-enable xdebug \
-    && wget https://getcomposer.org/download/latest-stable/composer.phar -O /usr/local/bin/composer \
+    && wget https://getcomposer.org/download/2.2.18/composer.phar -O /usr/local/bin/composer \
         && chmod +x /usr/local/bin/composer
 " | docker build --quiet --tag "$CONTAINER_NAME" - > /dev/null
 

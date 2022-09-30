@@ -115,6 +115,9 @@ final class Items implements \IteratorAggregate, PositionAware
         return new self($iterable, $options);
     }
 
+    /**
+     * @return \Generator
+     */
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
