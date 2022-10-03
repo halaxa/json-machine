@@ -124,7 +124,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return [
             'non existing pointer' => ['{}', '/not/found'],
             "empty string should not match '0'" => ['{"0":[]}', '/'],
-            'empty string should not match 0' => ['[[]]', '/'],
+            'empty string should not match 0 index' => ['[[]]', '/'],
             '0 should not match empty string' => ['{"":[]}', '/0'],
         ];
     }

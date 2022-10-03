@@ -127,8 +127,8 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             if (
                 (
-                    $jsonPointerPath == $currentPath
-                    || $jsonPointerPath == $currentPathWildcard
+                    ! array_diff($jsonPointerPath, $currentPath)
+                    || ! array_diff($jsonPointerPath, $currentPathWildcard)
                 )
                 && (
                     $currentLevel > $iteratorLevel
@@ -233,7 +233,10 @@ class Parser implements \IteratorAggregate, PositionAware
                 }
                 unset($valueResult);
             }
-            if ($jsonPointerPath == $currentPath || $jsonPointerPath == $currentPathWildcard) {
+            if (
+                    ! array_diff($jsonPointerPath, $currentPath)
+                    || ! array_diff($jsonPointerPath, $currentPathWildcard)
+            ) {
                 if ( ! in_array($this->matchedJsonPointer, $pointersFound, true)) {
                     $pointersFound[] = $this->matchedJsonPointer;
                 }
