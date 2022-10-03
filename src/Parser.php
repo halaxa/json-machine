@@ -234,13 +234,13 @@ class Parser implements \IteratorAggregate, PositionAware
                 unset($valueResult);
             }
             if (
-                    ! array_diff($jsonPointerPath, $currentPath)
-                    || ! array_diff($jsonPointerPath, $currentPathWildcard)
+                ! array_diff($jsonPointerPath, $currentPath)
+                || ! array_diff($jsonPointerPath, $currentPathWildcard)
             ) {
                 if ( ! in_array($this->matchedJsonPointer, $pointersFound, true)) {
                     $pointersFound[] = $this->matchedJsonPointer;
                 }
-            } elseif (count($pointersFound) == count($this->jsonPointers) && !$this->inJsonPointer()) {
+            } elseif (count($pointersFound) == count($this->jsonPointers) && ! $this->inJsonPointer()) {
                 $subtreeEnded = true;
                 break;
             }
@@ -301,9 +301,9 @@ class Parser implements \IteratorAggregate, PositionAware
 
         foreach ($this->paths as $jsonPointer => $referenceTokens) {
             foreach ($this->currentPath as $index => $pathToken) {
-                if (!isset($referenceTokens[$index]) || !$this->pathMatchesPointer($pathToken, $referenceTokens[$index])) {
+                if ( ! isset($referenceTokens[$index]) || ! $this->pathMatchesPointer($pathToken, $referenceTokens[$index])) {
                     continue 2;
-                } elseif (!isset($matchingPointerByIndex[$index])) {
+                } elseif ( ! isset($matchingPointerByIndex[$index])) {
                     $matchingPointerByIndex[$index] = $jsonPointer;
                 }
             }
@@ -382,9 +382,7 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * Determine whether the current position is within one of the JSON pointers
-     *
-     * @return bool
+     * Determine whether the current position is within one of the JSON pointers.
      */
     private function inJsonPointer(): bool
     {
@@ -398,11 +396,9 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * Determine whether the given path reference token matches the provided JSON pointer reference token
+     * Determine whether the given path reference token matches the provided JSON pointer reference token.
      *
      * @param string|int $pathToken
-     * @param string $pointerToken
-     * @return bool
      */
     private function pathMatchesPointer($pathToken, string $pointerToken): bool
     {
