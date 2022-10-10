@@ -120,14 +120,15 @@ class Parser implements \IteratorAggregate, PositionAware
             $isValue = ($tokenType | 23) == 23; // 23 = self::ANY_VALUE
             if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPathChanged = ! $this->hasSingleJsonPointer;
-                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? (string) (1 + (int) $currentPath[$currentLevel]) : '0';
+                $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? $currentPath[$currentLevel] + 1 : 0;
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/S', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
-                unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1], $stack[$currentLevel + 1]);
+                array_splice($currentPath, $currentLevel + 1);
+                array_splice($currentPathWildcard, $currentLevel + 1);
             }
             if (
-                (
-                    $jsonPointerPath == $currentPath
-                    || $jsonPointerPath == $currentPathWildcard
+                (   // array_diff may be replaced with '==' when PHP 7 stops being supported
+                    ! array_diff($jsonPointerPath, $currentPath)
+                    || ! array_diff($jsonPointerPath, $currentPathWildcard)
                 )
                 && (
                     $currentLevel > $iteratorLevel
@@ -156,7 +157,8 @@ class Parser implements \IteratorAggregate, PositionAware
                             $currentPathChanged = ! $this->hasSingleJsonPointer;
                             $currentPath[$currentLevel] = $referenceToken;
                             $currentPathWildcard[$currentLevel] = $referenceToken;
-                            unset($currentPath[$currentLevel + 1], $currentPathWildcard[$currentLevel + 1]);
+                            array_splice($currentPath, $currentLevel + 1);
+                            array_splice($currentPathWildcard, $currentLevel + 1);
                         }
                         continue 2; // a valid json chunk is not completed yet
                     }
@@ -231,11 +233,14 @@ class Parser implements \IteratorAggregate, PositionAware
                 }
                 unset($valueResult);
             }
-            if ($jsonPointerPath == $currentPath || $jsonPointerPath == $currentPathWildcard) {
+            if (
+                ! array_diff($jsonPointerPath, $currentPath)
+                || ! array_diff($jsonPointerPath, $currentPathWildcard)
+            ) {
                 if ( ! in_array($this->matchedJsonPointer, $pointersFound, true)) {
                     $pointersFound[] = $this->matchedJsonPointer;
                 }
-            } elseif (count($pointersFound) == count($this->jsonPointers)) {
+            } elseif (count($pointersFound) == count($this->jsonPointers) && ! $this->inJsonPointer()) {
                 $subtreeEnded = true;
                 break;
             }
@@ -292,49 +297,19 @@ class Parser implements \IteratorAggregate, PositionAware
 
     private function getMatchingJsonPointerPath(): array
     {
-        $matchingPointer = key($this->paths);
+        $matchingPointerByIndex = [];
 
-        if (count($this->paths) === 1) {
-            $this->matchedJsonPointer = $matchingPointer;
-
-            return $this->paths[$matchingPointer];
-        }
-
-        $currentPathLength = count($this->currentPath);
-        $matchLength = -1;
-
-        foreach ($this->paths as $jsonPointer => $path) {
-            $matchingReferenceTokens = [];
-
-            foreach ($path as $i => $referenceToken) {
-                if (
-                    ! isset($this->currentPath[$i])
-                    || (
-                        $this->currentPath[$i] !== $referenceToken
-                        && ValidJsonPointers::wildcardify($this->currentPath[$i]) !== $referenceToken
-                    )
-                ) {
-                    continue;
+        foreach ($this->paths as $jsonPointer => $referenceTokens) {
+            foreach ($this->currentPath as $index => $pathToken) {
+                if ( ! isset($referenceTokens[$index]) || ! $this->pathMatchesPointer($pathToken, $referenceTokens[$index])) {
+                    continue 2;
+                } elseif ( ! isset($matchingPointerByIndex[$index])) {
+                    $matchingPointerByIndex[$index] = $jsonPointer;
                 }
-
-                $matchingReferenceTokens[$i] = $referenceToken;
-            }
-
-            if (empty($matchingReferenceTokens)) {
-                continue;
-            }
-
-            $currentMatchLength = count($matchingReferenceTokens);
-
-            if ($currentMatchLength > $matchLength) {
-                $matchingPointer = $jsonPointer;
-                $matchLength = $currentMatchLength;
-            }
-
-            if ($matchLength === $currentPathLength) {
-                break;
             }
         }
+
+        $matchingPointer = end($matchingPointerByIndex) ?: key($this->paths);
 
         $this->matchedJsonPointer = $matchingPointer;
 
@@ -398,11 +373,39 @@ class Parser implements \IteratorAggregate, PositionAware
     private static function pathToJsonPointer(array $path): string
     {
         $encodedParts = array_map(function ($addressPart) {
-            return str_replace(['~', '/'], ['~0', '~1'], $addressPart);
+            return str_replace(['~', '/'], ['~0', '~1'], (string) $addressPart);
         }, $path);
 
         array_unshift($encodedParts, '');
 
         return implode('/', $encodedParts);
+    }
+
+    /**
+     * Determine whether the current position is within one of the JSON pointers.
+     */
+    private function inJsonPointer(): bool
+    {
+        $jsonPointerPath = $this->paths[$this->matchedJsonPointer];
+
+        if (($firstNest = array_search('-', $jsonPointerPath)) === false) {
+            return false;
+        }
+
+        return array_slice($jsonPointerPath, 0, $firstNest) == array_slice($this->currentPath, 0, $firstNest);
+    }
+
+    /**
+     * Determine whether the given path reference token matches the provided JSON pointer reference token.
+     *
+     * @param string|int $pathToken
+     */
+    private function pathMatchesPointer($pathToken, string $pointerToken): bool
+    {
+        if ($pointerToken === (string) $pathToken) {
+            return true;
+        }
+
+        return is_int($pathToken) && $pointerToken === '-';
     }
 }

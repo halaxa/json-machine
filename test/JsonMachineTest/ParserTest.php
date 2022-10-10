@@ -124,7 +124,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return [
             'non existing pointer' => ['{}', '/not/found'],
             "empty string should not match '0'" => ['{"0":[]}', '/'],
-            'empty string should not match 0' => ['[[]]', '/'],
+            'empty string should not match 0 index' => ['[[]]', '/'],
             '0 should not match empty string' => ['{"":[]}', '/0'],
         ];
     }
@@ -281,14 +281,64 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->createParser($json, '/zero/-/two/-/three');
 
-        $i = 0;
-        $expectedKey = 'three';
-        $expectedValues = [1, 2, 3];
+        $actual = [];
+        $expected = ['three' => [1, 2, 3]];
 
         foreach ($parser as $key => $value) {
-            $this->assertSame($expectedKey, $key);
-            $this->assertSame($expectedValues[$i++], $value);
+            $actual[$key][] = $value;
         }
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testGeneratorYieldsNestedValuesOfMultiplePaths()
+    {
+        $json = '
+            {
+                "zero": [
+                    {
+                        "one": "hello",
+                        "two": [
+                            {
+                                "three": 1
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    },
+                    {
+                        "one": "bye",
+                        "two": [
+                            {
+                                "three": 2
+                            },
+                            {
+                                "three": 3
+                            }
+                        ],
+                        "four": [
+                            {
+                                "five": "ignored"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ';
+
+        $parser = $this->createParser($json, ['/zero/-/one', '/zero/-/two/-/three']);
+
+        $actual = [];
+        $expected = ['one' => ['hello', 'bye'], 'three' => [1, 2, 3]];
+
+        foreach ($parser as $key => $value) {
+            $actual[$key][] = $value;
+        }
+
+        $this->assertSame($expected, $actual);
     }
 
     private function createParser($json, $jsonPointer = '')
