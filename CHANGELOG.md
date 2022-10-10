@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## master
 ### Fixed
-- Fix the parsing of nested sub-trees that use wildcards (#83)
+- Fix the parsing of nested sub-trees that use wildcards (#83). Thanks @cerbero90
 
 <br>
 
