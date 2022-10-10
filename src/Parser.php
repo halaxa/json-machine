@@ -126,7 +126,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 array_splice($currentPathWildcard, $currentLevel + 1);
             }
             if (
-                (
+                (   // array_diff may be replaced with '==' when PHP 7 stops being supported
                     ! array_diff($jsonPointerPath, $currentPath)
                     || ! array_diff($jsonPointerPath, $currentPathWildcard)
                 )
