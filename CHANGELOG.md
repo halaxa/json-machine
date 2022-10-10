@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Fixed
+- Fix the parsing of nested sub-trees that use wildcards (#83)
 
 <br>
 
