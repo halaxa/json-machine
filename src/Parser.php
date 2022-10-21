@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+use IteratorAggregate;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
@@ -11,6 +12,7 @@ use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\ItemDecoder;
+use JsonMachine\JsonDecoder\StringOnlyDecoder;
 use Traversable;
 
 class Parser implements \IteratorAggregate, PositionAware
@@ -52,21 +54,28 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var bool */
     private $hasSingleJsonPointer;
 
+    /** @var bool */
+    private bool $recursive;
+
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
      * @param ItemDecoder  $jsonDecoder
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $recursive = false)
     {
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
         $this->tokens = $tokens;
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
+        if ($recursive) {
+            $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
+        }
         $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
         $this->paths = $this->buildPaths($this->jsonPointers);
+        $this->recursive = $recursive;
     }
 
     private function buildPaths(array $jsonPointers): array
@@ -141,7 +150,12 @@ class Parser implements \IteratorAggregate, PositionAware
                     )
                 )
             ) {
-                $jsonBuffer .= $token;
+                if ($this->recursive && ($token == '{' || $token == '[')) {
+                    $jsonBuffer = new self($this->remainingTokens(), '', $this->jsonDecoder, true);
+                    $token = ' ';
+                } else {
+                    $jsonBuffer .= $token;
+                }
             }
             // todo move this switch to the top just after the syntax check to be a correct FSM
             switch ($token[0]) {
@@ -212,7 +226,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if ($currentLevel > $iteratorLevel) {
+            if ($currentLevel > $iteratorLevel && ! $this->recursive) {
                 continue; // a valid json chunk is not completed yet
             }
             if ($jsonBuffer !== '') {
@@ -244,6 +258,9 @@ class Parser implements \IteratorAggregate, PositionAware
                 $subtreeEnded = true;
                 break;
             }
+            if ($currentLevel < 0) {
+                break;
+            }
         }
 
         if ($token === null) {
@@ -260,6 +277,19 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->matchedJsonPointer = null;
         $this->currentPath = null;
+    }
+
+    /**
+     * @return void
+     */
+    private function remainingTokens()
+    {
+        /** @var \Iterator $iterator */
+        $iterator = $this->tokens instanceOf IteratorAggregate ?  $this->tokens->getIterator() : $this->tokens;
+        while ($iterator->valid()) {
+            yield $iterator->current();
+            $iterator->next();
+        }
     }
 
     private function tokenTypes()
@@ -346,7 +376,7 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function error($msg, $token, $exception = SyntaxErrorException::class)
     {
-        throw new $exception($msg." '".$token."'", $this->tokens->getPosition());
+        throw new $exception($msg." '".$token."'", method_exists($this->tokens, 'getPosition') ? $this->tokens->getPosition() : '');
     }
 
     /**

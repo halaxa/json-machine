@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use Generator;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
@@ -524,6 +525,22 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->expectException(SyntaxErrorException::class);
 
         foreach ($parser as $index => $item) {
+        }
+    }
+
+    public function testRecursiveIteration()
+    {
+        $parser = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
+
+        foreach ($parser as $object) {
+            $this->assertInstanceOf(Parser::class, $object);
+            foreach ($object as $key => $values) {
+                $this->assertInstanceOf(Parser::class, $values);
+                $this->assertSame("numbers", $key);
+                foreach ($values as $fortyTwo) {
+                    $this->assertSame(42, $fortyTwo);
+                }
+            }
         }
     }
 }
