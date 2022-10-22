@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Added
+- Recursive iteration via `recursive` option.
 
 <br>
 

@@ -20,6 +20,7 @@ for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optiona
   + [Parsing nested values in arrays](#parsing-nested-values)
   + [Parsing a single scalar value](#getting-scalar-values)
   + [Parsing multiple subtrees](#parsing-multiple-subtrees)
+  + [Recursive iteration](#recursive)
   + [What is JSON Pointer anyway?](#json-pointer)
 * [Options](#options)
 * [Parsing streaming responses from a JSON API](#parsing-json-stream-api-responses)
@@ -320,6 +321,39 @@ foreach ($fruits as $key => $value) {
 }
 ```
 
+<a name="recursive"></a>
+### Recursive iteration (BETA)
+Recursive iteration can be enabled via `recursive` option set to `true`.
+Every JSON iterable that JSON Machine encounters will then be yielded as a lazy instance of `Traversable`.
+No JSON vector will be materialized and kept in memory.
+The only PHP values you get materialized will be scalar values.
+Let's see an example with many, many users with many, many friends
+
+```php
+<?php
+
+use JsonMachine\Items;
+
+$users = Items::fromFile('users.json', ['recursive' => true]);
+foreach ($users as $user) { // $user instanceof Traversable, not an array/object
+    foreach ($user as $userField => $userValue) {
+        if ($userField == 'friends') {
+            foreach ($userValue as $friend) { // $userValue instanceof Traversable, not an array/object
+                foreach ($user as $friendField => $friendValue) { // $friend instanceof Traversable, not an array/object
+                    // do whatever you want here
+                    // maybe rather use PHP's Recursive*Iterators
+                }
+            }
+        }
+    }
+}
+```
+
+> You **MUST** iterate such lazy `Traversable`s in real time.
+> **NEVER** skip an iteration of such `Traversable` and
+> **NEVER** keep references to such past `Traversable`s to iterate them later
+> or you end up (almost) like [this guy](https://xkcd.com/292/).
+
 <a name="json-pointer"></a>
 ### What is JSON Pointer anyway?
 It's a way of addressing one item in JSON document. See the [JSON Pointer RFC 6901](https://tools.ietf.org/html/rfc6901).
@@ -347,6 +381,7 @@ Some examples:
 Options may change how a JSON is parsed. Array of options is the second parameter of all `Items::from*` functions.
 Available options are:
 - `pointer` - A JSON Pointer string that tells which part of the document you want to iterate.
+- `recursive` - Bool. Any JSON array/object the parser hits will not be decoded but served lazily as a `Traversable`. Default `false`.
 - `decoder` - An instance of `ItemDecoder` interface.
 - `debug` - `true` or `false` to enable or disable the debug mode. When the debug mode is enabled, data such as line,
 column and position in the document are available during parsing or in exceptions. Keeping debug disabled adds slight
@@ -518,30 +553,14 @@ but you forgot to specify a JSON Pointer. See [Parsing a subtree](#parsing-a-sub
 ### "That didn't help"
 The other reason may be, that one of the items you iterate is itself so huge it cannot be decoded at once.
 For example, you iterate over users and one of them has thousands of "friend" objects in it.
-Use `PassThruDecoder` which does not decode an item, get the json string of the user
-and parse it iteratively yourself using `Items::fromString()`.
-
-```php
-<?php
-
-use JsonMachine\Items;
-use JsonMachine\JsonDecoder\PassThruDecoder;
-
-$users = Items::fromFile('users.json', ['decoder' => new PassThruDecoder]);
-foreach ($users as $user) {
-    foreach (Items::fromString($user, ['pointer' => "/friends"]) as $friend) {
-        // process friends one by one
-    }
-}
-```
+The most efficient solution is to set `recursive` option to `true`.
+See [Recursive iteration](#recursive).
 
 <a name="step3"></a>
 ### "I am still out of luck"
-It probably means that the JSON string `$user` itself or one of the friends are too big and do not fit in memory.
-However, you can try this approach recursively. Parse `"/friends"` with `PassThruDecoder` getting one `$friend`
-json string at a time and then parse that using `Items::fromString()`... If even that does not help,
-there's probably no solution yet via JSON Machine. A feature is planned which will enable you to iterate
-any structure fully recursively and strings will be served as streams.
+It probably means that a single JSON string itself is too big to fit in memory.
+For example very big file encoded as base64.
+In that case you will probably be still out of luck until JSON Machine supports yielding of scalar values as PHP streams.
 
 <a name="installation"></a>
 ## Installation
