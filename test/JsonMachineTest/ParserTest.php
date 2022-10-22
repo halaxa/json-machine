@@ -14,6 +14,7 @@ use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
 use JsonMachine\TokensWithDebugging;
+use Traversable;
 
 /**
  * @covers \JsonMachine\Parser
@@ -530,17 +531,41 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testRecursiveIteration()
     {
-        $parser = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
+        $array = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
 
-        foreach ($parser as $object) {
-            $this->assertInstanceOf(Parser::class, $object);
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
             foreach ($object as $key => $values) {
-                $this->assertInstanceOf(Parser::class, $values);
+                $this->assertInstanceOf(Traversable::class, $values);
                 $this->assertSame("numbers", $key);
                 foreach ($values as $fortyTwo) {
                     $this->assertSame(42, $fortyTwo);
                 }
             }
         }
+    }
+
+    public function testZigZagRecursiveIteration()
+    {
+        $objectKeysToVisit = ['numbers', 'string', 'more numbers'];
+        $objectKeysVisited = [];
+        $valuesToVisit = [41, 42, 'text', 43];
+        $valuesVisited = [];
+
+        $array = new Parser(new Tokens(['[{"numbers": [41, 42], "string": ["text"], "more numbers": [43]}]']), '', null, true);
+
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
+            foreach ($object as $key => $values) {
+                $objectKeysVisited[] = $key;
+                $this->assertInstanceOf(Traversable::class, $values);
+                foreach ($values as $value) {
+                    $valuesVisited[] = $value;
+                }
+            }
+        }
+
+        $this->assertSame($objectKeysToVisit, $objectKeysVisited);
+        $this->assertSame($valuesToVisit, $valuesVisited);
     }
 }
