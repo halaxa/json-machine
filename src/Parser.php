@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+use Generator;
+use Iterator;
 use IteratorAggregate;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
@@ -36,6 +38,9 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Traversable */
     private $tokens;
 
+    /** @var Iterator */
+    private $tokensIterator;
+
     /** @var ItemDecoder */
     private $jsonDecoder;
 
@@ -59,7 +64,7 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param ItemDecoder  $jsonDecoder
+     * @param bool         $recursive
      *
      * @throws InvalidArgumentException
      */
@@ -68,6 +73,8 @@ class Parser implements \IteratorAggregate, PositionAware
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
         $this->tokens = $tokens;
+        $this->tokensIterator = $tokens instanceof IteratorAggregate ? $tokens->getIterator() : $tokens;
+
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
         if ($recursive) {
             $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
@@ -86,7 +93,7 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      *
      * @throws PathNotFoundException
      */
@@ -114,7 +121,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $iteratorLevel = 0;
 
         // local variables for faster name lookups
-        $tokens = $this->tokens;
+        $tokens = $this->tokensIterator;
 
         foreach ($tokens as $token) {
             if ($currentPathChanged) {
@@ -280,12 +287,11 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return void
+     * @return Generator
      */
     private function remainingTokens()
     {
-        /** @var \Iterator $iterator */
-        $iterator = $this->tokens instanceof IteratorAggregate ? $this->tokens->getIterator() : $this->tokens;
+        $iterator = $this->tokensIterator;
         while ($iterator->valid()) {
             yield $iterator->current();
             $iterator->next();
@@ -376,7 +382,10 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function error($msg, $token, $exception = SyntaxErrorException::class)
     {
-        throw new $exception($msg." '".$token."'", method_exists($this->tokens, 'getPosition') ? $this->tokens->getPosition() : '');
+        throw new $exception(
+            $msg." '".$token."'",
+            $this->tokens instanceof PositionAware ? $this->tokens->getPosition() : ''
+        );
     }
 
     /**
