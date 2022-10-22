@@ -233,7 +233,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         $expectedType = 96; // 96 = self::AFTER_ARRAY_VALUE;
                     }
             }
-            if ($currentLevel > $iteratorLevel && ! $this->recursive) {
+            if ($currentLevel > $iteratorLevel) {
                 continue; // a valid json chunk is not completed yet
             }
             if ($jsonBuffer !== '') {
