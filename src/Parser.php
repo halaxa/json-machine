@@ -55,7 +55,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private $hasSingleJsonPointer;
 
     /** @var bool */
-    private bool $recursive;
+    private $recursive;
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
@@ -285,7 +285,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private function remainingTokens()
     {
         /** @var \Iterator $iterator */
-        $iterator = $this->tokens instanceOf IteratorAggregate ?  $this->tokens->getIterator() : $this->tokens;
+        $iterator = $this->tokens instanceof IteratorAggregate ? $this->tokens->getIterator() : $this->tokens;
         while ($iterator->valid()) {
             yield $iterator->current();
             $iterator->next();

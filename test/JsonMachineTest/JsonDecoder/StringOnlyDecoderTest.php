@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachineTest\JsonDecoder;
 
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\StringOnlyDecoder;
 use JsonMachine\Parser;
 use PHPUnit\Framework\TestCase;

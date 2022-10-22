@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachine\JsonDecoder;
 
-use JsonMachine\Parser;
-
 class StringOnlyDecoder implements ItemDecoder
 {
     /** @var ItemDecoder */

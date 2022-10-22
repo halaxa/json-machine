@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
-use Generator;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
@@ -537,7 +536,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf(Traversable::class, $object);
             foreach ($object as $key => $values) {
                 $this->assertInstanceOf(Traversable::class, $values);
-                $this->assertSame("numbers", $key);
+                $this->assertSame('numbers', $key);
                 foreach ($values as $fortyTwo) {
                     $this->assertSame(42, $fortyTwo);
                 }

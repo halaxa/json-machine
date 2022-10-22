@@ -148,7 +148,7 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         foreach ($items as $emojis) {
             $this->assertInstanceOf(Traversable::class, $emojis);
             foreach ($emojis as $emoji) {
-                $this->assertSame(":)", $emoji);
+                $this->assertSame(':)', $emoji);
             }
         }
     }
