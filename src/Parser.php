@@ -109,7 +109,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $pointersFound = [];
         $currentLevel = -1;
         $stack = [$currentLevel => null];
-        $jsonBuffer = '';
+        $jsonValue = '';
         $key = null;
         $objectKeyExpected = false;
         $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
@@ -158,10 +158,10 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
-                    $jsonBuffer = new self($this->remainingTokens(), '', $this->jsonDecoder, true);
+                    $jsonValue = new self($this->remainingTokens(), '', $this->jsonDecoder, true);
                     $token = ' ';
                 } else {
-                    $jsonBuffer .= $token;
+                    $jsonValue .= $token;
                 }
             }
             // todo move this switch to the top just after the syntax check to be a correct FSM
@@ -236,9 +236,9 @@ class Parser implements \IteratorAggregate, PositionAware
             if ($currentLevel > $iteratorLevel) {
                 continue; // a valid json chunk is not completed yet
             }
-            if ($jsonBuffer !== '') {
-                $valueResult = $this->jsonDecoder->decode($jsonBuffer);
-                $jsonBuffer = '';
+            if ($jsonValue !== '') {
+                $valueResult = $this->jsonDecoder->decode($jsonValue);
+                $jsonValue = '';
                 if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
