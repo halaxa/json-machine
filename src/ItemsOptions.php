@@ -66,12 +66,18 @@ class ItemsOptions extends \ArrayObject
         return $debug;
     }
 
+    private function opt_recursive(bool $recursive)
+    {
+        return $recursive;
+    }
+
     public static function defaultOptions(): array
     {
         return [
             'pointer' => '',
             'decoder' => new ExtJsonDecoder(),
             'debug' => false,
+            'recursive' => false,
         ];
     }
 }

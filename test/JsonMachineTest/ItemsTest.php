@@ -6,6 +6,7 @@ namespace JsonMachineTest;
 
 use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
+use Traversable;
 
 /**
  * @covers \JsonMachine\Items
@@ -138,5 +139,17 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         $items = Items::fromString('[]', ['pointer' => ['/one', '/two']]);
 
         $this->assertSame(['/one', '/two'], $items->getJsonPointers());
+    }
+
+    public function testRecursiveIteration()
+    {
+        $items = Items::fromString('[[":)"]]', ['recursive' => true]);
+
+        foreach ($items as $emojis) {
+            $this->assertInstanceOf(Traversable::class, $emojis);
+            foreach ($emojis as $emoji) {
+                $this->assertSame(":)", $emoji);
+            }
+        }
     }
 }

@@ -63,7 +63,8 @@ final class Items implements \IteratorAggregate, PositionAware
                 $this->chunks
             ),
             $this->jsonPointer,
-            $this->jsonDecoder ?: new ExtJsonDecoder()
+            $this->jsonDecoder ?: new ExtJsonDecoder(),
+            $options['recursive']
         );
     }
 
