@@ -567,4 +567,21 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($objectKeysToVisit, $objectKeysVisited);
         $this->assertSame($valuesToVisit, $valuesVisited);
     }
+
+    public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
+    {
+        $iterator = new Parser(new Tokens(['[1,[{},2,3],4]']), '', null, true);
+        $array = [];
+
+        foreach ($iterator as $item) {
+            $array[] = $item;
+        }
+
+        $this->assertSame(1, $array[0]);
+        $this->assertInstanceOf(Traversable::class, $array[1]);
+        $this->assertSame(4, $array[2]);
+
+        $this->expectExceptionMessage('generator');
+        iterator_to_array($array[1]);
+    }
 }

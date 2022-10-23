@@ -158,7 +158,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
-                    $jsonValue = new self($this->remainingTokens(), '', $this->jsonDecoder, true);
+                    $jsonValue = (new self($this->remainingTokens(), '', $this->jsonDecoder, true))->getIterator();
                     $token = ' ';
                 } else {
                     $jsonValue .= $token;
@@ -242,17 +242,22 @@ class Parser implements \IteratorAggregate, PositionAware
                 if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
+                $value = $valueResult->getValue();
                 if ($iteratorStruct == '[') {
-                    yield $valueResult->getValue();
+                    yield $value;
                 } else {
                     $keyResult = $this->jsonDecoder->decode($key);
                     if ( ! $keyResult->isOk()) {
                         $this->error($keyResult->getErrorMessage(), $key);
                     }
-                    yield $keyResult->getValue() => $valueResult->getValue();
+                    yield $keyResult->getValue() => $value;
                     unset($keyResult);
                 }
+                if ($value instanceof Iterator && $value->valid()) {
+                    $this->eatAllRemainingTokens($value);
+                }
                 unset($valueResult);
+                unset($value);
             }
             if (
                 ! array_diff($jsonPointerPath, $currentPath)
@@ -295,6 +300,15 @@ class Parser implements \IteratorAggregate, PositionAware
         while ($iterator->valid()) {
             yield $iterator->current();
             $iterator->next();
+        }
+    }
+
+    private function eatAllRemainingTokens(Iterator $iterator)
+    {
+        foreach ($iterator as $item) {
+            if ($item instanceof Iterator) {
+                $this->eatAllRemainingTokens($item);
+            }
         }
     }
 

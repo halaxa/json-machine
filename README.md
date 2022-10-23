@@ -349,10 +349,9 @@ foreach ($users as $user) { // $user instanceof Traversable, not an array/object
 }
 ```
 
-> You **MUST** iterate such lazy `Traversable`s in real time.
-> **NEVER** skip an iteration of such `Traversable` and
-> **NEVER** keep references to such past `Traversable`s to iterate them later
-> or you end up (almost) like [this guy](https://xkcd.com/292/).
+> If you skip iteration of such lazy deeper-level `Traversable` and advance to a next value, you will not be able to iterate it later.
+> JSON Machine must iterate it the background to be able to read next value.
+> Such an attempt will result in closed generator exception.
 
 <a name="json-pointer"></a>
 ### What is JSON Pointer anyway?
