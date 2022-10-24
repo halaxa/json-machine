@@ -339,7 +339,7 @@ foreach ($users as $user) { // $user instanceof Traversable, not an array/object
     foreach ($user as $userField => $userValue) {
         if ($userField == 'friends') {
             foreach ($userValue as $friend) { // $userValue instanceof Traversable, not an array/object
-                foreach ($user as $friendField => $friendValue) { // $friend instanceof Traversable, not an array/object
+                foreach ($friend as $friendField => $friendValue) { // $friend instanceof Traversable, not an array/object
                     // do whatever you want here
                     // maybe rather use PHP's Recursive*Iterators
                 }
