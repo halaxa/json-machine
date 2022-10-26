@@ -72,4 +72,24 @@ class NestedIteratorTest extends TestCase
 
         $this->assertSame([1, 2, 3], $result);
     }
+
+    public function testAdvanceToKeyWorks()
+    {
+        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $iterator = new NestedIterator($generator());
+
+        $this->assertSame(1, $iterator->advanceToKey('one'));
+        $this->assertSame(1, $iterator->advanceToKey('one'));
+        $this->assertSame(2, $iterator->advanceToKey('two'));
+        $this->assertSame(3, $iterator->advanceToKey('three'));
+    }
+
+    public function testAdvanceToKeyThrows()
+    {
+        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $iterator = new NestedIterator($generator());
+
+        $this->expectExceptionMessage('not found');
+        $iterator->advanceToKey('four');
+    }
 }

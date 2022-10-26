@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JsonMachine;
 
 use Iterator;
+use JsonMachine\Exception\JsonMachineException;
 
 class NestedIterator implements \RecursiveIterator
 {
@@ -58,11 +59,22 @@ class NestedIterator implements \RecursiveIterator
         return $this->hasChildren() ? new self($this->current()) : null;
     }
 
-    public function advanceTo($key)
+    public function advanceToKey($key)
     {
+        $iterator = $this->iterator;
+
+        while ($key !== $iterator->key() && $iterator->valid()) {
+            $iterator->next();
+        }
+
+        if ($key !== $iterator->key()) {
+            throw new JsonMachineException("Key '$key' was not found.");
+        }
+
+        return $iterator->current();
     }
 
-    public function materialize()
+    public function toArray()
     {
     }
 }
