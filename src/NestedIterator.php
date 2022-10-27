@@ -74,7 +74,21 @@ class NestedIterator implements \RecursiveIterator
         return $iterator->current();
     }
 
-    public function toArray()
+    public function toArray(): array
     {
+        return self::toArrayRecursive($this);
+    }
+
+    private static function toArrayRecursive(\Traversable $traversable): array
+    {
+        $array = [];
+        foreach ($traversable as $key => $value) {
+            if ($value instanceof \Traversable) {
+                $value = self::toArrayRecursive($value);
+            }
+            $array[$key] = $value;
+        }
+
+        return $array;
     }
 }

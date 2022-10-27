@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use Generator;
+use Iterator;
 use JsonMachine\NestedIterator;
 use PHPUnit\Framework\TestCase;
 use RecursiveIteratorIterator;
@@ -91,5 +93,25 @@ class NestedIteratorTest extends TestCase
 
         $this->expectExceptionMessage('not found');
         $iterator->advanceToKey('four');
+    }
+
+    public function testToArray()
+    {
+        $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
+        $iterator = new NestedIterator($generator($generator(['42'])));
+
+        $expected = [
+            'one' => 1,
+            'two' => 2,
+            'i' => [
+                'one' => 1,
+                'two' => 2,
+                'i' => ['42'],
+                'three' => 3
+            ],
+            'three' => 3
+        ];
+
+        $this->assertSame($expected, $iterator->toArray());
     }
 }
