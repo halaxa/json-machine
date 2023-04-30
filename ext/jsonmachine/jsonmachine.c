@@ -9,12 +9,20 @@
 #include "php_jsonmachine.h"
 #include "jsonmachine_arginfo.h"
 
+#include <stdio.h>
+#include <string.h>
+
 /* For compatibility with older PHP versions */
 #ifndef ZEND_PARSE_PARAMETERS_NONE
 #define ZEND_PARSE_PARAMETERS_NONE() \
 	ZEND_PARSE_PARAMETERS_START(0, 0) \
 	ZEND_PARSE_PARAMETERS_END()
 #endif
+
+unsigned char uc(char ch)
+{
+    return (unsigned char) ch;
+}
 
 PHP_FUNCTION(jsonmachine_next_token)
 {
@@ -36,6 +44,111 @@ PHP_FUNCTION(jsonmachine_next_token)
 
     bytes_read = php_stream_read(stream, buffer, sizeof(buffer) - 1);
     buffer[bytes_read] = '\0';
+
+
+/// pure c POC
+
+    char json[] = "[{\"one\": 1}, {\"two\": false}, {\"thr\\\"ee\": \"string\"}]";
+    printf("%s\n", json);
+
+    char tokenBuffer[64] = "";
+    unsigned char byte;
+    bool escaping = false;
+    bool inString = false;
+
+    bool insignificantBytes[256];
+    for (int j = 0; j < 256; j++) {
+        insignificantBytes[j] = true;
+    }
+    insignificantBytes[uc('\\')] = false;
+    insignificantBytes[uc('"')] = false;
+    insignificantBytes[uc('\xEF')] = false;
+    insignificantBytes[uc('\xBB')] = false;
+    insignificantBytes[uc('\xBF')] = false;
+    insignificantBytes[uc(' ')] = false;
+    insignificantBytes[uc('\n')] = false;
+    insignificantBytes[uc('\r')] = false;
+    insignificantBytes[uc('\t')] = false;
+    insignificantBytes[uc('{')] = false;
+    insignificantBytes[uc('}')] = false;
+    insignificantBytes[uc('[')] = false;
+    insignificantBytes[uc(']')] = false;
+    insignificantBytes[uc(':')] = false;
+    insignificantBytes[uc(',')] = false;
+
+
+    bool tokenBoundaries[256];
+    for (int j = 0; j < 256; j++) {
+        tokenBoundaries[j] = false;
+    }
+
+    tokenBoundaries[uc('\xEF')] = true;
+    tokenBoundaries[uc('\xBB')] = true;
+    tokenBoundaries[uc('\xBF')] = true;
+    tokenBoundaries[uc(' ')] = true;
+    tokenBoundaries[uc('\n')] = true;
+    tokenBoundaries[uc('\r')] = true;
+    tokenBoundaries[uc('\t')] = true;
+    tokenBoundaries[uc('{')] = true;
+    tokenBoundaries[uc('}')] = true;
+    tokenBoundaries[uc('[')] = true;
+    tokenBoundaries[uc(']')] = true;
+    tokenBoundaries[uc(':')] = true;
+    tokenBoundaries[uc(',')] = true;
+
+
+    bool colonCommaBracket[256];
+    for (int j = 0; j < 256; j++) {
+        colonCommaBracket[j] = false;
+    }
+
+    colonCommaBracket[uc('{')] = true;
+    colonCommaBracket[uc('}')] = true;
+    colonCommaBracket[uc('[')] = true;
+    colonCommaBracket[uc(']')] = true;
+    colonCommaBracket[uc(':')] = true;
+    colonCommaBracket[uc(',')] = true;
+
+
+    for (int i = 0; i < strlen(json); i++) {
+        byte = json[i];
+
+        if (escaping) {
+            escaping = false;
+            tokenBuffer[strlen(tokenBuffer)] = byte;
+            continue;
+        }
+
+        if (insignificantBytes[byte]) {
+            tokenBuffer[strlen(tokenBuffer)] = byte;
+            continue;
+        }
+
+        if (inString) {
+            if (byte == '"') {
+                inString = false;
+            } else if (byte == '\\') {
+                escaping = true;
+            }
+            tokenBuffer[strlen(tokenBuffer)] = byte;
+            continue;
+        }
+
+        if (tokenBoundaries[byte]) {
+            if (strlen(tokenBuffer)) {
+                printf("%s\n", tokenBuffer);
+                memset(tokenBuffer,0,strlen(tokenBuffer));
+            }
+            if (colonCommaBracket[byte]) {
+                printf("%c\n", byte);
+            }
+        } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
+            inString = true;
+            tokenBuffer[strlen(tokenBuffer)] = byte;
+        }
+    }
+
+/// pure c POC
 
     RETURN_STRING(buffer);
 }
