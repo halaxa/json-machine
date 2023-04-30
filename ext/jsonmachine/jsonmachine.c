@@ -18,38 +18,27 @@
 
 PHP_FUNCTION(jsonmachine_next_token)
 {
-    unsigned short int boundary[256] = {0};
-    zend_string *jsonChunk;
-    bool finish = 0;
-    zend_array tokens[2];
+    zval *resource;
+    php_stream *stream;
+    ssize_t bytes_read;
+    char buffer[1024];
 
-    // (string $bytes, $finish = false)
-    ZEND_PARSE_PARAMETERS_START(1, 2)
-        Z_PARAM_STR(jsonChunk)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_BOOL(finish)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_RESOURCE(resource)
     ZEND_PARSE_PARAMETERS_END();
 
-    // Treat UTF-8 BOM bytes as whitespace
-    boundary[0xEF] = 1;
-    boundary[0xBB] = 1;
-    boundary[0xBF] = 1;
+    php_stream_from_zval_no_verify(stream, resource);
 
-    boundary[' ']  = 1;
-    boundary['\n'] = 1;
-    boundary['\r'] = 1;
-    boundary['\t'] = 1;
+    if (stream == NULL) {
+        php_error_docref(NULL, E_WARNING, "Invalid stream resource");
+        RETURN_NULL();
+    }
 
-    boundary['{']  = 2;
-    boundary['}']  = 2;
-    boundary['[']  = 2;
-    boundary[']']  = 2;
-    boundary[':']  = 2;
-    boundary[',']  = 2;
+    bytes_read = php_stream_read(stream, buffer, sizeof(buffer) - 1);
+    buffer[bytes_read] = '\0';
 
-    RETURN_ARR(tokens);
+    RETURN_STRING(buffer);
 }
-
 
 
 /* {{{ void test1() */
