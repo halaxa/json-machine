@@ -54,6 +54,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
     zend_bool escaping = zBool(zEscaping);
     zend_bool inString = zBool(zInString);
+    long int lastIndex = Z_LVAL_P(zLastIndex);
 
     bool insignificantBytes[256];
     for (int j = 0; j < 256; j++) {
@@ -109,21 +110,30 @@ PHP_FUNCTION(jsonmachine_next_token)
     colonCommaBracket[uc(',')] = true;
 
     unsigned char byte;
-    int i;
-    for (i = Z_LVAL_P(zLastIndex); i < strlen(json); i++) {
-        byte = json[i];
 
+zend_string *zstr_tokenBuffer;
+zend_string *zstr_byte;
+int myNum;
+    int i;
+    for (i = lastIndex; i < strlen(json); i++) {
+        byte = json[i];
+printf("[[%d, %d, \"%s\", %ld]]", inString, escaping, tokenBuffer, lastIndex);
+printf("'%c'\n", byte);
+printf("'%d'\n", i);
+
+scanf("%d", &myNum);
+printf("if (escaping) {\n");
         if (escaping) {
             escaping = false;
             tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
-
+printf("if (insignificantBytes[byte]) {\n");
         if (insignificantBytes[byte]) {
             tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
-
+printf("if (inString) {\n");
         if (inString) {
             if (byte == '"') {
                 inString = false;
@@ -133,31 +143,40 @@ PHP_FUNCTION(jsonmachine_next_token)
             tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
-
+printf("if (tokenBoundaries[byte]) {\n");
         if (tokenBoundaries[byte]) {
+printf("if (strlen(tokenBuffer)) {\n");
             if (strlen(tokenBuffer)) {
                 printf("%s\n", tokenBuffer);
-                ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);
-                ZVAL_BOOL(Z_REFVAL_P(zInString), false);
-                ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");
-                ZVAL_LONG(Z_REFVAL_P(zLastIndex), i);
-                RETURN_STR((zend_string *) &tokenBuffer);
-//                memset(tokenBuffer,0,strlen(tokenBuffer));
+                ZVAL_BOOL(zEscaping, false);
+                ZVAL_BOOL(zInString, false);
+                ZVAL_STRING(zTokenBuffer, "");
+                ZVAL_LONG(zLastIndex, i);
+printf("RETURN_STR(zstr_tokenBuffer);\n");
+                zstr_tokenBuffer = zend_string_init(tokenBuffer, strlen(tokenBuffer), 0);
+                RETURN_STR(zstr_tokenBuffer);
             }
+printf("if (colonCommaBracket[byte]) {\n");
             if (colonCommaBracket[byte]) {
-                printf("%c\n", byte);
-                ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);
-                ZVAL_BOOL(Z_REFVAL_P(zInString), false);
-                ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");
-                ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);
-                RETURN_STR((zend_string *) &byte);
+                printf("ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);\n");
+                ZVAL_BOOL(zEscaping, false);
+                printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
+                ZVAL_BOOL(zInString, false);
+                printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
+                ZVAL_STRING(zTokenBuffer, "");
+                printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
+                ZVAL_LONG(zLastIndex, i+1);
+printf("RETURN_STR((zend_string *) &byte);\n");
+                zstr_byte = zend_string_init((char *)&byte, 1, 0);
+                RETURN_STR(zstr_byte);
             }
+printf("} else {\n");
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
             tokenBuffer[strlen(tokenBuffer)] = byte;
         }
     }
-
+printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), tokenBuffer);\n");
     ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), tokenBuffer);
     ZVAL_BOOL(Z_REFVAL_P(zEscaping), escaping);
     ZVAL_BOOL(Z_REFVAL_P(zInString), inString);
