@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 5ab3feae5bd01fa0681248e24d3b4c2cd7c66e96 */
+ * Stub hash: 3932bcd6beac35482cca138424967d73d6a8cd69 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_test1, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -8,8 +8,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_test2, 0, 0, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, str, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_jsonmachine_next_token, 0, 1, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(0, resource, IS_RESOURCE, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_jsonmachine_next_token, 0, 5, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, chunk, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(1, tokenBuffer, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(1, escaping, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(1, inString, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(1, lastIndex, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 

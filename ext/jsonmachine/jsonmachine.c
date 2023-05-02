@@ -24,37 +24,36 @@ unsigned char uc(char ch)
     return (unsigned char) ch;
 }
 
+bool zBool(zval *trueFalse)
+{
+    return Z_TYPE_P(trueFalse) == IS_TRUE;
+}
+
 PHP_FUNCTION(jsonmachine_next_token)
 {
-    zval *resource;
-    php_stream *stream;
-    ssize_t bytes_read;
-    char buffer[1024];
+    char *chunk;
+    size_t chunk_len;
+    zval *zTokenBuffer;
+    zval *zEscaping;
+    zval *zInString;
+    zval *zLastIndex;
 
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_RESOURCE(resource)
+    ZEND_PARSE_PARAMETERS_START(5, 5)
+        Z_PARAM_STRING(chunk, chunk_len)
+        Z_PARAM_ZVAL(zTokenBuffer)
+        Z_PARAM_ZVAL(zEscaping)
+        Z_PARAM_ZVAL(zInString)
+        Z_PARAM_ZVAL(zLastIndex)
     ZEND_PARSE_PARAMETERS_END();
-
-    php_stream_from_zval_no_verify(stream, resource);
-
-    if (stream == NULL) {
-        php_error_docref(NULL, E_WARNING, "Invalid stream resource");
-        RETURN_NULL();
-    }
-
-    bytes_read = php_stream_read(stream, buffer, sizeof(buffer) - 1);
-    buffer[bytes_read] = '\0';
-
 
 /// pure c POC
 
     char json[] = "[{\"one\": 1}, {\"two\": false}, {\"thr\\\"ee\": \"string\"}]";
     printf("%s\n", json);
 
-    char tokenBuffer[64] = "";
-    unsigned char byte;
-    bool escaping = false;
-    bool inString = false;
+    char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
+    zend_bool escaping = zBool(zEscaping);
+    zend_bool inString = zBool(zInString);
 
     bool insignificantBytes[256];
     for (int j = 0; j < 256; j++) {
@@ -109,8 +108,9 @@ PHP_FUNCTION(jsonmachine_next_token)
     colonCommaBracket[uc(':')] = true;
     colonCommaBracket[uc(',')] = true;
 
-
-    for (int i = 0; i < strlen(json); i++) {
+    unsigned char byte;
+    int i;
+    for (i = Z_LVAL_P(zLastIndex); i < strlen(json); i++) {
         byte = json[i];
 
         if (escaping) {
@@ -137,10 +137,20 @@ PHP_FUNCTION(jsonmachine_next_token)
         if (tokenBoundaries[byte]) {
             if (strlen(tokenBuffer)) {
                 printf("%s\n", tokenBuffer);
-                memset(tokenBuffer,0,strlen(tokenBuffer));
+                ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);
+                ZVAL_BOOL(Z_REFVAL_P(zInString), false);
+                ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");
+                ZVAL_LONG(Z_REFVAL_P(zLastIndex), i);
+                RETURN_STR((zend_string *) &tokenBuffer);
+//                memset(tokenBuffer,0,strlen(tokenBuffer));
             }
             if (colonCommaBracket[byte]) {
                 printf("%c\n", byte);
+                ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);
+                ZVAL_BOOL(Z_REFVAL_P(zInString), false);
+                ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");
+                ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);
+                RETURN_STR((zend_string *) &byte);
             }
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
@@ -148,9 +158,10 @@ PHP_FUNCTION(jsonmachine_next_token)
         }
     }
 
-/// pure c POC
-
-    RETURN_STRING(buffer);
+    ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), tokenBuffer);
+    ZVAL_BOOL(Z_REFVAL_P(zEscaping), escaping);
+    ZVAL_BOOL(Z_REFVAL_P(zInString), inString);
+    ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);
 }
 
 
