@@ -20,5 +20,8 @@ class ExtJsonmachineTest extends TestCase
             flush();
             ob_flush();
         }
+        var_dump($token, $tokenBuffer, $escaping, $inString, $lastIndex);
+        flush();
+        ob_flush();
     }
 }
