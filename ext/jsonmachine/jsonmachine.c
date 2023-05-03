@@ -164,7 +164,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("%s\n", tokenBuffer);
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
-                ZVAL_STRING(zTokenBuffer, "");
+                ZVAL_STRINGL(zTokenBuffer, "", 0);
                 ZVAL_LONG(zLastIndex, i);
 //printf("RETURN_STR(zstr_tokenBuffer);\n");
 //                zstr_tokenBuffer = ;
@@ -178,7 +178,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //                printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
                 ZVAL_BOOL(zInString, false);
 //                printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
-                ZVAL_STRING(zTokenBuffer, "");
+                ZVAL_STRINGL(zTokenBuffer, "", 0);
 //                printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
                 ZVAL_LONG(zLastIndex, i+1);
 //printf("RETURN_STR((zend_string *) &byte);\n");
