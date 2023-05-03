@@ -140,11 +140,13 @@ PHP_FUNCTION(jsonmachine_next_token)
         if (escaping) {
             escaping = false;
             tokenBuffer[strlen(tokenBuffer)] = byte;
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
             continue;
         }
 //printf("if (insignificantBytes[byte]) {\n");
         if (insignificantBytes[byte]) {
             tokenBuffer[strlen(tokenBuffer)] = byte;
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
             continue;
         }
 //printf("if (inString) {\n");
@@ -155,6 +157,8 @@ PHP_FUNCTION(jsonmachine_next_token)
                 escaping = true;
             }
             tokenBuffer[strlen(tokenBuffer)] = byte;
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+
             continue;
         }
 //printf("if (tokenBoundaries[byte]) {\n");
@@ -164,7 +168,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("%s\n", tokenBuffer);
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
-                ZVAL_STRINGL(zTokenBuffer, "", 0);
+                ZVAL_STRING(zTokenBuffer, "");
                 ZVAL_LONG(zLastIndex, i);
 //printf("RETURN_STR(zstr_tokenBuffer);\n");
 //                zstr_tokenBuffer = ;
@@ -178,7 +182,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //                printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
                 ZVAL_BOOL(zInString, false);
 //                printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
-                ZVAL_STRINGL(zTokenBuffer, "", 0);
+                ZVAL_STRING(zTokenBuffer, "");
 //                printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
                 ZVAL_LONG(zLastIndex, i+1);
 //printf("RETURN_STR((zend_string *) &byte);\n");
@@ -190,6 +194,7 @@ PHP_FUNCTION(jsonmachine_next_token)
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
             tokenBuffer[strlen(tokenBuffer)] = byte;
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
         }
     }
 
