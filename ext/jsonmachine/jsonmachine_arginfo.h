@@ -10,10 +10,10 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_jsonmachine_next_token, 0, 0, 5)
     ZEND_ARG_TYPE_INFO(0, chunk, IS_STRING, 0)
-    ZEND_ARG_TYPE_INFO(1, tokenBuffer, IS_STRING, 1)
-    ZEND_ARG_TYPE_INFO(0, escaping, _IS_BOOL, 1)
-    ZEND_ARG_TYPE_INFO(0, inString, _IS_BOOL, 1)
-    ZEND_ARG_TYPE_INFO(0, lastIndex, IS_LONG, 1)
+    ZEND_ARG_TYPE_INFO(1, tokenBuffer, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(1, escaping, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(1, inString, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(1, lastIndex, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 
