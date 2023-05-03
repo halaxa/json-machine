@@ -139,14 +139,14 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("if (escaping) {\n");
         if (escaping) {
             escaping = false;
-            tokenBuffer[strlen(tokenBuffer)] = byte;
             tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
 //printf("if (insignificantBytes[byte]) {\n");
         if (insignificantBytes[byte]) {
-            tokenBuffer[strlen(tokenBuffer)] = byte;
             tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
 //printf("if (inString) {\n");
@@ -156,8 +156,8 @@ PHP_FUNCTION(jsonmachine_next_token)
             } else if (byte == '\\') {
                 escaping = true;
             }
-            tokenBuffer[strlen(tokenBuffer)] = byte;
             tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
 
             continue;
         }
@@ -193,8 +193,8 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("} else {\n");
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
-            tokenBuffer[strlen(tokenBuffer)] = byte;
             tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
         }
     }
 
