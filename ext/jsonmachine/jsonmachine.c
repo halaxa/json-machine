@@ -29,25 +29,17 @@ bool zBool(zval *trueFalse)
     return Z_TYPE_P(trueFalse) == IS_TRUE;
 }
 
-/** @author ChatGPT */
-void append_char_to_zval_string(zval *str, char c) {
-    size_t len = Z_STRLEN_P(str);
-    zend_string *new_str = zend_string_extend(Z_STR_P(str), len + 1, 0);
-    ZSTR_VAL(new_str)[len] = c;
-    ZSTR_VAL(new_str)[len + 1] = '\0';
-    ZVAL_STR(str, new_str);
-}
-
 PHP_FUNCTION(jsonmachine_next_token)
 {
-    zval *chunk;
+    char *chunk;
+    size_t chunk_len;
     zval *zTokenBuffer;
     zval *zEscaping;
     zval *zInString;
     zval *zLastIndex;
 
     ZEND_PARSE_PARAMETERS_START(5, 5)
-        Z_PARAM_ZVAL(chunk)
+        Z_PARAM_STRING(chunk, chunk_len)
         Z_PARAM_ZVAL(zTokenBuffer)
         Z_PARAM_ZVAL(zEscaping)
         Z_PARAM_ZVAL(zInString)
@@ -65,7 +57,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     char json[] = "[{\"one\": 1}, {\"two\": false}, {\"thr\\\"ee\": \"string\"}]";
 //    printf("%s\n", json);
 
-//    char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
+    char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
     zend_bool escaping = zBool(zEscaping);
     zend_bool inString = zBool(zInString);
     long int lastIndex = Z_LVAL_P(zLastIndex);
@@ -136,84 +128,83 @@ PHP_FUNCTION(jsonmachine_next_token)
 //    printf("i < strlen(json): %d\n", i < strlen(json));
 //    printf("for\n");
 
-    for (int i = lastIndex; i < chunk_len; i++) {
-        byte = (unsigned char) chunk[i];
-printf("line: %d\n", __LINE__);
-printf("%c\n", byte);
+    for (int i = lastIndex; i < strlen(json); i++) {
 
+        byte = json[i];
 //printf("[[%d, %d, \"%s\", %ld]]\n", inString, escaping, tokenBuffer, lastIndex);
 //printf("'%c'\n", byte);
 //printf("'%d'\n", i);
 
 //scanf("%d", &myNum);
-printf("if (escaping) {\n");
+//printf("if (escaping) {\n");
         if (escaping) {
             escaping = false;
-            append_char_to_zval_string(zTokenBuffer, byte);
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
-printf("if (insignificantBytes[byte]) {\n");
+//printf("if (insignificantBytes[byte]) {\n");
         if (insignificantBytes[byte]) {
-        printf("line: %d\n", __LINE__);
-            append_char_to_zval_string(zTokenBuffer, byte);
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
             continue;
         }
-printf("if (inString) {\n");
+//printf("if (inString) {\n");
         if (inString) {
             if (byte == '"') {
                 inString = false;
             } else if (byte == '\\') {
                 escaping = true;
             }
-            append_char_to_zval_string(zTokenBuffer, byte);
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
+
             continue;
         }
-printf("if (tokenBoundaries[byte]) {\n");
+//printf("if (tokenBoundaries[byte]) {\n");
         if (tokenBoundaries[byte]) {
-printf("if (strlen(tokenBuffer)) {\n");
-            if (Z_STRLEN_P(zTokenBuffer)) {
+//printf("if (strlen(tokenBuffer)) {\n");
+            if (strlen(tokenBuffer)) {
 //printf("%s\n", tokenBuffer);
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
                 ZVAL_STRING(zTokenBuffer, "");
                 ZVAL_LONG(zLastIndex, i);
-printf("RETURN_STR(zstr_tokenBuffer);\n");
+//printf("RETURN_STR(zstr_tokenBuffer);\n");
 //                zstr_tokenBuffer = ;
                 printf("line: %d\n", __LINE__);
                 RETURN_STR(zend_string_init(tokenBuffer, strlen(tokenBuffer), 0));
             }
-printf("if (colonCommaBracket[byte]) {\n");
+//printf("if (colonCommaBracket[byte]) {\n");
             if (colonCommaBracket[byte]) {
-                printf("ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);\n");
+//                printf("ZVAL_BOOL(Z_REFVAL_P(zEscaping), false);\n");
                 ZVAL_BOOL(zEscaping, false);
-                printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
+//                printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
                 ZVAL_BOOL(zInString, false);
-                printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
-printf("%ld", sizeof(zTokenBuffer));
+//                printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
                 ZVAL_STRING(zTokenBuffer, "");
-printf("line: %d\n", __LINE__);
-printf("%ld", sizeof(zTokenBuffer));
-                printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
+//                printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
                 ZVAL_LONG(zLastIndex, i+1);
-printf("RETURN_STR((zend_string *) &byte);\n");
+//printf("RETURN_STR((zend_string *) &byte);\n");
 //                zstr_byte = ;
                 printf("line: %d\n", __LINE__);
                 RETURN_STR(zend_string_init((char *)&byte, 1, 0));
             }
-printf("} else {\n");
+//printf("} else {\n");
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
-            append_char_to_zval_string(zTokenBuffer, byte);
+            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
+            tokenBuffer[strlen(tokenBuffer)] = byte;
         }
     }
 
-    printf("line: %d\n", __LINE__);
+//    printf("line: %d\n", __LINE__);
     ZVAL_BOOL(zEscaping, escaping);
-    printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
+//    printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
     ZVAL_BOOL(zInString, inString);
 //    printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
-//    ZVAL_STRING(zTokenBuffer, tokenBuffer);
-    printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
+    ZVAL_STRING(zTokenBuffer, tokenBuffer);
+//    printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
     ZVAL_LONG(zLastIndex, 0);
 }
 
