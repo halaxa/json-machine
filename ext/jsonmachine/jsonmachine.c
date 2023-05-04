@@ -19,6 +19,16 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
+void append_char_to_zval_string(zval *str, char c) {
+//    printf("line: %d, c: %c\n", __LINE__, c);
+    size_t len = Z_STRLEN_P(str);
+    zend_string *new_str = zend_string_realloc(Z_STR_P(str), len + 1, 0);
+    ZSTR_VAL(new_str)[len] = c;
+    ZSTR_VAL(new_str)[len + 1] = '\0';
+//    printf("line: %d, new_str: %s\n", __LINE__, new_str->val);
+    ZVAL_STR(str, new_str);
+}
+
 unsigned char uc(char ch)
 {
     return (unsigned char) ch;
@@ -51,13 +61,12 @@ PHP_FUNCTION(jsonmachine_next_token)
     ZVAL_DEREF(zInString);
     ZVAL_DEREF(zLastIndex);
 
-
 /// pure c POC
 
     char json[] = "[{\"one\": 1}, {\"two\": false}, {\"thr\\\"ee\": \"string\"}]";
 //    printf("%s\n", json);
 
-    char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
+//    char * tokenBuffer = Z_STRVAL_P(zTokenBuffer);
     zend_bool escaping = zBool(zEscaping);
     zend_bool inString = zBool(zInString);
     long int lastIndex = Z_LVAL_P(zLastIndex);
@@ -115,7 +124,6 @@ PHP_FUNCTION(jsonmachine_next_token)
     colonCommaBracket[uc(':')] = true;
     colonCommaBracket[uc(',')] = true;
 
-    unsigned char byte;
 
 //zend_string *zstr_tokenBuffer;
 //zend_string *zstr_byte;
@@ -128,9 +136,10 @@ PHP_FUNCTION(jsonmachine_next_token)
 //    printf("i < strlen(json): %d\n", i < strlen(json));
 //    printf("for\n");
 
-    for (int i = lastIndex; i < strlen(json); i++) {
+    unsigned char byte;
+    for (int i = lastIndex; i < chunk_len; i++) {
 
-        byte = json[i];
+        byte = (unsigned char) chunk[i];
 //printf("[[%d, %d, \"%s\", %ld]]\n", inString, escaping, tokenBuffer, lastIndex);
 //printf("'%c'\n", byte);
 //printf("'%d'\n", i);
@@ -139,14 +148,12 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("if (escaping) {\n");
         if (escaping) {
             escaping = false;
-            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
-            tokenBuffer[strlen(tokenBuffer)] = byte;
+            append_char_to_zval_string(zTokenBuffer, byte);
             continue;
         }
 //printf("if (insignificantBytes[byte]) {\n");
         if (insignificantBytes[byte]) {
-            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
-            tokenBuffer[strlen(tokenBuffer)] = byte;
+            append_char_to_zval_string(zTokenBuffer, byte);
             continue;
         }
 //printf("if (inString) {\n");
@@ -156,24 +163,26 @@ PHP_FUNCTION(jsonmachine_next_token)
             } else if (byte == '\\') {
                 escaping = true;
             }
-            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
-            tokenBuffer[strlen(tokenBuffer)] = byte;
+            append_char_to_zval_string(zTokenBuffer, byte);
 
             continue;
         }
 //printf("if (tokenBoundaries[byte]) {\n");
         if (tokenBoundaries[byte]) {
 //printf("if (strlen(tokenBuffer)) {\n");
-            if (strlen(tokenBuffer)) {
-//printf("%s\n", tokenBuffer);
+            if (Z_STRLEN_P(zTokenBuffer)) {
+//printf("%s\n", zTokenBuffer);
+                zval zReturnStr;
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
-                ZVAL_STRING(zTokenBuffer, "");
                 ZVAL_LONG(zLastIndex, i);
 //printf("RETURN_STR(zstr_tokenBuffer);\n");
 //                zstr_tokenBuffer = ;
-                printf("line: %d\n", __LINE__);
-                RETURN_STR(zend_string_init(tokenBuffer, strlen(tokenBuffer), 0));
+//                printf("line: %d, zTokenBuffer: %s\n", __LINE__, Z_STRVAL_P(zTokenBuffer));
+//                printf("line: %d\n", __LINE__);
+                ZVAL_NEW_STR(&zReturnStr, Z_STR_P(zTokenBuffer));
+                ZVAL_STRING(zTokenBuffer, "");
+                RETURN_STR(Z_STR(zReturnStr));
             }
 //printf("if (colonCommaBracket[byte]) {\n");
             if (colonCommaBracket[byte]) {
@@ -193,8 +202,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //printf("} else {\n");
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
             inString = true;
-            tokenBuffer[strlen(tokenBuffer)+1] = '\0';
-            tokenBuffer[strlen(tokenBuffer)] = byte;
+            append_char_to_zval_string(zTokenBuffer, byte);
         }
     }
 
@@ -203,7 +211,7 @@ PHP_FUNCTION(jsonmachine_next_token)
 //    printf("ZVAL_BOOL(Z_REFVAL_P(zInString), false);\n");
     ZVAL_BOOL(zInString, inString);
 //    printf("ZVAL_STRING(Z_REFVAL_P(zTokenBuffer), "");\n");
-    ZVAL_STRING(zTokenBuffer, tokenBuffer);
+//    ZVAL_STRING(zTokenBuffer, tokenBuffer);
 //    printf("ZVAL_LONG(Z_REFVAL_P(zLastIndex), i+1);\n");
     ZVAL_LONG(zLastIndex, 0);
 }
