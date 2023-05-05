@@ -139,4 +139,11 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(['/one', '/two'], $items->getJsonPointers());
     }
+
+    public function testCountViaIteratorCount()
+    {
+        $items = Items::fromIterable(['{"results":', '[1,2,3]}'], ['pointer' => ['/results']]);
+
+        $this->assertSame(3, iterator_count($items));
+    }
 }

@@ -12,6 +12,28 @@ Nothing yet
 
 <br>
 
+## 1.1.3 - 2022-10-12
+### Fixed
+- Fix the parsing of nested sub-trees that use wildcards (#83). Thanks @cerbero90
+
+<br>
+
+## 1.1.2 - 2022-09-29
+### Added
+- PHP 8.2 support
+
+### Fixed
+- Meaningful error on invalid token. (#86)
+- Added missing return type annotation. (#84)
+
+<br>
+
+## 1.1.1 - 2022-03-03
+### Fixed
+- Fixed warning when generating autoload classmap via composer.
+
+<br>
+
 ## 1.1.0 - 2022-02-19
 ### Added
 - Autoloading without Composer. Thanks @a-sync.

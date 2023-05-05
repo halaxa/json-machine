@@ -11,7 +11,8 @@ define PHP_VERSIONS
 "7.3 3.1.1"\
 "7.4 3.1.1"\
 "8.0 3.1.1"\
-"8.1 3.1.1"
+"8.1 3.1.1"\
+"8.2 3.2.0"
 endef
 
 define DOCKER_RUN
