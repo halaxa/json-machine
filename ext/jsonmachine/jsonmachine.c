@@ -38,6 +38,10 @@ bool zBool(zval *trueFalse)
     return Z_TYPE_P(trueFalse) == IS_TRUE;
 }
 
+static bool colonCommaBracket[256];
+static bool tokenBoundaries[256];
+static bool insignificantBytes[256];
+
 PHP_FUNCTION(jsonmachine_next_token)
 {
     char *chunk;
@@ -63,59 +67,6 @@ PHP_FUNCTION(jsonmachine_next_token)
     bool escaping = zBool(zEscaping);
     bool inString = zBool(zInString);
     long int lastIndex = Z_LVAL_P(zLastIndex);
-
-    bool insignificantBytes[256];
-    for (int j = 0; j < 256; j++) {
-        insignificantBytes[j] = true;
-    }
-    insignificantBytes[uc('\\')] = false;
-    insignificantBytes[uc('"')] = false;
-    insignificantBytes[uc('\xEF')] = false;
-    insignificantBytes[uc('\xBB')] = false;
-    insignificantBytes[uc('\xBF')] = false;
-    insignificantBytes[uc(' ')] = false;
-    insignificantBytes[uc('\n')] = false;
-    insignificantBytes[uc('\r')] = false;
-    insignificantBytes[uc('\t')] = false;
-    insignificantBytes[uc('{')] = false;
-    insignificantBytes[uc('}')] = false;
-    insignificantBytes[uc('[')] = false;
-    insignificantBytes[uc(']')] = false;
-    insignificantBytes[uc(':')] = false;
-    insignificantBytes[uc(',')] = false;
-
-
-    bool tokenBoundaries[256];
-    for (int j = 0; j < 256; j++) {
-        tokenBoundaries[j] = false;
-    }
-
-    tokenBoundaries[uc('\xEF')] = true;
-    tokenBoundaries[uc('\xBB')] = true;
-    tokenBoundaries[uc('\xBF')] = true;
-    tokenBoundaries[uc(' ')] = true;
-    tokenBoundaries[uc('\n')] = true;
-    tokenBoundaries[uc('\r')] = true;
-    tokenBoundaries[uc('\t')] = true;
-    tokenBoundaries[uc('{')] = true;
-    tokenBoundaries[uc('}')] = true;
-    tokenBoundaries[uc('[')] = true;
-    tokenBoundaries[uc(']')] = true;
-    tokenBoundaries[uc(':')] = true;
-    tokenBoundaries[uc(',')] = true;
-
-
-    bool colonCommaBracket[256];
-    for (int j = 0; j < 256; j++) {
-        colonCommaBracket[j] = false;
-    }
-
-    colonCommaBracket[uc('{')] = true;
-    colonCommaBracket[uc('}')] = true;
-    colonCommaBracket[uc('[')] = true;
-    colonCommaBracket[uc(']')] = true;
-    colonCommaBracket[uc(':')] = true;
-    colonCommaBracket[uc(',')] = true;
 
     unsigned char byte;
     for (int i = lastIndex; i < chunk_len; i++) {
@@ -169,6 +120,57 @@ PHP_FUNCTION(jsonmachine_next_token)
 }
 
 
+PHP_MINIT_FUNCTION(jsonmachine)
+{
+    for (int j = 0; j < 256; j++) {
+        insignificantBytes[j] = true;
+    }
+    insignificantBytes[uc('\\')] = false;
+    insignificantBytes[uc('"')] = false;
+    insignificantBytes[uc('\xEF')] = false;
+    insignificantBytes[uc('\xBB')] = false;
+    insignificantBytes[uc('\xBF')] = false;
+    insignificantBytes[uc(' ')] = false;
+    insignificantBytes[uc('\n')] = false;
+    insignificantBytes[uc('\r')] = false;
+    insignificantBytes[uc('\t')] = false;
+    insignificantBytes[uc('{')] = false;
+    insignificantBytes[uc('}')] = false;
+    insignificantBytes[uc('[')] = false;
+    insignificantBytes[uc(']')] = false;
+    insignificantBytes[uc(':')] = false;
+    insignificantBytes[uc(',')] = false;
+
+    for (int j = 0; j < 256; j++) {
+        tokenBoundaries[j] = false;
+    }
+    tokenBoundaries[uc('\xEF')] = true;
+    tokenBoundaries[uc('\xBB')] = true;
+    tokenBoundaries[uc('\xBF')] = true;
+    tokenBoundaries[uc(' ')] = true;
+    tokenBoundaries[uc('\n')] = true;
+    tokenBoundaries[uc('\r')] = true;
+    tokenBoundaries[uc('\t')] = true;
+    tokenBoundaries[uc('{')] = true;
+    tokenBoundaries[uc('}')] = true;
+    tokenBoundaries[uc('[')] = true;
+    tokenBoundaries[uc(']')] = true;
+    tokenBoundaries[uc(':')] = true;
+    tokenBoundaries[uc(',')] = true;
+
+    for (int j = 0; j < 256; j++) {
+        colonCommaBracket[j] = false;
+    }
+    colonCommaBracket[uc('{')] = true;
+    colonCommaBracket[uc('}')] = true;
+    colonCommaBracket[uc('[')] = true;
+    colonCommaBracket[uc(']')] = true;
+    colonCommaBracket[uc(':')] = true;
+    colonCommaBracket[uc(',')] = true;
+
+    return SUCCESS;
+}
+
 /* {{{ void test1() */
 PHP_FUNCTION(test1)
 {
@@ -221,7 +223,7 @@ zend_module_entry jsonmachine_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"jsonmachine",					/* Extension name */
 	ext_functions,					/* zend_function_entry */
-	NULL,							/* PHP_MINIT - Module initialization */
+	PHP_MINIT(jsonmachine),			/* PHP_MINIT - Module initialization */
 	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(jsonmachine),			/* PHP_RINIT - Request initialization */
 	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
