@@ -25,7 +25,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
             'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
             'Iterator POC' => [IteratorLexerPOC::class],
-            'zephir ext' => [ExtTokens::class],
+            'ext' => [ExtTokens::class],
         ];
     }
 
