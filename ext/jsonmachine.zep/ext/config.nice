@@ -1,9 +1,0 @@
-#! /bin/sh
-#
-# Created by configure
-
-CFLAGS='-O2 -fvisibility=hidden -Wparentheses -DZEPHIR_RELEASE=1' \
-CC='gcc' \
-'./configure' \
-'--enable-jsonmachine' \
-"$@"

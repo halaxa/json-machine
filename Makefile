@@ -118,19 +118,3 @@ ext-build:  ## Build JSON Machine's PHP extension for production and run perform
 ext-build-debug: DEBUG=--enable-debug
 ext-build-debug: EXT_BUILD_POST_CMD=composer tests -- --colors=always
 ext-build-debug: ext-build ## Build JSON Machine's PHP extension for development and run tests
-
-zephir:
-	docker build --tag json-machine-zephir ext/jsonmachine
-	docker rm json-machine-zephir || true
-	docker run --volume "$$PWD:/json-machine" -it json-machine-zephir /bin/bash -c \
-		"\
-			cd /json-machine/ext/jsonmachine \
-			&& zephir fullclean \
-			&& zephir generate \
-			&& zephir compile --no-dev \
-			&& zephir install --no-dev \
-			&& zephir stubs \
-			&& cd /json-machine \
-			&& vendor/bin/phpunit \
-			&& php test/performance/testPerformance.php \
-		"
