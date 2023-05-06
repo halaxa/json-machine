@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
+use JsonMachine\ExtTokens;
+use JsonMachine\FileChunks;
 use JsonMachine\Items;
+use JsonMachine\Parser;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+passthru('php -v');
+echo "Ext jsonmachine version: ". phpversion('jsonmachine') . PHP_EOL;
 if ( ! ini_get('xdebug.mode')) {
     echo "Xdebug disabled\n";
 } else {
@@ -30,14 +35,11 @@ $decoders = [
     'Items::fromFile()' => function ($file) {
         return Items::fromFile($file);
     },
-    'Items::fromString()' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')));
-    },
     'Items::fromFile() - debug' => function ($file) {
         return Items::fromFile($file, ['debug' => true]);
     },
-    'Items::fromString() - debug' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
+    'Items::fromFile() - ext' => function ($file) {
+        return new Parser(new ExtTokens((new FileChunks($file))->getIterator()));
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use ArrayIterator;
+use JsonMachine\IteratorLexerPOC;
 use JsonMachine\FileChunks;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
+use JsonMachine\ExtTokens;
 use JsonMachine\TokensWithDebugging;
 
 /**
@@ -21,6 +24,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         return [
             'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
+            'Iterator POC' => [IteratorLexerPOC::class],
+            'ext' => [ExtTokens::class],
         ];
     }
 
@@ -29,13 +34,9 @@ class TokensTest extends \PHPUnit_Framework_TestCase
      */
     public function testCorrectlyYieldsZeroToken($tokensClass)
     {
-        $data = ['0'];
-        $expected = ['0'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
-
         $stream = fopen('data://text/plain,{"value":0}', 'r');
         $expected = ['{', '"value"', ':', '0', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new StreamChunks($stream, 10))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass((new StreamChunks($stream, 10))->getIterator())));
     }
 
     /**
@@ -43,8 +44,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
      */
     public function testGeneratesTokens($tokensClass)
     {
-        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
-        $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""'];
+        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\"",'];
+        $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""', ','];
         $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
     }
 
@@ -144,7 +145,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
         foreach (range(1, strlen($json)) as $chunkLength) {
             $chunks = str_split($json, $chunkLength);
-            $result = iterator_to_array(new $tokensClass($chunks));
+            $result = iterator_to_array(new $tokensClass(new ArrayIterator($chunks)));
 
             $this->assertSame($expected, $result);
         }
