@@ -108,14 +108,18 @@ release: .env build
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
 	@$(call DOCKER_RUN,$(LATEST_PHP),$(CMD))
 
-
-ext-build:  ## Build JSON Machine's PHP extension
-	docker build --tag json-machine-ext ext/build
+EXT_BUILD_POST_CMD=composer performance-tests
+ext-build:  ## Build JSON Machine's PHP extension for production and run performance tests
+	docker build --tag json-machine-ext --build-arg debug=$(DEBUG) ext/build
 	docker rm json-machine-ext || true
 	docker run --volume "$$PWD:/json-machine" -it json-machine-ext /bin/bash -c \
-		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make clean && make && make install && cd /json-machine && php -d xdebug.mode=off -d opcache.enable_cli=1 -d opcache.jit_buffer_size=100M test/performance/testPerformance.php"
+		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make clean && make && make install && cd /json-machine && $(EXT_BUILD_POST_CMD)"
 
-zephir:  ## Build JSON Machine's PHP extension
+ext-build-debug: DEBUG=--enable-debug
+ext-build-debug: EXT_BUILD_POST_CMD=composer tests -- --colors=always
+ext-build-debug: ext-build ## Build JSON Machine's PHP extension for development and run tests
+
+zephir:
 	docker build --tag json-machine-zephir ext/jsonmachine
 	docker rm json-machine-zephir || true
 	docker run --volume "$$PWD:/json-machine" -it json-machine-zephir /bin/bash -c \
