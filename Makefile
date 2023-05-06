@@ -113,7 +113,7 @@ ext-build:  ## Build JSON Machine's PHP extension
 	docker build --tag json-machine-ext ext/build
 	docker rm json-machine-ext || true
 	docker run --volume "$$PWD:/json-machine" -it json-machine-ext /bin/bash -c \
-		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make && make install && cd /json-machine && vendor/bin/phpunit --filter TokensTest"
+		"cd /json-machine/ext/jsonmachine; phpize && ./configure && make clean && make && make install && cd /json-machine && php -d xdebug.mode=off -d opcache.enable_cli=1 -d opcache.jit_buffer_size=100M test/performance/testPerformance.php"
 
 zephir:  ## Build JSON Machine's PHP extension
 	docker build --tag json-machine-zephir ext/jsonmachine

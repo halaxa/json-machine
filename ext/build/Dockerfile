@@ -37,13 +37,13 @@ RUN git clone https://github.com/php/php-src.git
 RUN cd php-src \
     && git checkout php-8.0.9 \
     && ./buildconf --force \
-    && ./configure --enable-debug --enable-mbstring --disable-mbregex \
-        --prefix=$HOME/php-bin/DEBUG \
-        --with-config-file-path=$HOME/php-bin/DEBUG/etc \
+    && ./configure --enable-mbstring --disable-mbregex \
+        --prefix=$HOME/php-bin \
+        --with-config-file-path=$HOME/php-bin/etc \
     && make -j`nproc` \
     && make install
 
-ENV PATH="/home/user/php-bin/DEBUG/bin:${PATH}"
+ENV PATH="/home/user/php-bin/bin:${PATH}"
 
-RUN mkdir php-bin/DEBUG/etc
-COPY php.ini php-bin/DEBUG/etc/php.ini
+RUN mkdir php-bin/etc
+COPY php.ini php-bin/etc/php.ini

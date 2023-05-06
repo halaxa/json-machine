@@ -19,7 +19,7 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-void append_char_to_zval_string(zval *str, char c)
+static zend_always_inline void append_char_to_zval_string(zval *str, char c)
 {
     size_t len = Z_STRLEN_P(str);
     zend_string *new_str = zend_string_realloc(Z_STR_P(str), len + 1, 0);
@@ -93,18 +93,16 @@ PHP_FUNCTION(jsonmachine_next_token)
 
         if (tokenBoundaries[byte]) {
             if (Z_STRLEN_P(zTokenBuffer)) {
-                zval zReturnStr;
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
                 ZVAL_LONG(zLastIndex, i);
-                ZVAL_NEW_STR(&zReturnStr, Z_STR_P(zTokenBuffer));
-                ZVAL_STRING(zTokenBuffer, "");
-                RETURN_STR(Z_STR(zReturnStr));
+                ZVAL_COPY_VALUE(return_value, zTokenBuffer);
+                ZVAL_EMPTY_STRING(zTokenBuffer);
+                return;
             }
             if (colonCommaBracket[byte]) {
                 ZVAL_BOOL(zEscaping, false);
                 ZVAL_BOOL(zInString, false);
-                ZVAL_STRING(zTokenBuffer, "");
                 ZVAL_LONG(zLastIndex, i+1);
                 RETURN_STR(zend_string_init((char *)&byte, 1, 0));
             }
