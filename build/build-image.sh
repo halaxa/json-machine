@@ -28,6 +28,7 @@ printf "
         make \
         bash \
         linux-headers \
+        git \
     && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
     && pecl install xdebug-$XDEBUG_VERSION \
         && docker-php-ext-enable xdebug \
