@@ -111,8 +111,10 @@ docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.:
 EXT_BUILD_POST_CMD=composer performance-tests
 ext-build:  ## Build JSON Machine's PHP extension for production and run performance tests
 	docker build --tag json-machine-ext --build-arg debug=$(DEBUG) ext/build
-	./build/docker-run.sh "json-machine-ext" "$$PWD" "cd /project/ext/jsonmachine; phpize && ./configure && make clean && make && make install && cd /project && $(EXT_BUILD_POST_CMD)"
+	./build/docker-run.sh \
+		"json-machine-ext" \
+		"$$PWD" \
+		"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && composer tests -- --colors=always && composer performance-tests"
 
 ext-build-debug: DEBUG=--enable-debug
-ext-build-debug: EXT_BUILD_POST_CMD=composer tests -- --colors=always
 ext-build-debug: ext-build ## Build JSON Machine's PHP extension for development and run tests

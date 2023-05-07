@@ -32,24 +32,14 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN wget https://getcomposer.org/download/2.2.18/composer.phar -O /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
 
-RUN useradd --create-home --shell /bin/bash user
-USER user
-WORKDIR /home/user
-
-# https://www.zend.com/setting-up-your-php-build-environment
+WORKDIR /usr/src
 RUN git clone https://github.com/php/php-src.git
-
 ARG debug
 RUN cd php-src \
     && git checkout php-8.0.9 \
     && ./buildconf --force \
     && ./configure $debug --enable-mbstring --disable-mbregex --with-openssl \
-        --prefix=$HOME/php-bin \
-        --with-config-file-path=$HOME/php-bin/etc \
     && make -j`nproc` \
     && make install
-
-ENV PATH="/home/user/php-bin/bin:${PATH}"
-
-RUN mkdir php-bin/etc
-COPY php.ini php-bin/etc/php.ini
+RUN rm -rf php-src
+COPY php.ini /usr/local/lib/php.ini
