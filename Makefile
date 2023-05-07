@@ -29,7 +29,7 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: tests-all cs-check ## Run all necessary stuff before commit.
+build: ext-build-debug tests-all cs-check ## Run all necessary stuff before commit.
 
 
 tests: CMD=composer tests -- $(ARGS)
