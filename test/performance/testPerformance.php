@@ -10,7 +10,7 @@ use JsonMachine\Parser;
 require_once __DIR__.'/../../vendor/autoload.php';
 
 passthru('php -v');
-echo "Ext jsonmachine version: ". phpversion('jsonmachine') . PHP_EOL;
+echo 'Ext jsonmachine version: '.phpversion('jsonmachine').PHP_EOL;
 if ( ! ini_get('xdebug.mode')) {
     echo "Xdebug disabled\n";
 } else {

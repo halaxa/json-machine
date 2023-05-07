@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonMachine;
 
 use Iterator;
@@ -9,13 +11,11 @@ class IteratorLexerPOC implements \Iterator
     /** @var Iterator */
     private $jsonChunks;
 
-
     /** @var array */
     private $tokenBoundaries = [];
 
-    /** @var array  */
+    /** @var array */
     private $jsonInsignificantBytes = [];
-
 
     /** @var string */
     private $carryToken;
@@ -35,7 +35,6 @@ class IteratorLexerPOC implements \Iterator
     /** @var int */
     private $chunkIndex;
 
-
     /** @var bool */
     private $inString = false;
 
@@ -44,7 +43,6 @@ class IteratorLexerPOC implements \Iterator
 
     /** @var bool */
     private $escaping = false;
-
 
     /**
      * @param Iterator<string> $jsonChunks
@@ -56,24 +54,24 @@ class IteratorLexerPOC implements \Iterator
         $this->jsonInsignificantBytes = $this->jsonInsignificantBytes();
     }
 
-
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->jsonChunksRewind();
         $this->next();
     }
 
-
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->current = '';
 
-        for ( ; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex)
-        {
+        for (; $this->chunkIndex < $this->chunkLength; ++$this->chunkIndex) {
             if ($this->carryToken != null) {
                 $this->current = $this->carryToken;
                 $this->carryToken = null;
                 ++$this->key;
+
                 return;
             }
 
@@ -111,6 +109,7 @@ class IteratorLexerPOC implements \Iterator
                 if ($this->current != '') {
                     ++$this->key;
                     ++$this->chunkIndex;
+
                     return;
                 }
             } else {
@@ -130,24 +129,23 @@ class IteratorLexerPOC implements \Iterator
         }
     }
 
-
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->current !== '';
     }
 
-
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
     }
 
-
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;
     }
-
 
     private function mapOfBoundaryBytes(): array
     {
@@ -157,35 +155,33 @@ class IteratorLexerPOC implements \Iterator
         $boundary[$utf8bom[0]] = 0;
         $boundary[$utf8bom[1]] = 0;
         $boundary[$utf8bom[2]] = 0;
-        $boundary[' ']         = 0;
-        $boundary["\n"]        = 0;
-        $boundary["\r"]        = 0;
-        $boundary["\t"]        = 0;
+        $boundary[' '] = 0;
+        $boundary["\n"] = 0;
+        $boundary["\r"] = 0;
+        $boundary["\t"] = 0;
 
-        $boundary['{']         = 1;
-        $boundary['}']         = 1;
-        $boundary['[']         = 1;
-        $boundary[']']         = 1;
-        $boundary[':']         = 1;
-        $boundary[',']         = 1;
+        $boundary['{'] = 1;
+        $boundary['}'] = 1;
+        $boundary['['] = 1;
+        $boundary[']'] = 1;
+        $boundary[':'] = 1;
+        $boundary[','] = 1;
 
         return $boundary;
     }
-
 
     private function jsonInsignificantBytes(): array
     {
         $bytes = [];
         foreach (range(0, 255) as $ord) {
-            $bytes[chr($ord)] = !in_array(
+            $bytes[chr($ord)] = ! in_array(
                 chr($ord),
-                ["\\", '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
+                ['\\', '"', "\xEF", "\xBB", "\xBF", ' ', "\n", "\r", "\t", '{', '}', '[', ']', ':', ',']
             );
         }
 
         return $bytes;
     }
-
 
     private function initCurrentChunk(): bool
     {
@@ -205,12 +201,10 @@ class IteratorLexerPOC implements \Iterator
         return 0;
     }
 
-
     public function getLine(): int
     {
         return 1;
     }
-
 
     public function getColumn(): int
     {
@@ -220,12 +214,14 @@ class IteratorLexerPOC implements \Iterator
     private function jsonChunksRewind(): bool
     {
         $this->jsonChunks->rewind();
+
         return $this->initCurrentChunk();
     }
 
     private function jsonChunksNext(): bool
     {
         $this->jsonChunks->next();
+
         return $this->initCurrentChunk();
     }
 }

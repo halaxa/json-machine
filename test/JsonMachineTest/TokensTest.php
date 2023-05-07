@@ -5,32 +5,31 @@ declare(strict_types=1);
 namespace JsonMachineTest;
 
 use ArrayIterator;
-use JsonMachine\IteratorLexerPOC;
 use JsonMachine\FileChunks;
+use JsonMachine\IteratorLexerPOC;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
-use JsonMachine\ExtTokens;
 use JsonMachine\TokensWithDebugging;
 
 /**
  * @covers \JsonMachine\Tokens
  * @covers \JsonMachine\TokensWithDebugging
+ * @covers \JsonMachine\IteratorLexerPOC
  */
 class TokensTest extends \PHPUnit_Framework_TestCase
 {
-    public function bothDebugModes()
+    public function availableTokenizers()
     {
         return [
             'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
             'Iterator POC' => [IteratorLexerPOC::class],
-            'ext' => [ExtTokens::class],
         ];
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyYieldsZeroToken($tokensClass)
     {
@@ -40,7 +39,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testGeneratesTokens($tokensClass)
     {
@@ -50,7 +49,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testWithBOM($tokensClass)
     {
@@ -60,7 +59,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($tokensClass)
     {
@@ -68,7 +67,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($tokensClass)
     {
@@ -78,7 +77,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitBeforeStringEnd($tokensClass)
     {
@@ -88,7 +87,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($tokensClass)
     {
@@ -98,7 +97,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($tokensClass)
     {
@@ -108,7 +107,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testAnyPossibleChunkSplit($tokensClass)
     {

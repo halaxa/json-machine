@@ -1,7 +1,8 @@
 <?php
 
-namespace JsonMachine;
+declare(strict_types=1);
 
+namespace JsonMachine;
 
 class ExtTokens implements \IteratorAggregate
 {
@@ -21,10 +22,10 @@ class ExtTokens implements \IteratorAggregate
         $lastIndex = 0;
         $inString = false;
         $escaping = false;
-        $tokenBuffer = "";
+        $tokenBuffer = '';
 
         foreach ($this->jsonChunks as $jsonChunk) {
-            while (NULL !== ($token = jsonmachine_next_token($jsonChunk, $tokenBuffer, $escaping, $inString, $lastIndex))) {
+            while (null !== ($token = jsonmachine_next_token($jsonChunk, $tokenBuffer, $escaping, $inString, $lastIndex))) {
                 yield $token;
             }
         }
