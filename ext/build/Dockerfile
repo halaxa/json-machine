@@ -43,7 +43,7 @@ ARG debug
 RUN cd php-src \
     && git checkout php-8.0.9 \
     && ./buildconf --force \
-    && ./configure $debug --enable-mbstring --disable-mbregex --with-openssl --enable-openssl \
+    && ./configure $debug --enable-mbstring --disable-mbregex --with-openssl \
         --prefix=$HOME/php-bin \
         --with-config-file-path=$HOME/php-bin/etc \
     && make -j`nproc` \
