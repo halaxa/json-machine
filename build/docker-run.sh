@@ -7,7 +7,7 @@ shift
 PROJECT_DIR=$1
 shift
 
-docker run --rm \
+docker run $(DOCKER_RUN_OPTS) --rm \
   --name "$CONTAINER_NAME" \
   --volume "$PROJECT_DIR:/project" \
   --volume "/tmp:/tmp" \
