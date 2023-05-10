@@ -69,7 +69,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     long int lastIndex = Z_LVAL_P(zLastIndex);
 
     unsigned char byte;
-    for (int i = lastIndex; i < chunk_len; i++) {
+    for (size_t i = lastIndex; i < chunk_len; i++) {
         byte = (unsigned char) chunk[i];
         if (escaping) {
             escaping = false;
