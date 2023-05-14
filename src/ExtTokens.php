@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
-class ExtTokens implements \IteratorAggregate
+class ExtTokens implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;
@@ -29,5 +29,10 @@ class ExtTokens implements \IteratorAggregate
                 yield $token;
             }
         }
+    }
+
+    public function getPosition()
+    {
+        return 0;
     }
 }

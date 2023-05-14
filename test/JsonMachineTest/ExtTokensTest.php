@@ -18,7 +18,8 @@ class ExtTokensTest extends TokensTest
         }
 
         return [
-            'ext' => [ExtTokens::class],
+//            'ext' => [ExtTokens::class],
+            'extfull' => [\ExtTokens::class],
         ];
     }
 }

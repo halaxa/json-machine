@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use JsonMachine\ExtTokens;
+use \ExtTokens;
 use JsonMachine\FileChunks;
 use JsonMachine\Items;
 use JsonMachine\Parser;
+use JsonMachine\Tokens;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
@@ -32,16 +33,22 @@ if ( ! function_exists('opcache_get_status')) {
 ini_set('memory_limit', '-1'); // for json_decode use case
 
 $decoders = [
-    'Items::fromFile()' => function ($file) {
-        return Items::fromFile($file);
-    },
-    'Items::fromFile() - debug' => function ($file) {
+    'php Items (TokensWithDebugging)' => function ($file) {
         return Items::fromFile($file, ['debug' => true]);
     },
-    'Items::fromFile() - ext' => function ($file) {
+    'php Items (Tokens)' => function ($file) {
+        return Items::fromFile($file);
+    },
+    'php Tokens' => function ($file) {
+        return new Tokens((new FileChunks($file))->getIterator());
+    },
+    'ext Items' => function ($file) {
         return new Parser(new ExtTokens((new FileChunks($file))->getIterator()));
     },
-    'json_decode()' => function ($file) {
+    'ext ExtTokens' => function ($file) {
+        return new ExtTokens((new FileChunks($file))->getIterator());
+    },
+    'ext json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);
     },
 ];

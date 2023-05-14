@@ -114,7 +114,8 @@ ext-build:  ## Build JSON Machine's PHP extension for production and run perform
 	./build/docker-run.sh \
 		"json-machine-ext" \
 		"$$PWD" \
-		"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && composer tests -- --colors=always && composer performance-tests"
+		"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && composer tests -- --colors=always --stop-on-failure && composer performance-tests"
+#		"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && valgrind php /project/jnt.php"
 
 ext-build-debug: DEBUG=--enable-debug
 ext-build-debug: ext-build ## Build JSON Machine's PHP extension for development and run tests

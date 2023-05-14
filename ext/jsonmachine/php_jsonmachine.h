@@ -12,11 +12,6 @@ extern zend_module_entry jsonmachine_module_entry;
 ZEND_TSRMLS_CACHE_EXTERN()
 # endif
 
-typedef struct _exttokens_object {
-    zend_object std;
-    zval iterator;
-} exttokens_object;
-
 zend_class_entry *exttokens_ce;
 zend_object_handlers exttokens_object_handlers;
 
