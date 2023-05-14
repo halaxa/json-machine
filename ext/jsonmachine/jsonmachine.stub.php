@@ -1,37 +1,40 @@
 <?php
 
 /** @generate-function-entries */
-namespace {
-    function jsonmachine_next_token(string $chunk, string &$tokenBuffer, bool &$escaping, bool &$inString, int &$lastIndex): ?string
-    {}
-}
+function jsonmachine_next_token(string $chunk, string &$tokenBuffer, bool &$escaping, bool &$inString, int &$lastIndex): ?string
+{}
 
-namespace JsonMachine {
-    class ExtTokens implements \Iterator
+
+
+class ExtTokens implements \Iterator
+{
+    public function __construct(Iterator $iterator)
     {
-        public function current()
-        {
-            // TODO: Implement current() method.
-        }
 
-        public function next()
-        {
-            // TODO: Implement next() method.
-        }
+    }
 
-        public function key()
-        {
-            // TODO: Implement key() method.
-        }
+    public function current(): mixed
+    {
+        // TODO: Implement current() method.
+    }
 
-        public function valid()
-        {
-            // TODO: Implement valid() method.
-        }
+    public function next(): void
+    {
+        // TODO: Implement next() method.
+    }
 
-        public function rewind()
-        {
-            // TODO: Implement rewind() method.
-        }
+    public function key(): mixed
+    {
+        // TODO: Implement key() method.
+    }
+
+    public function valid(): bool
+    {
+        // TODO: Implement valid() method.
+    }
+
+    public function rewind(): void
+    {
+        // TODO: Implement rewind() method.
     }
 }

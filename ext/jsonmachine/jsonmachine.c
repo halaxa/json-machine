@@ -118,11 +118,7 @@ PHP_FUNCTION(jsonmachine_next_token)
     ZVAL_LONG(zLastIndex, 0);
 }
 
-static zend_always_inline exttokens_object *php_exttokens_fetch_object(zend_object *obj) {
-    return (exttokens_object *)((char*)(obj) - XtOffsetOf(exttokens_object, std));
-}
-#define Z_EXTTOKENS_OBJ_P(zv) php_exttokens_fetch_object(Z_OBJ_P(zv))
-#define XZ_EXTTOKENS_OBJ_P(zv) ((exttokens_object *)Z_OBJ_P((zv)))->iterator
+#define Z_EXTTOKENS_OBJ_P(zv) ((exttokens_object *)Z_OBJ_P((zv)))
 
 PHP_METHOD(ExtTokens, __construct)
 {
@@ -139,7 +135,7 @@ PHP_METHOD(ExtTokens, current)
     exttokens_object *objval = Z_EXTTOKENS_OBJ_P(getThis());
     zval retval;
     zend_call_method_with_0_params(Z_OBJ_P(&objval->iterator), Z_OBJCE_P(&objval->iterator), NULL, "current", &retval);
-    RETURN_ZVAL(&retval, 0, 0); // Return the value obtained from the call to 'current' and don't try to copy/free it
+    RETURN_ZVAL(&retval, 0, 0);
 }
 
 PHP_METHOD(ExtTokens, next)
@@ -153,7 +149,7 @@ PHP_METHOD(ExtTokens, key)
     exttokens_object *objval = Z_EXTTOKENS_OBJ_P(getThis());
     zval retval;
     zend_call_method_with_0_params(Z_OBJ_P(&objval->iterator), Z_OBJCE_P(&objval->iterator), NULL, "key", &retval);
-    RETURN_ZVAL(&retval, 0, 0); // Return the value obtained from the call to 'key' and don't try to copy/free it
+    RETURN_ZVAL(&retval, 0, 0);
 }
 
 PHP_METHOD(ExtTokens, valid)
@@ -161,7 +157,7 @@ PHP_METHOD(ExtTokens, valid)
     exttokens_object *objval = Z_EXTTOKENS_OBJ_P(getThis());
     zval retval;
     zend_call_method_with_0_params(Z_OBJ_P(&objval->iterator), Z_OBJCE_P(&objval->iterator), NULL, "valid", &retval);
-    RETURN_BOOL(Z_TYPE(retval) == IS_TRUE); // Returns the boolean value of the valid method's return value
+    RETURN_BOOL(Z_TYPE(retval) == IS_TRUE);
 }
 
 PHP_METHOD(ExtTokens, rewind)
@@ -230,34 +226,16 @@ void init_char_maps()
     colonCommaBracket[uc(',')] = true;
 }
 
-//static const zend_function_entry exttokens_methods[] = {
-//    PHP_ME(ExtTokens, __construct, arginfo_exttokens_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-//    PHP_ME(ExtTokens, current, arginfo_exttokens_void, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, next, arginfo_exttokens_void, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, key, arginfo_exttokens_void, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, valid, arginfo_exttokens_void, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, rewind, arginfo_exttokens_void, ZEND_ACC_PUBLIC)
-//    PHP_FE_END
-//};
-
-//static zend_function_entry exttokens_methods[] = {
-//    PHP_ME(ExtTokens, __construct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-//    PHP_ME(ExtTokens, current, NULL, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, next, NULL, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, key, NULL, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, valid, NULL, ZEND_ACC_PUBLIC)
-//    PHP_ME(ExtTokens, rewind, NULL, ZEND_ACC_PUBLIC)
-//    {NULL, NULL, NULL}
-//};
-
 PHP_MINIT_FUNCTION(jsonmachine)
 {
     init_char_maps();
 
     zend_class_entry ce;
-    INIT_CLASS_ENTRY(ce, "ExtTokens", exttokens_methods);
+    INIT_CLASS_ENTRY(ce, "ExtTokens", class_ExtTokens_methods);
     exttokens_ce = zend_register_internal_class(&ce);
     exttokens_ce->create_object = exttokens_create_handler;
+    zend_class_implements(exttokens_ce, 1, zend_ce_iterator);
+
     memcpy(&exttokens_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     exttokens_object_handlers.clone_obj = NULL;
 
