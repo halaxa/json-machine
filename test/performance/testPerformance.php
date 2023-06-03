@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use \ExtTokens;
+use ExtTokens;
 use JsonMachine\FileChunks;
 use JsonMachine\Items;
 use JsonMachine\Parser;
