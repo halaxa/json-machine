@@ -48,23 +48,20 @@ void jsonmachine_next_token(
     zval * zChunk,
     size_t chunk_len,
     zval * zTokenBuffer,
-    zval * zEscaping,
-    zval * zInString,
-    zval * zLastIndex,
+    bool * escaping,
+    bool * inString,
+    size_t * lastIndex,
     zval * return_value
 )
 {
     char * chunk = Z_STRVAL_P(zChunk);
-    bool escaping = zBool(zEscaping);
-    bool inString = zBool(zInString);
-    long int lastIndex = Z_LVAL_P(zLastIndex);
-    size_t i;
 
-    for (i = lastIndex; i < chunk_len; i++) {
+    size_t i;
+    for (i = *lastIndex; i < chunk_len; i++) {
         unsigned char byte;
         byte = (unsigned char) chunk[i];
-        if (escaping) {
-            escaping = false;
+        if (*escaping) {
+            *escaping = false;
             append_char_to_zval_string(zTokenBuffer, byte);
             continue;
         }
@@ -72,11 +69,11 @@ void jsonmachine_next_token(
             append_char_to_zval_string(zTokenBuffer, byte);
             continue;
         }
-        if (inString) {
+        if (*inString) {
             if (byte == '"') {
-                inString = false;
+                *inString = false;
             } else if (byte == '\\') {
-                escaping = true;
+                *escaping = true;
             }
             append_char_to_zval_string(zTokenBuffer, byte);
 
@@ -85,28 +82,22 @@ void jsonmachine_next_token(
 
         if (tokenBoundaries[byte]) {
             if (Z_STRLEN_P(zTokenBuffer)) {
-                ZVAL_BOOL(zEscaping, false);
-                ZVAL_BOOL(zInString, false);
-                ZVAL_LONG(zLastIndex, i);
+                *lastIndex = i;
                 ZVAL_COPY_VALUE(return_value, zTokenBuffer);
                 ZVAL_EMPTY_STRING(zTokenBuffer);
                 return;
             }
             if (colonCommaBracket[byte]) {
-                ZVAL_BOOL(zEscaping, false);
-                ZVAL_BOOL(zInString, false);
-                ZVAL_LONG(zLastIndex, i+1);
+                *lastIndex = i+1;
                 RETURN_STR(zend_string_init((char *)&byte, 1, 0));
             }
         } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
-            inString = true;
+            *inString = true;
             append_char_to_zval_string(zTokenBuffer, byte);
         }
     }
 
-    ZVAL_BOOL(zEscaping, escaping);
-    ZVAL_BOOL(zInString, inString);
-    ZVAL_LONG(zLastIndex, i);
+    *lastIndex = i;
 }
 
 PHP_FUNCTION(jsonmachine_next_token)
@@ -145,9 +136,9 @@ typedef struct _exttokens_object {
     bool rewindCalled;
     zval chunk;
     zval tokenBuffer;
-    zval inString;
-    zval escaping;
-    zval lastIndex;
+    bool inString;
+    bool escaping;
+    size_t lastIndex;
 } exttokens_object;
 
 PHP_METHOD(ExtTokens, __construct)
@@ -164,9 +155,9 @@ PHP_METHOD(ExtTokens, __construct)
     ZVAL_EMPTY_STRING(&this->tokenBuffer);
     ZVAL_EMPTY_STRING(&this->chunk);
     ZVAL_EMPTY_STRING(&this->current);
-    ZVAL_BOOL(&this->inString, false);
-    ZVAL_BOOL(&this->escaping, false);
-    ZVAL_LONG(&this->lastIndex, 0);
+    this->inString = false;
+    this->escaping = false;
+    this->lastIndex = 0;
     this->key = -1;
     this->rewindCalled = false;
 }
@@ -183,7 +174,7 @@ PHP_METHOD(ExtTokens, next)
 
     this->key++;
     ZVAL_EMPTY_STRING(&this->current);
-    if (Z_LVAL(this->lastIndex) && Z_LVAL(this->lastIndex) == Z_STRLEN(this->chunk)) {
+    if (this->lastIndex && this->lastIndex == Z_STRLEN(this->chunk)) {
         return;
     }
     ZVAL_EMPTY_STRING(return_value);
@@ -199,7 +190,7 @@ PHP_METHOD(ExtTokens, next)
             return_value
         );
 
-        if (Z_LVAL(this->lastIndex) == Z_STRLEN(this->chunk)) {
+        if (this->lastIndex == Z_STRLEN(this->chunk)) {
             zval valid;
             if (this->rewindCalled) {
                 zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "next", NULL);
@@ -219,9 +210,9 @@ PHP_METHOD(ExtTokens, next)
             zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "current", &this->chunk);
             // todo test me:
             if (Z_TYPE(this->chunk) != IS_STRING) {
-                zend_error(E_ERROR, "Iterator providing token chunks must return string.");
+                zend_error(E_ERROR, "Iterator providing token chunks must produce strings.");
             }
-            ZVAL_LONG(&this->lastIndex, 0);
+            this->lastIndex = 0;
         }
 
     } while (Z_STRLEN_P(return_value) == 0);
