@@ -44,86 +44,6 @@ static bool colonCommaBracket[256];
 static bool tokenBoundaries[256];
 static bool insignificantBytes[256];
 
-void jsonmachine_next_token(
-    zval * zChunk,
-    size_t chunk_len,
-    zval * zTokenBuffer,
-    bool * escaping,
-    bool * inString,
-    size_t * lastIndex,
-    zval * return_value
-)
-{
-    char * chunk = Z_STRVAL_P(zChunk);
-
-    size_t i;
-    for (i = *lastIndex; i < chunk_len; i++) {
-        unsigned char byte;
-        byte = (unsigned char) chunk[i];
-        if (*escaping) {
-            *escaping = false;
-            append_char_to_zval_string(zTokenBuffer, byte);
-            continue;
-        }
-        if (insignificantBytes[byte]) {
-            append_char_to_zval_string(zTokenBuffer, byte);
-            continue;
-        }
-        if (*inString) {
-            if (byte == '"') {
-                *inString = false;
-            } else if (byte == '\\') {
-                *escaping = true;
-            }
-            append_char_to_zval_string(zTokenBuffer, byte);
-
-            continue;
-        }
-
-        if (tokenBoundaries[byte]) {
-            if (Z_STRLEN_P(zTokenBuffer)) {
-                *lastIndex = i;
-                ZVAL_COPY_VALUE(return_value, zTokenBuffer);
-                ZVAL_EMPTY_STRING(zTokenBuffer);
-                return;
-            }
-            if (colonCommaBracket[byte]) {
-                *lastIndex = i+1;
-                RETURN_STR(zend_string_init((char *)&byte, 1, 0));
-            }
-        } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
-            *inString = true;
-            append_char_to_zval_string(zTokenBuffer, byte);
-        }
-    }
-
-    *lastIndex = i;
-}
-
-PHP_FUNCTION(jsonmachine_next_token)
-{
-    zval *zChunk;
-    zval *zTokenBuffer;
-    zval *zEscaping;
-    zval *zInString;
-    zval *zLastIndex;
-
-    ZEND_PARSE_PARAMETERS_START(5, 5)
-        Z_PARAM_ZVAL(zChunk)
-        Z_PARAM_ZVAL(zTokenBuffer)
-        Z_PARAM_ZVAL(zEscaping)
-        Z_PARAM_ZVAL(zInString)
-        Z_PARAM_ZVAL(zLastIndex)
-    ZEND_PARSE_PARAMETERS_END();
-
-    ZVAL_DEREF(zTokenBuffer);
-    ZVAL_DEREF(zEscaping);
-    ZVAL_DEREF(zInString);
-    ZVAL_DEREF(zLastIndex);
-
-    jsonmachine_next_token(zChunk, Z_STRLEN_P(zChunk), zTokenBuffer, zEscaping, zInString, zLastIndex, return_value);
-}
-
 #define Z_EXTTOKENS_OBJ_P(zv) ((exttokens_object *)Z_OBJ_P((zv)))
 
 typedef struct _exttokens_object {
@@ -170,26 +90,68 @@ PHP_METHOD(ExtTokens, current)
 
 PHP_METHOD(ExtTokens, next)
 {
+    zval token;
+    ZVAL_EMPTY_STRING(&token);
+
     exttokens_object *this = Z_EXTTOKENS_OBJ_P(getThis());
+    ZVAL_EMPTY_STRING(&this->current);
 
     this->key++;
-    ZVAL_EMPTY_STRING(&this->current);
+
     if (this->lastIndex && this->lastIndex == Z_STRLEN(this->chunk)) {
         return;
     }
-    ZVAL_EMPTY_STRING(return_value);
 
     do {
-        jsonmachine_next_token(
-            &this->chunk,
-            Z_STRLEN(this->chunk),
-            &this->tokenBuffer,
-            &this->escaping,
-            &this->inString,
-            &this->lastIndex,
-            return_value
-        );
+        do {
+            char * chunk = Z_STRVAL(this->chunk);
 
+            size_t i;
+            for (i = this->lastIndex; i < Z_STRLEN(this->chunk); i++) {
+                unsigned char byte;
+                byte = (unsigned char) chunk[i];
+                if (this->escaping) {
+                    this->escaping = false;
+                    append_char_to_zval_string(&this->tokenBuffer, byte);
+                    continue;
+                }
+                if (insignificantBytes[byte]) {
+                    append_char_to_zval_string(&this->tokenBuffer, byte);
+                    continue;
+                }
+                if (this->inString) {
+                    if (byte == '"') {
+                        this->inString = false;
+                    } else if (byte == '\\') {
+                        this->escaping = true;
+                    }
+                    append_char_to_zval_string(&this->tokenBuffer, byte);
+
+                    continue;
+                }
+
+                if (tokenBoundaries[byte]) {
+                    if (Z_STRLEN(this->tokenBuffer)) {
+                        this->lastIndex = i;
+                        ZVAL_COPY(&token, &this->tokenBuffer);
+                        ZVAL_EMPTY_STRING(&this->tokenBuffer);
+                        goto after;
+                    }
+                    if (colonCommaBracket[byte]) {
+                        this->lastIndex = i+1;
+                        ZVAL_STR(&token, zend_string_init((char *)&byte, 1, 0));
+                        goto after;
+                    }
+                } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
+                    this->inString = true;
+                    append_char_to_zval_string(&this->tokenBuffer, byte);
+                }
+            }
+
+            this->lastIndex = i;
+        } while (0);
+
+        after:
         if (this->lastIndex == Z_STRLEN(this->chunk)) {
             zval valid;
             if (this->rewindCalled) {
@@ -200,8 +162,8 @@ PHP_METHOD(ExtTokens, next)
             }
             zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "valid", &valid);
             if ( ! zBool(&valid)) {
-                if (Z_STRLEN_P(return_value)) {
-                    ZVAL_COPY(&this->current, return_value);
+                if (Z_STRLEN_P(&token)) {
+                    ZVAL_COPY(&this->current, &token);
                 } else {
                     ZVAL_COPY(&this->current, &this->tokenBuffer);
                 }
@@ -214,10 +176,9 @@ PHP_METHOD(ExtTokens, next)
             }
             this->lastIndex = 0;
         }
+    } while (Z_STRLEN(token) == 0);
 
-    } while (Z_STRLEN_P(return_value) == 0);
-
-    ZVAL_COPY(&this->current, return_value);
+    ZVAL_COPY(&this->current, &token);
 }
 
 PHP_METHOD(ExtTokens, key)
@@ -338,7 +299,7 @@ PHP_MINFO_FUNCTION(jsonmachine)
 zend_module_entry jsonmachine_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"jsonmachine",					/* Extension name */
-	ext_functions,					/* zend_function_entry */
+	NULL,       					/* zend_function_entry */
 	PHP_MINIT(jsonmachine),			/* PHP_MINIT - Module initialization */
 	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(jsonmachine),			/* PHP_RINIT - Request initialization */

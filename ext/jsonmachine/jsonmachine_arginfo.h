@@ -1,13 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 2e218bb2bc1f234cb273cb1e54b266dad5f0442d */
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_jsonmachine_next_token, 0, 5, IS_STRING, 1)
-	ZEND_ARG_TYPE_INFO(0, chunk, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(1, tokenBuffer, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(1, escaping, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(1, inString, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(1, lastIndex, IS_LONG, 0)
-ZEND_END_ARG_INFO()
+ * Stub hash: XXXXXXXXXXXXXXXXXXXXXX */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_ExtTokens___construct, 0, 0, 1)
 	ZEND_ARG_OBJ_INFO(0, iterator, Iterator, 0)
@@ -26,21 +18,12 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_ExtTokens_rewind arginfo_class_ExtTokens_next
 
-
-ZEND_FUNCTION(jsonmachine_next_token);
 ZEND_METHOD(ExtTokens, __construct);
 ZEND_METHOD(ExtTokens, current);
 ZEND_METHOD(ExtTokens, next);
 ZEND_METHOD(ExtTokens, key);
 ZEND_METHOD(ExtTokens, valid);
 ZEND_METHOD(ExtTokens, rewind);
-
-
-static const zend_function_entry ext_functions[] = {
-	ZEND_FE(jsonmachine_next_token, arginfo_jsonmachine_next_token)
-	ZEND_FE_END
-};
-
 
 static const zend_function_entry class_ExtTokens_methods[] = {
 	ZEND_ME(ExtTokens, __construct, arginfo_class_ExtTokens___construct, ZEND_ACC_PUBLIC)
