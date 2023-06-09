@@ -105,53 +105,51 @@ PHP_METHOD(ExtTokens, next)
     }
 
     do {
-        do {
-            char * chunk = Z_STRVAL(this->chunk);
+        char * chunk = Z_STRVAL(this->chunk);
 
-            size_t i;
-            for (i = this->lastIndex; i < this->chunkLen; i++) {
-                unsigned char byte;
-                byte = (unsigned char) chunk[i];
-                if (this->escaping) {
-                    this->escaping = false;
-                    append_char_to_zval_string(&this->tokenBuffer, byte);
-                    continue;
+        size_t i;
+        for (i = this->lastIndex; i < this->chunkLen; i++) {
+            unsigned char byte;
+            byte = (unsigned char) chunk[i];
+            if (this->escaping) {
+                this->escaping = false;
+                append_char_to_zval_string(&this->tokenBuffer, byte);
+                continue;
+            }
+            if (insignificantBytes[byte]) {
+                append_char_to_zval_string(&this->tokenBuffer, byte);
+                continue;
+            }
+            if (this->inString) {
+                if (byte == '"') {
+                    this->inString = false;
+                } else if (byte == '\\') {
+                    this->escaping = true;
                 }
-                if (insignificantBytes[byte]) {
-                    append_char_to_zval_string(&this->tokenBuffer, byte);
-                    continue;
-                }
-                if (this->inString) {
-                    if (byte == '"') {
-                        this->inString = false;
-                    } else if (byte == '\\') {
-                        this->escaping = true;
-                    }
-                    append_char_to_zval_string(&this->tokenBuffer, byte);
+                append_char_to_zval_string(&this->tokenBuffer, byte);
 
-                    continue;
-                }
-
-                if (tokenBoundaries[byte]) {
-                    if (Z_STRLEN(this->tokenBuffer)) {
-                        this->lastIndex = i;
-                        ZVAL_COPY(&token, &this->tokenBuffer);
-                        ZVAL_EMPTY_STRING(&this->tokenBuffer);
-                        goto after;
-                    }
-                    if (colonCommaBracket[byte]) {
-                        this->lastIndex = i+1;
-                        ZVAL_STR(&token, zend_string_init((char *)&byte, 1, 0));
-                        goto after;
-                    }
-                } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
-                    this->inString = true;
-                    append_char_to_zval_string(&this->tokenBuffer, byte);
-                }
+                continue;
             }
 
-            this->lastIndex = i;
-        } while (0);
+            if (tokenBoundaries[byte]) {
+                if (Z_STRLEN(this->tokenBuffer)) {
+                    this->lastIndex = i;
+                    ZVAL_COPY(&token, &this->tokenBuffer);
+                    ZVAL_EMPTY_STRING(&this->tokenBuffer);
+                    goto after;
+                }
+                if (colonCommaBracket[byte]) {
+                    this->lastIndex = i+1;
+                    ZVAL_STR(&token, zend_string_init((char *)&byte, 1, 0));
+                    goto after;
+                }
+            } else { // else branch matches `"` but also `\` outside of a string literal which is an error anyway but strictly speaking not correctly parsed token
+                this->inString = true;
+                append_char_to_zval_string(&this->tokenBuffer, byte);
+            }
+        }
+
+        this->lastIndex = i;
 
         after:
         if (this->lastIndex == this->chunkLen) {
