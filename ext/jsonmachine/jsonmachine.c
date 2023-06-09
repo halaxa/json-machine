@@ -55,6 +55,7 @@ typedef struct _exttokens_object {
 
     bool rewindCalled;
     zval chunk;
+    size_t chunkLen;
     zval tokenBuffer;
     bool inString;
     bool escaping;
@@ -74,6 +75,7 @@ PHP_METHOD(ExtTokens, __construct)
     ZVAL_COPY(&this->jsonChunks, jsonChunks);
     ZVAL_EMPTY_STRING(&this->tokenBuffer);
     ZVAL_EMPTY_STRING(&this->chunk);
+    this->chunkLen = 0;
     ZVAL_EMPTY_STRING(&this->current);
     this->inString = false;
     this->escaping = false;
@@ -98,7 +100,7 @@ PHP_METHOD(ExtTokens, next)
 
     this->key++;
 
-    if (this->lastIndex && this->lastIndex == Z_STRLEN(this->chunk)) {
+    if (this->lastIndex && this->lastIndex == this->chunkLen) {
         return;
     }
 
@@ -107,7 +109,7 @@ PHP_METHOD(ExtTokens, next)
             char * chunk = Z_STRVAL(this->chunk);
 
             size_t i;
-            for (i = this->lastIndex; i < Z_STRLEN(this->chunk); i++) {
+            for (i = this->lastIndex; i < this->chunkLen; i++) {
                 unsigned char byte;
                 byte = (unsigned char) chunk[i];
                 if (this->escaping) {
@@ -152,7 +154,7 @@ PHP_METHOD(ExtTokens, next)
         } while (0);
 
         after:
-        if (this->lastIndex == Z_STRLEN(this->chunk)) {
+        if (this->lastIndex == this->chunkLen) {
             zval valid;
             if (this->rewindCalled) {
                 zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "next", NULL);
@@ -170,6 +172,7 @@ PHP_METHOD(ExtTokens, next)
                 return;
             }
             zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "current", &this->chunk);
+            this->chunkLen = Z_STRLEN(this->chunk);
             // todo test me:
             if (Z_TYPE(this->chunk) != IS_STRING) {
                 zend_error(E_ERROR, "Iterator providing token chunks must produce strings.");
