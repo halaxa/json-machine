@@ -232,7 +232,7 @@ void exttokens_object_free_obj(zend_object *object)
     /* Here you can free any resources that your object has acquired,
        but do NOT free the object itself; Zend will do that for you */
     zend_object_std_dtor(&handler->std);
-    efree(object);
+//    efree(object);
 }
 
 void init_char_maps()
