@@ -10,6 +10,7 @@
 #include "php_jsonmachine.h"
 #include "jsonmachine_arginfo.h"
 #include "zend_interfaces.h"
+#include "zend_exceptions.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -61,6 +62,18 @@ typedef struct _exttokens_object {
     bool escaping;
     size_t lastIndex;
 } exttokens_object;
+
+void throw_php_exception(const char * className, const char * message)
+{
+    zend_string * classNameZS = zend_string_init(className, strlen(className), 0);
+    zend_class_entry * ce = zend_fetch_class(classNameZS, ZEND_FETCH_CLASS_AUTO);
+    if ( ! ce) {
+//        zend_error();
+        return;
+    }
+    zend_throw_exception(ce, message, 0);
+    zend_string_release(classNameZS);
+}
 
 PHP_METHOD(ExtTokens, __construct)
 {
@@ -170,11 +183,14 @@ PHP_METHOD(ExtTokens, next)
                 return;
             }
             zend_call_method_with_0_params(Z_OBJ(this->jsonChunks), Z_OBJCE(this->jsonChunks), NULL, "current", &this->chunk);
-            this->chunkLen = Z_STRLEN(this->chunk);
-            // todo test me:
             if (Z_TYPE(this->chunk) != IS_STRING) {
-                zend_error(E_ERROR, "Iterator providing token chunks must produce strings.");
+                throw_php_exception(
+                    "JsonMachine\\Exception\\JsonMachineException",
+                    "Iterator providing token chunks must produce strings."
+                );
+                return;
             }
+            this->chunkLen = Z_STRLEN(this->chunk);
             this->lastIndex = 0;
         }
     } while (Z_STRLEN(token) == 0);
@@ -202,14 +218,22 @@ PHP_METHOD(ExtTokens, rewind)
 
 zend_object *exttokens_create_handler(zend_class_entry *ce)
 {
-    exttokens_object *objval = emalloc(sizeof(exttokens_object));
-    memset(objval, 0, sizeof(exttokens_object));
-    zend_object_std_init(&objval->std, ce);
-    object_properties_init(&objval->std, ce);
-    objval->std.handlers = &exttokens_object_handlers;
-    return &objval->std;
+    exttokens_object *handler = emalloc(sizeof(exttokens_object));
+    memset(handler, 0, sizeof(exttokens_object));
+    zend_object_std_init(&handler->std, ce);
+    object_properties_init(&handler->std, ce);
+    handler->std.handlers = &exttokens_object_handlers;
+    return &handler->std;
 }
 
+void exttokens_object_free_obj(zend_object *object)
+{
+    exttokens_object *handler = (exttokens_object *)object;
+    /* Here you can free any resources that your object has acquired,
+       but do NOT free the object itself; Zend will do that for you */
+    zend_object_std_dtor(&handler->std);
+    efree(object);
+}
 
 void init_char_maps()
 {
@@ -272,9 +296,12 @@ PHP_MINIT_FUNCTION(jsonmachine)
 
     memcpy(&exttokens_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
     exttokens_object_handlers.clone_obj = NULL;
+    exttokens_object_handlers.offset = XtOffsetOf(exttokens_object, std);
+    exttokens_object_handlers.free_obj = exttokens_object_free_obj;
 
     return SUCCESS;
 }
+
 
 /* {{{ PHP_RINIT_FUNCTION */
 PHP_RINIT_FUNCTION(jsonmachine)
