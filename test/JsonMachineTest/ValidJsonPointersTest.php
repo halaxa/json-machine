@@ -85,6 +85,8 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['/one', '/two'],
+            ['/companies/-/id', '/companies/0/idempotency_key'],
+            ['/companies/1/id', '/companies/1/idempotency_key'],
         ];
     }
 }
