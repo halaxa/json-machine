@@ -64,8 +64,8 @@ final class ValidJsonPointers
                     continue;
                 }
                 if ($jsonPointerA === $jsonPointerB
-                    || self::str_contains($jsonPointerA, $jsonPointerB)
-                    || self::str_contains($jsonPointerA, self::wildcardify($jsonPointerB))
+                    || self::str_contains("$jsonPointerA/", "$jsonPointerB/")
+                    || self::str_contains("$jsonPointerA/", self::wildcardify("$jsonPointerB/"))
                 ) {
                     throw new InvalidArgumentException(
                         sprintf(
