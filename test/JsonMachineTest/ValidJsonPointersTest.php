@@ -70,11 +70,21 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
         (new ValidJsonPointers(['/one', '/one']))->toArray();
     }
 
-    public function testToArrayReturnsJsonPointers()
+    /**
+     * @dataProvider data_testToArrayReturnsJsonPointers
+     */
+    public function testToArrayReturnsJsonPointers(string $pointerA, string $pointerB)
     {
         $this->assertSame(
-            ['/one', '/two'],
-            (new ValidJsonPointers(['/one', '/two']))->toArray()
+            [$pointerA, $pointerB],
+            (new ValidJsonPointers([$pointerA, $pointerB]))->toArray()
         );
+    }
+
+    public function data_testToArrayReturnsJsonPointers()
+    {
+        return [
+            ['/one', '/two'],
+        ];
     }
 }
