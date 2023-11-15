@@ -6,6 +6,9 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 
+/**
+ * @implements \IteratorAggregate<int, string>
+ */
 class StreamChunks implements \IteratorAggregate
 {
     /** @var resource */

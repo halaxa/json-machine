@@ -15,6 +15,7 @@ class StreamChunksTest extends \PHPUnit_Framework_TestCase
     public function testThrowsIfNoResource()
     {
         $this->expectException(InvalidArgumentException::class);
+        /* @phpstan-ignore-next-line */
         new StreamChunks(false);
     }
 

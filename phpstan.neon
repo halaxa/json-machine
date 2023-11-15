@@ -1,0 +1,21 @@
+parameters:
+  level: 5
+  paths:
+    - src
+    - test
+  bootstrapFiles:
+    - %rootDir%/../../../test/bootstrap.php
+  treatPhpDocTypesAsCertain: false
+  exceptions:
+    implicitThrows: false
+    check:
+      missingCheckedExceptionInThrows: true
+      tooWideThrowType: true
+    reportUncheckedExceptionDeadCatch: true
+    checkedExceptionClasses:
+      - JsonMachine\Exception\PathNotFoundException
+      - JsonMachine\Exception\SyntaxErrorException
+      - JsonMachine\Exception\UnexpectedEndSyntaxErrorException
+    uncheckedExceptionClasses:
+      - JsonMachine\Exception\InvalidArgumentException
+      - JsonMachine\Exception\JsonMachineException

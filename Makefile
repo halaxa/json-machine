@@ -30,16 +30,15 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: tests-all cs-check ## Run all necessary stuff before commit.
+build: tests-all cs-check phpstan ## Run all necessary stuff before commit.
 
 
-tests: CMD=composer tests -- $(ARGS)
-tests: docker-run ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
+tests: ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
+	@$(call DOCKER_RUN,$(COVERAGE_PHP),composer tests -- $(ARGS))
 
 
-tests-coverage: CMD=composer tests-coverage -- $(ARGS)
 tests-coverage: ## Runs tests and creates ./clover.xml. Pass args to phpunit via ARGS=""
-	@$(call DOCKER_RUN,$(COVERAGE_PHP),$(CMD))
+	@$(call DOCKER_RUN,$(COVERAGE_PHP),composer tests-coverage -- $(ARGS))
 
 
 tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via ARGS=""
@@ -52,16 +51,20 @@ tests-all: ## Run tests on all supported PHP versions. Pass args to phpunit via 
 	done
 
 
-cs-check: CMD=composer cs-check
-cs-check: docker-run ## Check code style
+cs-check: ## Check code style
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer cs-check)
 
 
-cs-fix: CMD=composer cs-fix
-cs-fix: docker-run ## Fix code style
+phpstan: ## Run phpstan
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer phpstan)
 
 
-performance-tests: CMD=composer performance-tests
-performance-tests: docker-run ## Run performance tests
+cs-fix: ## Fix code style
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer cs-fix)
+
+
+performance-tests: ## Run performance tests
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer performance-tests)
 
 
 release: .env build

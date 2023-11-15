@@ -16,7 +16,6 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
      * @dataProvider data_testThrowsOnIntersectingPaths
      *
      * @param $jsonPointers
-     * @param ParserTest $parserTest
      */
     public function testThrowsOnIntersectingPaths($jsonPointers)
     {
