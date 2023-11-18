@@ -24,6 +24,7 @@ class FileChunks implements \IteratorAggregate
 
     /**
      * @return \Generator
+     *
      * @throws Exception\InvalidArgumentException
      */
     #[\ReturnTypeWillChange]
