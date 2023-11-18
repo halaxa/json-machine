@@ -21,7 +21,12 @@ docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "
 
 printf "
     FROM $FROM_IMAGE
-    RUN apk add --update \
+    RUN apk update && apk upgrade
+    # https://stackoverflow.com/questions/76507083/pecl-install-no-releases-available#comment136513209_76651916
+    RUN rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem || true \
+      && cat /etc/ssl/certs/*.pem > /etc/ssl/certs/ca-certificates.crt \
+      && cat /etc/ssl/certs/*.pem > /etc/ssl/cert.pem
+    RUN apk add \
         autoconf \
         g++ \
         libtool \
