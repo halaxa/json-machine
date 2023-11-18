@@ -117,6 +117,7 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @return \Generator
+     * @throws Exception\PathNotFoundException
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
@@ -124,6 +125,9 @@ final class Items implements \IteratorAggregate, PositionAware
         return $this->parser->getIterator();
     }
 
+    /**
+     * @throws Exception\JsonMachineException
+     */
     public function getPosition()
     {
         return $this->parser->getPosition();
@@ -134,11 +138,17 @@ final class Items implements \IteratorAggregate, PositionAware
         return $this->parser->getJsonPointers();
     }
 
+    /**
+     * @throws Exception\JsonMachineException
+     */
     public function getCurrentJsonPointer(): string
     {
         return $this->parser->getCurrentJsonPointer();
     }
 
+    /**
+     * @throws Exception\JsonMachineException
+     */
     public function getMatchedJsonPointer(): string
     {
         return $this->parser->getMatchedJsonPointer();
