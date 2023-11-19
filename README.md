@@ -1,9 +1,7 @@
-<img align="right" src="img/github.png" />
-
-(README in sync with the code)
+# <img align="right" src="img/github.png" alt="JSON Machine" />
 
 Very easy to use and memory efficient drop-in replacement for inefficient iteration of big JSON files or streams
-for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`.
+for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optional `ext-json`. README in sync with the code
 
 [![Build Status](https://github.com/halaxa/json-machine/actions/workflows/makefile.yml/badge.svg)](https://github.com/halaxa/json-machine/actions)
 [![codecov](https://img.shields.io/codecov/c/gh/halaxa/json-machine?label=phpunit%20%40covers)](https://codecov.io/gh/halaxa/json-machine)
