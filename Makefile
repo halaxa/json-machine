@@ -30,7 +30,7 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: tests-all cs-check ## Run all necessary stuff before commit.
+build: ext-build tests-all cs-check ## Run all necessary stuff before commit.
 
 
 tests: CMD=composer tests -- $(ARGS)
@@ -108,3 +108,15 @@ release: .env build
 
 docker-run: ## Run a command in a latest JSON Machine PHP docker container. Ex.: make docker-run CMD="php -v"
 	@$(call DOCKER_RUN,$(LATEST_PHP),$(CMD))
+
+EXT_BUILD_POST_CMD=composer performance-tests
+ext-build:  ## Build JSON Machine's PHP extension for production and run performance tests
+	docker build --tag json-machine-ext --build-arg debug=$(DEBUG) ext/build
+	./build/docker-run.sh \
+		"json-machine-ext" \
+		"$$PWD" \
+		"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && composer tests -- --colors=always --stop-on-failure --filter \\\\JsonMachineTest\\\\ExtTokensTest && composer performance-tests"
+		#"cd /project/ext/jsonmachine; phpize && ./configure $(DEBUG) && make clean && make && cd /project && valgrind php /project/jnt.php"
+
+ext-build-debug: DEBUG=--enable-debug
+ext-build-debug: ext-build ## Build JSON Machine's PHP extension for development and run tests

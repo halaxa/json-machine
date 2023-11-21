@@ -1,0 +1,7 @@
+ARG_ENABLE('jsonmachine', 'jsonmachine support', 'no');
+
+if (PHP_JSONMACHINE != 'no') {
+	AC_DEFINE('HAVE_JSONMACHINE', 1, 'jsonmachine support enabled');
+
+	EXTENSION('jsonmachine', 'jsonmachine.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}

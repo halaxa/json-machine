@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use ArrayIterator;
 use JsonMachine\FileChunks;
+use JsonMachine\IteratorLexerPOC;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
@@ -13,43 +15,41 @@ use JsonMachine\TokensWithDebugging;
 /**
  * @covers \JsonMachine\Tokens
  * @covers \JsonMachine\TokensWithDebugging
+ * @covers \JsonMachine\IteratorLexerPOC
  */
 class TokensTest extends \PHPUnit_Framework_TestCase
 {
-    public function bothDebugModes()
+    public function availableTokenizers()
     {
         return [
             'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
+            'Iterator POC' => [IteratorLexerPOC::class],
         ];
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyYieldsZeroToken($tokensClass)
     {
-        $data = ['0'];
-        $expected = ['0'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
-
         $stream = fopen('data://text/plain,{"value":0}', 'r');
         $expected = ['{', '"value"', ':', '0', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new StreamChunks($stream, 10))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass((new StreamChunks($stream, 10))->getIterator())));
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testGeneratesTokens($tokensClass)
     {
-        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
-        $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""'];
+        $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\"",'];
+        $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""', ','];
         $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testWithBOM($tokensClass)
     {
@@ -59,7 +59,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($tokensClass)
     {
@@ -67,7 +67,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesEscapedQuotesInTheMiddleOfAString($tokensClass)
     {
@@ -77,7 +77,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitBeforeStringEnd($tokensClass)
     {
@@ -87,7 +87,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitBeforeEscapedCharacter($tokensClass)
     {
@@ -97,7 +97,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testCorrectlyParsesChunksSplitAfterEscapedCharacter($tokensClass)
     {
@@ -107,7 +107,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider bothDebugModes
+     * @dataProvider availableTokenizers
      */
     public function testAnyPossibleChunkSplit($tokensClass)
     {
@@ -144,7 +144,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
         foreach (range(1, strlen($json)) as $chunkLength) {
             $chunks = str_split($json, $chunkLength);
-            $result = iterator_to_array(new $tokensClass($chunks));
+            $result = iterator_to_array(new $tokensClass(new ArrayIterator($chunks)));
 
             $this->assertSame($expected, $result);
         }
