@@ -321,6 +321,9 @@ class Parser implements \IteratorAggregate, PositionAware
         return array_values($this->jsonPointers);
     }
 
+    /**
+     * @throws JsonMachineException
+     */
     public function getCurrentJsonPointer(): string
     {
         if ($this->currentPath === null) {
@@ -330,6 +333,9 @@ class Parser implements \IteratorAggregate, PositionAware
         return self::pathToJsonPointer($this->currentPath);
     }
 
+    /**
+     * @throws JsonMachineException
+     */
     public function getMatchedJsonPointer(): string
     {
         if ($this->matchedJsonPointer === null) {
