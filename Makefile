@@ -30,7 +30,7 @@ help:
 	@grep -E '^[-a-zA-Z0-9_\.\/]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-15s\033[0m\t%s\n", $$1, $$2}'
 
 
-build: tests-all cs-check phpstan ## Run all necessary stuff before commit.
+build: composer-validate cs-check phpstan tests-all ## Run all necessary stuff before commit.
 
 
 tests: ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
@@ -65,6 +65,10 @@ cs-fix: ## Fix code style
 
 performance-tests: ## Run performance tests
 	@$(call DOCKER_RUN,$(LATEST_PHP),composer performance-tests)
+
+
+composer-validate: ## Validate composer.json contents
+	@$(call DOCKER_RUN,$(LATEST_PHP),composer validate)
 
 
 release: .env build
