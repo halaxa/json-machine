@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+- Minor fixes and added some tests.
+### Added
+- Support for PHP 8.3
+- Added PHPStan to build pipeline
+### Fixed
+- Fixed the case when non-intersecting pointers were considered intersecting (#106). Thanks @XedinUnknown
 
 <br>
 
