@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+Nothing yet
+
+<br>
+
+## 1.1.4 - 2023-11-28
 - Minor fixes and added some tests.
 ### Added
 - Support for PHP 8.3
