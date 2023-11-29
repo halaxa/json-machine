@@ -6,8 +6,22 @@ use JsonMachine\Items;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
-if (in_array('xdebug', get_loaded_extensions())) {
-    trigger_error('Xdebug enabled. Results may be affected.', E_USER_WARNING);
+if ( ! ini_get('xdebug.mode')) {
+    echo "Xdebug disabled\n";
+} else {
+    echo "Xdebug enabled\n";
+}
+
+if ( ! function_exists('opcache_get_status')) {
+    echo "Opcache disabled\n";
+    echo "JIT disabled\n";
+} else {
+    echo "Opcache enabled\n";
+    if (opcache_get_status()['jit']['enabled']) {
+        echo "JIT enabled\n";
+    } else {
+        echo "JIT disabled\n";
+    }
 }
 
 ini_set('memory_limit', '-1'); // for json_decode use case

@@ -16,7 +16,6 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
      * @dataProvider data_testThrowsOnIntersectingPaths
      *
      * @param $jsonPointers
-     * @param ParserTest $parserTest
      */
     public function testThrowsOnIntersectingPaths($jsonPointers)
     {
@@ -70,11 +69,23 @@ class ValidJsonPointersTest extends \PHPUnit_Framework_TestCase
         (new ValidJsonPointers(['/one', '/one']))->toArray();
     }
 
-    public function testToArrayReturnsJsonPointers()
+    /**
+     * @dataProvider data_testToArrayReturnsJsonPointers
+     */
+    public function testToArrayReturnsJsonPointers(string $pointerA, string $pointerB)
     {
         $this->assertSame(
-            ['/one', '/two'],
-            (new ValidJsonPointers(['/one', '/two']))->toArray()
+            [$pointerA, $pointerB],
+            (new ValidJsonPointers([$pointerA, $pointerB]))->toArray()
         );
+    }
+
+    public function data_testToArrayReturnsJsonPointers()
+    {
+        return [
+            ['/one', '/two'],
+            ['/companies/-/id', '/companies/0/idempotency_key'],
+            ['/companies/1/id', '/companies/1/idempotency_key'],
+        ];
     }
 }

@@ -13,18 +13,20 @@
         "tests-coverage": "build/composer-update.sh && XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover clover.xml",
         "cs-check": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --dry-run --verbose --allow-risky=yes",
         "cs-fix": "build/composer-update.sh && vendor/bin/php-cs-fixer fix --verbose --allow-risky=yes",
-        "performance-tests": "php -n test/performance/testPerformance.php"
+        "phpstan": "build/composer-update.sh && vendor/bin/phpstan analyse",
+        "performance-tests": "php -d xdebug.mode=off -d opcache.enable_cli=1 -d opcache.jit_buffer_size=100M test/performance/testPerformance.php"
     },
     "config": {
         "lock": false,
         "sort-packages": true
     },
     "require": {
-        "php": ">=7.0"
+        "php": "7.0 - 8.3"
     },
     "require-dev": {
         "ext-json": "*",
         "friendsofphp/php-cs-fixer": "^3.0",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {

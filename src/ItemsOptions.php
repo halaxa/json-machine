@@ -12,6 +12,9 @@ class ItemsOptions extends \ArrayObject
 {
     private $options = [];
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(array $options = [])
     {
         $this->validateOptions($options);

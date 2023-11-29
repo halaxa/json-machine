@@ -21,7 +21,12 @@ docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "
 
 printf "
     FROM $FROM_IMAGE
-    RUN apk add --update \
+    RUN apk update && apk upgrade
+    # https://stackoverflow.com/questions/76507083/pecl-install-no-releases-available#comment136513209_76651916
+    RUN rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem || true \
+      && cat /etc/ssl/certs/*.pem > /etc/ssl/certs/ca-certificates.crt \
+      && cat /etc/ssl/certs/*.pem > /etc/ssl/cert.pem
+    RUN apk add \
         autoconf \
         g++ \
         libtool \
@@ -31,6 +36,7 @@ printf "
     && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
     && pecl install xdebug-$XDEBUG_VERSION \
         && docker-php-ext-enable xdebug \
+        && docker-php-ext-enable opcache \
     && wget https://getcomposer.org/download/2.2.18/composer.phar -O /usr/local/bin/composer \
         && chmod +x /usr/local/bin/composer
 " | docker build --quiet --tag "$CONTAINER_NAME" - > /dev/null

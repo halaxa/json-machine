@@ -6,6 +6,9 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 
+/**
+ * @implements \IteratorAggregate<int, string>
+ */
 class StreamChunks implements \IteratorAggregate
 {
     /** @var resource */
@@ -17,6 +20,8 @@ class StreamChunks implements \IteratorAggregate
     /**
      * @param resource $stream
      * @param int      $chunkSize
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct($stream, $chunkSize = 1024 * 8)
     {

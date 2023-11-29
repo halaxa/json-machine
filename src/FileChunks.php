@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+/**
+ * @implements \IteratorAggregate<int, string>
+ */
 class FileChunks implements \IteratorAggregate
 {
     /** @var string */
@@ -24,6 +27,8 @@ class FileChunks implements \IteratorAggregate
 
     /**
      * @return \Generator
+     *
+     * @throws Exception\InvalidArgumentException
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
