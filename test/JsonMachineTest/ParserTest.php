@@ -9,6 +9,7 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\NestedIterator;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
@@ -588,5 +589,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->expectExceptionMessage('generator');
         iterator_to_array($array[1]);
+    }
+
+    public function testRecursiveIterationYieldsNestedIterator()
+    {
+        $iterator = new Parser(new Tokens(['[[1]]']), '', null, true);
+
+        foreach ($iterator as $item) {
+            $this->assertInstanceOf(NestedIterator::class, $item);
+        }
     }
 }

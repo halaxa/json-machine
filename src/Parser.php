@@ -38,7 +38,7 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Traversable */
     private $tokens;
 
-    /** @var Iterator */
+    /** @var Iterator<int, string> */
     private $tokensIterator;
 
     /** @var ItemDecoder */
@@ -64,7 +64,6 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param bool         $recursive
      *
      * @throws InvalidArgumentException
      */
@@ -73,7 +72,13 @@ class Parser implements \IteratorAggregate, PositionAware
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
         $this->tokens = $tokens;
-        $this->tokensIterator = $tokens instanceof IteratorAggregate ? $tokens->getIterator() : $tokens;
+        if ($tokens instanceof IteratorAggregate) {
+            $this->tokensIterator = $tokens->getIterator();
+        } elseif ($tokens instanceof Iterator) {
+            $this->tokensIterator = $tokens;
+        } else {
+            throw new InvalidArgumentException('$tokens must be either an instance of Iterator or IteratorAggregate.');
+        }
 
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
         if ($recursive) {
@@ -158,7 +163,14 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
-                    $jsonValue = (new self($this->remainingTokens(), '', $this->jsonDecoder, true))->getIterator();
+                    $jsonValue = new NestedIterator(
+                        (new self(
+                            $this->remainingTokens(),
+                            '',
+                            $this->jsonDecoder,
+                            true
+                        ))->getIterator()
+                    );
                     $token = ' ';
                 } else {
                     $jsonValue .= $token;

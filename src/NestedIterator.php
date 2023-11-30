@@ -26,7 +26,7 @@ class NestedIterator implements \RecursiveIterator
     #[\ReturnTypeWillChange]
     public function next()
     {
-        return $this->iterator->next();
+        $this->iterator->next();
     }
 
     #[\ReturnTypeWillChange]

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
-use Generator;
-use Iterator;
 use JsonMachine\NestedIterator;
 use PHPUnit\Framework\TestCase;
 use RecursiveIteratorIterator;
@@ -107,9 +105,9 @@ class NestedIteratorTest extends TestCase
                 'one' => 1,
                 'two' => 2,
                 'i' => ['42'],
-                'three' => 3
+                'three' => 3,
             ],
-            'three' => 3
+            'three' => 3,
         ];
 
         $this->assertSame($expected, $iterator->toArray());
