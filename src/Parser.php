@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+use Generator;
+use Iterator;
+use IteratorAggregate;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
@@ -11,6 +14,7 @@ use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\ItemDecoder;
+use JsonMachine\JsonDecoder\StringOnlyDecoder;
 use Traversable;
 
 class Parser implements \IteratorAggregate, PositionAware
@@ -34,6 +38,9 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Traversable */
     private $tokens;
 
+    /** @var Iterator<int, string> */
+    private $tokensIterator;
+
     /** @var ItemDecoder */
     private $jsonDecoder;
 
@@ -52,21 +59,35 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var bool */
     private $hasSingleJsonPointer;
 
+    /** @var bool */
+    private $recursive;
+
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param ItemDecoder  $jsonDecoder
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $recursive = false)
     {
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
         $this->tokens = $tokens;
+        if ($tokens instanceof IteratorAggregate) {
+            $this->tokensIterator = $tokens->getIterator();
+        } elseif ($tokens instanceof Iterator) {
+            $this->tokensIterator = $tokens;
+        } else {
+            throw new InvalidArgumentException('$tokens must be either an instance of Iterator or IteratorAggregate.');
+        }
+
         $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
+        if ($recursive) {
+            $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
+        }
         $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
         $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
         $this->paths = $this->buildPaths($this->jsonPointers);
+        $this->recursive = $recursive;
     }
 
     private function buildPaths(array $jsonPointers): array
@@ -77,7 +98,7 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      *
      * @throws PathNotFoundException
      */
@@ -93,7 +114,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $pointersFound = [];
         $currentLevel = -1;
         $stack = [$currentLevel => null];
-        $jsonBuffer = '';
+        $jsonValue = '';
         $key = null;
         $objectKeyExpected = false;
         $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
@@ -105,7 +126,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $iteratorLevel = 0;
 
         // local variables for faster name lookups
-        $tokens = $this->tokens;
+        $tokens = $this->tokensIterator;
 
         foreach ($tokens as $token) {
             if ($currentPathChanged) {
@@ -141,7 +162,19 @@ class Parser implements \IteratorAggregate, PositionAware
                     )
                 )
             ) {
-                $jsonBuffer .= $token;
+                if ($this->recursive && ($token == '{' || $token == '[')) {
+                    $jsonValue = new NestedIterator(
+                        (new self(
+                            $this->remainingTokens(),
+                            '',
+                            $this->jsonDecoder,
+                            true
+                        ))->getIterator()
+                    );
+                    $token = ' ';
+                } else {
+                    $jsonValue .= $token;
+                }
             }
             // todo move this switch to the top just after the syntax check to be a correct FSM
             switch ($token[0]) {
@@ -215,23 +248,28 @@ class Parser implements \IteratorAggregate, PositionAware
             if ($currentLevel > $iteratorLevel) {
                 continue; // a valid json chunk is not completed yet
             }
-            if ($jsonBuffer !== '') {
-                $valueResult = $this->jsonDecoder->decode($jsonBuffer);
-                $jsonBuffer = '';
+            if ($jsonValue !== '') {
+                $valueResult = $this->jsonDecoder->decode($jsonValue);
+                $jsonValue = '';
                 if ( ! $valueResult->isOk()) {
                     $this->error($valueResult->getErrorMessage(), $token);
                 }
+                $value = $valueResult->getValue();
                 if ($iteratorStruct == '[') {
-                    yield $valueResult->getValue();
+                    yield $value;
                 } else {
                     $keyResult = $this->jsonDecoder->decode($key);
                     if ( ! $keyResult->isOk()) {
                         $this->error($keyResult->getErrorMessage(), $key);
                     }
-                    yield $keyResult->getValue() => $valueResult->getValue();
+                    yield $keyResult->getValue() => $value;
                     unset($keyResult);
                 }
+                if ($value instanceof Iterator && $value->valid()) {
+                    $this->eatAllRemainingTokens($value);
+                }
                 unset($valueResult);
+                unset($value);
             }
             if (
                 ! array_diff($jsonPointerPath, $currentPath)
@@ -242,6 +280,9 @@ class Parser implements \IteratorAggregate, PositionAware
                 }
             } elseif (count($pointersFound) == count($this->jsonPointers) && ! $this->inJsonPointer()) {
                 $subtreeEnded = true;
+                break;
+            }
+            if ($currentLevel < 0) {
                 break;
             }
         }
@@ -260,6 +301,27 @@ class Parser implements \IteratorAggregate, PositionAware
 
         $this->matchedJsonPointer = null;
         $this->currentPath = null;
+    }
+
+    /**
+     * @return Generator
+     */
+    private function remainingTokens()
+    {
+        $iterator = $this->tokensIterator;
+        while ($iterator->valid()) {
+            yield $iterator->current();
+            $iterator->next();
+        }
+    }
+
+    private function eatAllRemainingTokens(Iterator $iterator)
+    {
+        foreach ($iterator as $item) {
+            if ($item instanceof Iterator) {
+                $this->eatAllRemainingTokens($item);
+            }
+        }
     }
 
     private function tokenTypes()
@@ -352,7 +414,10 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function error($msg, $token, $exception = SyntaxErrorException::class)
     {
-        throw new $exception($msg." '".$token."'", $this->tokens instanceof PositionAware ? $this->tokens->getPosition() : 0);
+        throw new $exception(
+            $msg." '".$token."'",
+            $this->tokens instanceof PositionAware ? $this->tokens->getPosition() : ''
+        );
     }
 
     /**
