@@ -322,8 +322,8 @@ foreach ($fruits as $key => $value) {
 <a name="recursive"></a>
 ### Recursive iteration (BETA)
 Recursive iteration can be enabled via `recursive` option set to `true`.
-Every JSON iterable that JSON Machine encounters will then be yielded as a lazy instance of `Traversable`.
-No JSON vector will be materialized and kept in memory.
+Every JSON iterable that JSON Machine encounters will then be yielded as an instance of `NestedIterator`.
+No JSON array or object will be materialized and kept in memory.
 The only PHP values you get materialized will be scalar values.
 Let's see an example with many, many users with many, many friends
 
@@ -335,11 +335,10 @@ use JsonMachine\Items;
 $users = Items::fromFile('users.json', ['recursive' => true]);
 foreach ($users as $user) { // $user instanceof Traversable, not an array/object
     foreach ($user as $userField => $userValue) {
-        if ($userField == 'friends') {
+        if ($userField === 'friends') {
             foreach ($userValue as $friend) { // $userValue instanceof Traversable, not an array/object
                 foreach ($friend as $friendField => $friendValue) { // $friend instanceof Traversable, not an array/object
                     // do whatever you want here
-                    // maybe rather use PHP's Recursive*Iterators
                 }
             }
         }
@@ -347,7 +346,8 @@ foreach ($users as $user) { // $user instanceof Traversable, not an array/object
 }
 ```
 
-> If you skip iteration of such lazy deeper-level `Traversable` and advance to a next value, you will not be able to iterate it later.
+> If you break an iteration of such lazy deeper-level (i.e. you skip some `"friends"` via `break`)
+> and advance to a next value (i.e. next `user`), you will not be able to iterate it later.
 > JSON Machine must iterate it the background to be able to read next value.
 > Such an attempt will result in closed generator exception.
 
@@ -555,8 +555,8 @@ See [Recursive iteration](#recursive).
 
 <a name="step3"></a>
 ### "I am still out of luck"
-It probably means that a single JSON string itself is too big to fit in memory.
-For example very big file encoded as base64.
+It probably means that a single JSON scalar string itself is too big to fit in memory.
+For example very big base64-encoded file.
 In that case you will probably be still out of luck until JSON Machine supports yielding of scalar values as PHP streams.
 
 <a name="installation"></a>
