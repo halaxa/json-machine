@@ -6,10 +6,10 @@ namespace JsonMachineTest;
 
 use JsonMachine\Items;
 use JsonMachine\JsonDecoder\PassThruDecoder;
-use Traversable;
 
 /**
  * @covers \JsonMachine\Items
+ * @covers \JsonMachine\RecursiveItems
  */
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {
@@ -146,17 +146,5 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         $items = Items::fromIterable(['{"results":', '[1,2,3]}'], ['pointer' => ['/results']]);
 
         $this->assertSame(3, iterator_count($items));
-    }
-
-    public function testRecursiveIteration()
-    {
-        $items = Items::fromString('[[":)"]]', ['recursive' => true]);
-
-        foreach ($items as $emojis) {
-            $this->assertInstanceOf(Traversable::class, $emojis);
-            foreach ($emojis as $emoji) {
-                $this->assertSame(':)', $emoji);
-            }
-        }
     }
 }
