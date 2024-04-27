@@ -49,7 +49,7 @@ for PHP >=7.0. See [TL;DR](#tl-dr). No dependencies in production except optiona
 ```diff
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 // this often causes Allowed Memory Size Exhausted
 - $users = json_decode(file_get_contents('500MB-users.json'));
@@ -107,7 +107,7 @@ It can be parsed this way:
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruits.json');
 
@@ -151,7 +151,7 @@ use JSON Pointer `/results` as `pointer` option:
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruits.json', ['pointer' => '/results']);
 foreach ($fruits as $name => $data) {
@@ -195,7 +195,7 @@ To iterate over all colors of the fruits, use the JSON Pointer `"/results/-/colo
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruitsArray.json', ['pointer' => '/results/-/color']);
 
@@ -234,7 +234,7 @@ Get the scalar value of `lastModified` key like this:
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 foreach ($fruits as $key => $value) {
@@ -251,7 +251,7 @@ The obvious shortcut is:
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruits.json', ['pointer' => '/lastModified']);
 $lastModified = iterator_to_array($fruits)['lastModified'];
@@ -293,7 +293,7 @@ does not matter. The items will be iterated in the order of appearance in the do
 ```php
 <?php
 
-use \JsonMachine\Items;
+use JsonMachine\Items;
 
 $fruits = Items::fromFile('fruits.json', [
     'pointer' => ['/berries', '/citruses']
