@@ -9,10 +9,12 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\NestedIterator;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
 use JsonMachine\TokensWithDebugging;
+use Traversable;
 
 /**
  * @covers \JsonMachine\Parser
@@ -530,5 +532,62 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         foreach ($parser as $index => $item) {
         }
+    }
+
+    public function testRecursiveIteration()
+    {
+        $array = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
+
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
+            foreach ($object as $key => $values) {
+                $this->assertInstanceOf(Traversable::class, $values);
+                $this->assertSame('numbers', $key);
+                foreach ($values as $fortyTwo) {
+                    $this->assertSame(42, $fortyTwo);
+                }
+            }
+        }
+    }
+
+    public function testZigZagRecursiveIteration()
+    {
+        $objectKeysToVisit = ['numbers', 'string', 'more numbers'];
+        $objectKeysVisited = [];
+        $valuesToVisit = [41, 42, 'text', 43];
+        $valuesVisited = [];
+
+        $array = new Parser(new Tokens(['[{"numbers": [41, 42], "string": ["text"], "more numbers": [43]}]']), '', null, true);
+
+        foreach ($array as $object) {
+            $this->assertInstanceOf(Traversable::class, $object);
+            foreach ($object as $key => $values) {
+                $objectKeysVisited[] = $key;
+                $this->assertInstanceOf(Traversable::class, $values);
+                foreach ($values as $value) {
+                    $valuesVisited[] = $value;
+                }
+            }
+        }
+
+        $this->assertSame($objectKeysToVisit, $objectKeysVisited);
+        $this->assertSame($valuesToVisit, $valuesVisited);
+    }
+
+    public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
+    {
+        $iterator = new Parser(new Tokens(['[1,[{},2,3],4]']), '', null, true);
+        $array = [];
+
+        foreach ($iterator as $item) {
+            $array[] = $item;
+        }
+
+        $this->assertSame(1, $array[0]);
+        $this->assertInstanceOf(Traversable::class, $array[1]);
+        $this->assertSame(4, $array[2]);
+
+        $this->expectExceptionMessage('generator');
+        iterator_to_array($array[1]);
     }
 }
