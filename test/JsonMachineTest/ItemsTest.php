@@ -9,7 +9,6 @@ use JsonMachine\JsonDecoder\PassThruDecoder;
 
 /**
  * @covers \JsonMachine\Items
- * @covers \JsonMachine\RecursiveItems
  */
 class ItemsTest extends \PHPUnit_Framework_TestCase
 {

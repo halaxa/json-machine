@@ -11,21 +11,6 @@ use JsonMachine\JsonDecoder\ItemDecoder;
 trait FacadeTrait
 {
     /**
-     * @var iterable
-     */
-    private $chunks;
-
-    /**
-     * @var string
-     */
-    private $jsonPointer;
-
-    /**
-     * @var ItemDecoder|null
-     */
-    private $jsonDecoder;
-
-    /**
      * @var Parser
      */
     private $parser;
@@ -35,98 +20,32 @@ trait FacadeTrait
      */
     private $debugEnabled;
 
-    /**
-     * @todo Make private when PHP 7 stops being supported
-     */
-    protected abstract function recursive(): bool;
+    public function isDebugEnabled(): bool
+    {
+        return $this->debugEnabled;
+    }
 
     /**
      * @param iterable $bytesIterator
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($bytesIterator, array $options = [])
+    private static function createParser($bytesIterator, ItemsOptions $options, bool $recursive): Parser
     {
-        $options = new ItemsOptions($options);
-
-        $this->chunks = $bytesIterator;
-        $this->jsonPointer = $options['pointer'];
-        $this->jsonDecoder = $options['decoder'];
-        $this->debugEnabled = $options['debug'];
-
-        if ($this->debugEnabled) {
+        if ($options['debug']) {
             $tokensClass = TokensWithDebugging::class;
         } else {
             $tokensClass = Tokens::class;
         }
 
-        $this->parser = new Parser(
+        return new Parser(
             new $tokensClass(
-                $this->chunks
+                $bytesIterator
             ),
-            $this->jsonPointer,
-            $this->jsonDecoder ?: new ExtJsonDecoder(),
-            $this->recursive()
+            $options['pointer'],
+            $options['decoder'] ?: new ExtJsonDecoder(),
+            $recursive
         );
-    }
-
-    /**
-     * @param string $string
-     *
-     * @return self
-     *
-     * @throws InvalidArgumentException
-     */
-    public static function fromString($string, array $options = [])
-    {
-        return new self(new StringChunks($string), $options);
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return self
-     *
-     * @throws Exception\InvalidArgumentException
-     */
-    public static function fromFile($file, array $options = [])
-    {
-        return new self(new FileChunks($file), $options);
-    }
-
-    /**
-     * @param resource $stream
-     *
-     * @return self
-     *
-     * @throws Exception\InvalidArgumentException
-     */
-    public static function fromStream($stream, array $options = [])
-    {
-        return new self(new StreamChunks($stream), $options);
-    }
-
-    /**
-     * @param iterable $iterable
-     *
-     * @return self
-     *
-     * @throws Exception\InvalidArgumentException
-     */
-    public static function fromIterable($iterable, array $options = [])
-    {
-        return new self($iterable, $options);
-    }
-
-    /**
-     * @return \Generator
-     *
-     * @throws Exception\PathNotFoundException
-     */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
-    {
-        return $this->parser->getIterator();
     }
 
     /**
@@ -159,10 +78,23 @@ trait FacadeTrait
     }
 
     /**
-     * @return bool
+     * @param string $string
      */
-    public function isDebugEnabled()
-    {
-        return $this->debugEnabled;
-    }
+    abstract public static function fromString($string, array $options = []): self;
+
+    /**
+     * @param string $file
+     */
+    abstract public static function fromFile($file, array $options = []): self;
+
+    /**
+     * @param resource $stream
+     */
+    abstract public static function fromStream($stream, array $options = []): self;
+
+    /**
+     * @param iterable $iterable
+     */
+    abstract public static function fromIterable($iterable, array $options = []): self;
+
 }

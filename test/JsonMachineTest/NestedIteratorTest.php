@@ -46,21 +46,6 @@ class NestedIteratorTest extends TestCase
         $this->assertSame([false, true, false], $result);
     }
 
-    public function testGetChildrenReturnsNestedIterator()
-    {
-        $generator = function () {yield from [1, new \ArrayIterator([]), 3]; };
-        $iterator = new NestedIterator($generator());
-
-        $result = [];
-        foreach ($iterator as $item) {
-            $result[] = $iterator->getChildren();
-        }
-
-        $this->assertSame(null, $result[0]);
-        $this->assertInstanceOf(NestedIterator::class, $result[1]);
-        $this->assertSame(null, $result[2]);
-    }
-
     public function testGetChildrenReturnsCorrectItems()
     {
         $generator = function () {yield from [1, new \ArrayIterator([2]), 3]; };

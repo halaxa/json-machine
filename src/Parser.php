@@ -163,14 +163,12 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
-                    $jsonValue = new NestedIterator(
-                        (new self(
-                            $this->remainingTokens(),
-                            '',
-                            $this->jsonDecoder,
-                            true
-                        ))->getIterator()
-                    );
+                    $jsonValue = (new self(
+                        $this->remainingTokens(),
+                        '',
+                        $this->jsonDecoder,
+                        true
+                    ))->$this->getIterator();
                     $token = ' ';
                 } else {
                     $jsonValue .= $token;
@@ -400,7 +398,7 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function getMatchedJsonPointer(): string
     {
-        if ($this->matchedJsonPointer === null) {
+        if ($this->isOutsideGenerator()) {
             throw new JsonMachineException(__METHOD__.' must be called inside a loop');
         }
 
