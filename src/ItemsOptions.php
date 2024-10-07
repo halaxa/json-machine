@@ -59,7 +59,7 @@ class ItemsOptions extends \ArrayObject
         return $pointer;
     }
 
-    private function opt_decoder(ItemDecoder $decoder = null)
+    private function opt_decoder(?ItemDecoder $decoder = null)
     {
         return $decoder;
     }

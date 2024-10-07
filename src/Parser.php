@@ -54,11 +54,11 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
-     * @param ItemDecoder  $jsonDecoder
+     * @param ?ItemDecoder $jsonDecoder
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ?ItemDecoder $jsonDecoder = null)
     {
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
