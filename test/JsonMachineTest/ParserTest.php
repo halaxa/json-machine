@@ -107,6 +107,36 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ['id' => '2'],
                 ],
             ],
+            'ISSUE-110-vector-first' => [
+                ['/items', '/total'],
+                '{
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ],
+                    "total": 2
+                }',
+                [
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                    ['total' => 2],
+                ],
+            ],
+            'ISSUE-110-scalar-first' => [
+                ['/items', '/total'],
+                '{
+                    "total": 2,
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ]
+                }',
+                [
+                    ['total' => 2],
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                ],
+            ],
         ];
     }
 

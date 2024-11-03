@@ -112,6 +112,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $currentPathChanged = false;
                 $jsonPointerPath = $this->getMatchingJsonPointerPath();
                 $iteratorLevel = count($jsonPointerPath);
+                $iteratorStruct = null;
             }
             $tokenType = $tokenTypes[$token[0]];
             if (0 == ($tokenType & $expectedType)) {
