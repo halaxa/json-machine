@@ -137,6 +137,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     [1 => ['test2']],
                 ],
             ],
+            'ISSUE-100' => [
+                ['/results/-/color'],
+                '{"results":[{"name":"apple","color":"red"},{"name":"pear","color":"yellow"}]}',
+                [
+                    ['color' => 'red'],
+                    ['color' => 'yellow'],
+                ],
+            ],
         ];
     }
 
