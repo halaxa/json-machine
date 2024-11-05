@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+### Added
+- Support for PHP 8.3
+- Exception on misspelled option name suggests a correct one. 
 ### Fixed
 - Wrong key when combining list and scalar value pointers (#110). Thanks [@daniel-sc](https://github.com/daniel-sc)
 
