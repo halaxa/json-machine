@@ -62,6 +62,12 @@ class ItemsOptionsTest extends TestCase
 
         new ItemsOptions(['invalid_option_name' => 'value']);
     }
+
+    public function testSuggestsCorrectOption()
+    {
+        $this->expectExceptionMessage("'debug'");
+        new ItemsOptions(['degub' => true]);
+    }
 }
 
 class InvalidValue
