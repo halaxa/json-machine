@@ -21,12 +21,12 @@
         "sort-packages": true
     },
     "require": {
-        "php": "7.0 - 8.3"
+        "php": "7.2 - 8.4"
     },
     "require-dev": {
         "ext-json": "*",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {

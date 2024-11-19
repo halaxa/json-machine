@@ -14,7 +14,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider data_testFactories
      */
-    public function testFactories($expected, $methodName, ...$args)
+    public function testFactories($methodName, ...$args)
     {
         $iterator = call_user_func_array(RecursiveItems::class."::$methodName", [
             $args[0],
@@ -24,18 +24,18 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
                 'debug' => $args[3],
             ],
         ]);
-        $this->assertSame($expected, iterator_to_array($iterator));
+        $this->assertInstanceOf(RecursiveItems::class, $iterator);
     }
 
     public function data_testFactories()
     {
         foreach ([true, false] as $debug) {
             foreach ([
-                 [RecursiveItems::class, 'fromStream', fopen('data://text/plain,{"path": {"key":["value"]}}', 'r'), '/path', null, $debug],
-                 [RecursiveItems::class, 'fromString', '{"path": {"key":["value"]}}', '/path', null, $debug],
-                 [RecursiveItems::class, 'fromFile', __DIR__.'/RecursiveItemsTest.json', '/path', null, $debug],
-                 [RecursiveItems::class, 'fromIterable', ['{"path": {"key', '":["value"]}}'], '/path', null, $debug],
-                 [RecursiveItems::class, 'fromIterable', new \ArrayIterator(['{"path": {"key', '":["value"]}}']), '/path', null, $debug],
+                 ['fromStream', fopen('data://text/plain,{"path": {"key":["value"]}}', 'r'), '/path', null, $debug],
+                 ['fromString', '{"path": {"key":["value"]}}', '/path', null, $debug],
+                 ['fromFile', __DIR__.'/RecursiveItemsTest.json', '/path', null, $debug],
+                 ['fromIterable', ['{"path": {"key', '":["value"]}}'], '/path', null, $debug],
+                 ['fromIterable', new \ArrayIterator(['{"path": {"key', '":["value"]}}']), '/path', null, $debug],
              ] as $case) {
                 yield $case;
             }
@@ -56,7 +56,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testGetChildrenReturnsNestedIterator()
     {
-        $iterator = RecursiveItems::fromString("[1,[],1]");
+        $iterator = RecursiveItems::fromString('[1,[],1]');
 
         $result = [];
         foreach ($iterator as $item) {
@@ -70,6 +70,5 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testCurrentReturnsSameInstanceOfParser()
     {
-
     }
 }

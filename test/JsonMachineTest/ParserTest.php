@@ -9,7 +9,6 @@ use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\NestedIterator;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
@@ -107,6 +106,44 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ['id' => '1'],
                     ['company' => 'Company 1'],
                     ['id' => '2'],
+                ],
+            ],
+            'ISSUE-110-vector-first' => [
+                ['/items', '/total'],
+                '{
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ],
+                    "total": 2
+                }',
+                [
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                    ['total' => 2],
+                ],
+            ],
+            'ISSUE-110-scalar-first' => [
+                ['/items', '/total'],
+                '{
+                    "total": 2,
+                    "items": [
+                        ["test1"],
+                        ["test2"]
+                    ]
+                }',
+                [
+                    ['total' => 2],
+                    [0 => ['test1']],
+                    [1 => ['test2']],
+                ],
+            ],
+            'ISSUE-100' => [
+                ['/results/-/color'],
+                '{"results":[{"name":"apple","color":"red"},{"name":"pear","color":"yellow"}]}',
+                [
+                    ['color' => 'red'],
+                    ['color' => 'yellow'],
                 ],
             ],
         ];

@@ -37,7 +37,12 @@ class ItemsOptions extends \ArrayObject
         try {
             foreach ($mergedOptions as $optionName => $optionValue) {
                 if ( ! isset(self::defaultOptions()[$optionName])) {
-                    throw new InvalidArgumentException("Option '$optionName' does not exist.");
+                    $exceptionMessage = "Option '$optionName' does not exist.";
+                    $suggestion = self::getSuggestion(array_keys(self::defaultOptions()), $optionName);
+                    if ($suggestion) {
+                        $exceptionMessage .= " Did you mean '$suggestion'?";
+                    }
+                    throw new InvalidArgumentException($exceptionMessage);
                 }
                 $this->options[$optionName] = $this->{"opt_$optionName"}($optionValue);
             }
@@ -51,15 +56,17 @@ class ItemsOptions extends \ArrayObject
     private function opt_pointer($pointer)
     {
         if (is_array($pointer)) {
+            /** @phpstan-ignore expr.resultUnused */
             (function (string ...$p) {})(...$pointer);
         } else {
+            /** @phpstan-ignore expr.resultUnused */
             (function (string $p) {})($pointer);
         }
 
         return $pointer;
     }
 
-    private function opt_decoder(ItemDecoder $decoder = null)
+    private function opt_decoder(?ItemDecoder $decoder = null)
     {
         return $decoder;
     }
@@ -82,5 +89,35 @@ class ItemsOptions extends \ArrayObject
             'debug' => false,
             'recursive' => false,
         ];
+    }
+
+    /**
+     * From Nette ObjectHelpers.
+     *
+     * @see https://github.com/nette/utils/blob/master/src/Utils/ObjectHelpers.php
+     *
+     * Finds the best suggestion (for 8-bit encoding).
+     *
+     * @param  (\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionClass|\ReflectionProperty|string)[]  $possibilities
+     *
+     * @internal
+     */
+    private static function getSuggestion(array $possibilities, string $value): ?string
+    {
+        $norm = preg_replace($re = '#^(get|set|has|is|add)(?=[A-Z])#', '+', $value);
+        $best = null;
+        $min = (strlen($value) / 4 + 1) * 10 + .1;
+        foreach (array_unique($possibilities, SORT_REGULAR) as $item) {
+            $item = $item instanceof \Reflector ? $item->name : $item;
+            if ($item !== $value && (
+                ($len = levenshtein($item, $value, 10, 11, 10)) < $min
+                || ($len = levenshtein(preg_replace($re, '*', $item), $norm, 10, 11, 10)) < $min
+            )) {
+                $min = $len;
+                $best = $item;
+            }
+        }
+
+        return $best;
     }
 }

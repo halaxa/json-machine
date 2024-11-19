@@ -6,7 +6,6 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\JsonDecoder\ItemDecoder;
 
 trait FacadeTrait
 {
@@ -96,5 +95,4 @@ trait FacadeTrait
      * @param iterable $iterable
      */
     abstract public static function fromIterable($iterable, array $options = []): self;
-
 }

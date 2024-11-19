@@ -36,6 +36,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     public static function fromString($string, array $options = []): self
     {
         $options = new ItemsOptions($options);
+
         return new self(
             self::createParser(new StringChunks($string), $options, true),
             $options
@@ -48,6 +49,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     public static function fromFile($file, array $options = []): self
     {
         $options = new ItemsOptions($options);
+
         return new self(
             self::createParser(new FileChunks($file), $options, true),
             $options
@@ -60,6 +62,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     public static function fromStream($stream, array $options = []): self
     {
         $options = new ItemsOptions($options);
+
         return new self(
             self::createParser(new StreamChunks($stream), $options, true),
             $options
@@ -72,6 +75,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     public static function fromIterable($iterable, array $options = []): self
     {
         $options = new ItemsOptions($options);
+
         return new self(
             self::createParser($iterable, $options, true),
             $options

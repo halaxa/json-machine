@@ -64,10 +64,11 @@ class Parser implements \IteratorAggregate, PositionAware
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
+     * @param ?ItemDecoder $jsonDecoder
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $tokens, $jsonPointer = '', ItemDecoder $jsonDecoder = null, $recursive = false)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ?ItemDecoder $jsonDecoder = null, $recursive = false)
     {
         $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
 
@@ -133,9 +134,11 @@ class Parser implements \IteratorAggregate, PositionAware
                 $currentPathChanged = false;
                 $jsonPointerPath = $this->getMatchingJsonPointerPath();
                 $iteratorLevel = count($jsonPointerPath);
+                $iteratorStruct = null;
             }
             $tokenType = $tokenTypes[$token[0]];
             if (0 == ($tokenType & $expectedType)) {
+                var_dump($expectedType);
                 $this->error('Unexpected symbol', $token);
             }
             $isValue = ($tokenType | 23) == 23; // 23 = self::ANY_VALUE
@@ -163,13 +166,13 @@ class Parser implements \IteratorAggregate, PositionAware
                 )
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
-                    $jsonValue = (new self(
+                    $jsonValue = new self(
                         $this->remainingTokens(),
                         '',
                         $this->jsonDecoder,
                         true
-                    ))->$this->getIterator();
-                    $token = ' ';
+                    );
+//                    $token = ' ';
                 } else {
                     $jsonValue .= $token;
                 }
@@ -398,7 +401,7 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function getMatchedJsonPointer(): string
     {
-        if ($this->isOutsideGenerator()) {
+        if ($this->matchedJsonPointer === null) {
             throw new JsonMachineException(__METHOD__.' must be called inside a loop');
         }
 
