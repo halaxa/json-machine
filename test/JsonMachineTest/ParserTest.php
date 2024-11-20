@@ -611,9 +611,12 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($valuesToVisit, $valuesVisited);
     }
 
-    public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
+    /**
+     * @dataProvider data_testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser
+     */
+    public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser(string $json)
     {
-        $iterator = new Parser(new Tokens(['[1,[{},2,3],4]']), '', null, true);
+        $iterator = new Parser(new Tokens([$json]), '', null, true);
         $array = [];
 
         foreach ($iterator as $item) {
@@ -626,5 +629,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->expectExceptionMessage('generator');
         iterator_to_array($array[1]);
+    }
+
+    public function data_testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
+    {
+        return [
+            ['[1,[{},2,3],4]'],
+            ['[1,[[],2,3],4]'],
+            ['[1,[{"key": "value"},2,3],4]'],
+            ['[1,[[null, true, "string"],2,3],4]'],
+        ];
     }
 }

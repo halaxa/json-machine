@@ -67,8 +67,4 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(RecursiveItems::class, $result[1]);
         $this->assertSame(null, $result[2]);
     }
-
-    public function testCurrentReturnsSameInstanceOfParser()
-    {
-    }
 }
