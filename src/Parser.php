@@ -41,6 +41,9 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Iterator<int, string> */
     private $tokensIterator;
 
+    /** @var Generator */
+    private $generator;
+
     /** @var ItemDecoder */
     private $jsonDecoder;
 
@@ -98,13 +101,21 @@ class Parser implements \IteratorAggregate, PositionAware
         }, $jsonPointers);
     }
 
+    #[\ReturnTypeWillChange]
+    public function getIterator(): Generator
+    {
+        if ( ! $this->generator) {
+            $this->generator = $this->createGenerator();
+        }
+
+        return $this->generator;
+    }
+
     /**
-     * @return Generator
-     *
+     * @throws InvalidArgumentException
      * @throws PathNotFoundException
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    private function createGenerator(): Generator
     {
         $tokenTypes = $this->tokenTypes();
 
@@ -138,7 +149,6 @@ class Parser implements \IteratorAggregate, PositionAware
             }
             $tokenType = $tokenTypes[$token[0]];
             if (0 == ($tokenType & $expectedType)) {
-                var_dump($expectedType);
                 $this->error('Unexpected symbol', $token);
             }
             $isValue = ($tokenType | 23) == 23; // 23 = self::ANY_VALUE
@@ -172,7 +182,7 @@ class Parser implements \IteratorAggregate, PositionAware
                         $this->jsonDecoder,
                         true
                     );
-//                    $token = ' ';
+                    $token = ' ';
                 } else {
                     $jsonValue .= $token;
                 }
@@ -266,8 +276,8 @@ class Parser implements \IteratorAggregate, PositionAware
                     yield $keyResult->getValue() => $value;
                     unset($keyResult);
                 }
-                if ($value instanceof Iterator && $value->valid()) {
-                    $this->eatAllRemainingTokens($value);
+                if ($value instanceof Parser) {
+                    $value->ensureIterationComplete();
                 }
                 unset($valueResult);
                 unset($value);
@@ -316,12 +326,14 @@ class Parser implements \IteratorAggregate, PositionAware
         }
     }
 
-    private function eatAllRemainingTokens(Iterator $iterator)
+    public function ensureIterationComplete(): void
     {
-        foreach ($iterator as $item) {
-            if ($item instanceof Iterator) {
-                $this->eatAllRemainingTokens($item);
-            }
+        $generator = $this->getIterator();
+
+        while ($generator->valid()) {
+            $generator->key();
+            $generator->current();
+            $generator->next();
         }
     }
 
