@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace JsonMachine;
 
 use Generator;
+use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Exception\PathNotFoundException;
 
 class Tokens implements \IteratorAggregate, PositionAware
 {
     /** @var iterable */
     private $jsonChunks;
+
+    /** @var Generator */
+    private $generator;
 
     /**
      * @param iterable<string> $jsonChunks
@@ -24,6 +29,16 @@ class Tokens implements \IteratorAggregate, PositionAware
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
+    {
+        if ( ! $this->generator) {
+            $this->generator = $this->createGenerator();
+        }
+
+        return $this->generator;
+    }
+
+
+    private function createGenerator(): Generator
     {
         $insignificantBytes = $this->insignificantBytes();
         $tokenBoundaries = $this->tokenBoundaries();

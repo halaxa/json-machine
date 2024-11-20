@@ -177,7 +177,7 @@ class Parser implements \IteratorAggregate, PositionAware
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
                     $jsonValue = new self(
-                        $this->remainingTokens(),
+                        new ResumableIteratorAggregateProxy($this->tokens), // could single shared instance work?
                         '',
                         $this->jsonDecoder,
                         true
@@ -434,17 +434,15 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
+     * Returns JSON bytes read so far
+     *
      * @return int
      *
      * @throws JsonMachineException
      */
     public function getPosition()
     {
-        if ($this->tokens instanceof PositionAware) {
-            return $this->tokens->getPosition();
-        }
-
-        throw new JsonMachineException('Provided tokens iterable must implement PositionAware to call getPosition on it.');
+        return $this->tokens->getPosition();
     }
 
     private static function jsonPointerToPath(string $jsonPointer): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use Error;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
@@ -557,7 +558,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser(new \ArrayObject());
 
-        $this->expectException(JsonMachineException::class);
+        $this->expectException(Error::class);
         $parser->getPosition();
     }
 
@@ -639,5 +640,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             ['[1,[{"key": "value"},2,3],4]'],
             ['[1,[[null, true, "string"],2,3],4]'],
         ];
+    }
+
+    public function testGetPositionWorksInsideRecursion()
+    {
+        $parser = new Parser(
+            new Tokens(new \ArrayIterator(["[[11,12]]"])),
+            "",
+            null,
+            true
+        );
+
+        foreach ($parser as $item) {
+            /** @var $item Parser */
+            $this->assertSame(0, $item->getPosition());
+        }
     }
 }
