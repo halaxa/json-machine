@@ -129,7 +129,7 @@ class Parser implements \IteratorAggregate, PositionAware
         $jsonValue = '';
         $key = null;
         $objectKeyExpected = false;
-        $inObject = true; // hack to make "!$inObject" in first iteration work. Better code structure?
+        $inObject = null;
         $expectedType = self::OBJECT_START | self::ARRAY_START;
         $subtreeEnded = false;
         $token = null;
@@ -152,7 +152,7 @@ class Parser implements \IteratorAggregate, PositionAware
                 $this->error('Unexpected symbol', $token);
             }
             $isValue = ($tokenType | 23) == 23; // 23 = self::ANY_VALUE
-            if ( ! $inObject && $isValue && $currentLevel < $iteratorLevel) {
+            if ($inObject === false && $isValue && $currentLevel < $iteratorLevel) {
                 $currentPathChanged = ! $this->hasSingleJsonPointer;
                 $currentPath[$currentLevel] = isset($currentPath[$currentLevel]) ? $currentPath[$currentLevel] + 1 : 0;
                 $currentPathWildcard[$currentLevel] = preg_match('/^(?:\d+|-)$/S', $jsonPointerPath[$currentLevel]) ? '-' : $currentPath[$currentLevel];
