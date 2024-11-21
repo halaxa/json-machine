@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
+use Iterator;
+use IteratorAggregate;
+use JsonMachine\ItemsOptions;
 use JsonMachine\RecursiveItems;
 
 /**
@@ -67,4 +70,91 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(RecursiveItems::class, $result[1]);
         $this->assertSame(null, $result[2]);
     }
+
+    public function testAdvanceToKeyWorks()
+    {
+        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+
+        $this->assertSame(1, $iterator->advanceToKey('one'));
+        $this->assertSame(1, $iterator->advanceToKey('one'));
+        $this->assertSame(2, $iterator->advanceToKey('two'));
+        $this->assertSame(3, $iterator->advanceToKey('three'));
+    }
+
+    public function testAdvanceToKeyThrows()
+    {
+        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+
+        $this->expectExceptionMessage('not found');
+        $iterator->advanceToKey('four');
+    }
+
+    public function testToArray()
+    {
+        $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
+        $iterator = new RecursiveItems(
+            toIteratorAggregate($generator(
+                toIteratorAggregate($generator(
+                    toIteratorAggregate(new \ArrayIterator(['42']))
+                ))
+            ))
+        );
+
+        $expected = [
+            'one' => 1,
+            'two' => 2,
+            'i' => [
+                'one' => 1,
+                'two' => 2,
+                'i' => ['42'],
+                'three' => 3,
+            ],
+            'three' => 3,
+        ];
+
+        $this->assertSame($expected, $iterator->toArray());
+    }
+
+    public function testHasChildrenFollowsIterators()
+    {
+        $generator = function () {yield from [1, toIteratorAggregate(new \ArrayIterator([])), 3]; };
+        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+
+        $result = [];
+        foreach ($iterator as $item) {
+            $result[] = $iterator->hasChildren();
+        }
+
+        $this->assertSame([false, true, false], $result);
+    }
+
+    public function testToArrayThrowsMeaningfulErrorWhenIteratorIsAlreadyOpen()
+    {
+        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+
+        $iterator->rewind();
+        $iterator->next();
+        $iterator->rewind();
+        $iterator->next();
+
+        var_dump($iterator->toArray());
+    }
+}
+
+function toIteratorAggregate(Iterator $iterator): IteratorAggregate
+{
+    return new class($iterator) implements IteratorAggregate {
+        private $iterator;
+        public function __construct(Iterator $iterator)
+        {
+            $this->iterator = $iterator;
+        }
+        public function getIterator()
+        {
+            return $this->iterator;
+        }
+    };
 }

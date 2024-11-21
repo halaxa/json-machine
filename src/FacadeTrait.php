@@ -29,7 +29,7 @@ trait FacadeTrait
      *
      * @throws InvalidArgumentException
      */
-    private static function createParser($bytesIterator, ItemsOptions $options, bool $recursive): Parser
+    private static function createParser(iterable $bytesIterator, ItemsOptions $options, bool $recursive): Parser
     {
         if ($options['debug']) {
             $tokensClass = TokensWithDebugging::class;
@@ -53,27 +53,6 @@ trait FacadeTrait
     public function getPosition()
     {
         return $this->parser->getPosition();
-    }
-
-    public function getJsonPointers(): array
-    {
-        return $this->parser->getJsonPointers();
-    }
-
-    /**
-     * @throws Exception\JsonMachineException
-     */
-    public function getCurrentJsonPointer(): string
-    {
-        return $this->parser->getCurrentJsonPointer();
-    }
-
-    /**
-     * @throws Exception\JsonMachineException
-     */
-    public function getMatchedJsonPointer(): string
-    {
-        return $this->parser->getMatchedJsonPointer();
     }
 
     /**
