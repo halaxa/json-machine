@@ -132,15 +132,14 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testToArrayThrowsMeaningfulErrorWhenIteratorIsAlreadyOpen()
     {
-        $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
+        $generator = function () {yield 'one' => 1; yield 'two' => 2; yield 'three' => 3; };
         $iterator = new RecursiveItems(toIteratorAggregate($generator()));
 
         $iterator->rewind();
         $iterator->next();
-        $iterator->rewind();
-        $iterator->next();
 
-        var_dump($iterator->toArray());
+        $this->expectExceptionMessage('toArray()');
+        $iterator->toArray();
     }
 }
 
@@ -152,7 +151,7 @@ function toIteratorAggregate(Iterator $iterator): IteratorAggregate
         {
             $this->iterator = $iterator;
         }
-        public function getIterator()
+        public function getIterator(): \Traversable
         {
             return $this->iterator;
         }

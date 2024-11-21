@@ -89,6 +89,10 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         );
     }
 
+    /**
+     * @return mixed Move to return type when PHP 7 support is dropped
+     */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $current = $this->parserIterator->current();
@@ -107,11 +111,15 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         return $current;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->parserIterator->next();
     }
 
+    /**
+     * @return mixed Move to return type when PHP 7 support is dropped
+     */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->parserIterator->key();
@@ -122,7 +130,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         return $this->parserIterator->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->parserIterator = $this->parser->getIterator();
         $this->parserIterator->rewind();
@@ -133,7 +141,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         return $this->current() instanceof self;
     }
 
-    public function getChildren()
+    public function getChildren(): ?\RecursiveIterator
     {
         $current = $this->current();
         if ($current instanceof self) {
@@ -177,14 +185,24 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
      */
     public function toArray(): array
     {
+        try {
+            $this->rewind();
+        } catch (\Exception $e) {
+            if (false !== strpos($e->getMessage(), 'generator')){
+                throw new JsonMachineException(
+                    'Method toArray() can only be called before any items in the collection have been accessed.'
+                );
+            }
+        }
+
         return self::toArrayRecursive($this);
     }
 
-    private static function toArrayRecursive(\Traversable $traversable): array
+    private static function toArrayRecursive(self $traversable): array
     {
         $array = [];
         foreach ($traversable as $key => $value) {
-            if ($value instanceof \Traversable) {
+            if ($value instanceof self) {
                 $value = self::toArrayRecursive($value);
             }
             $array[$key] = $value;

@@ -21,7 +21,7 @@ class ResumableIteratorAggregateProxy implements IteratorAggregate
         $this->iteratorAggregate = $iteratorAggregate;
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $iterator = $this->iteratorAggregate->getIterator();
         while ($iterator->valid()) {
