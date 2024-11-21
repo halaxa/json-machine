@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## master
 ### Added
 - Support for PHP 8.4
+- Recursive iteration via new facade `RecursiveItems`.
 - Exception on misspelled option name suggests a correct one. 
-- Recursive iteration via `recursive` option.
 ### Fixed
 - Wrong key when combining list and scalar value pointers (#110). Thanks [@daniel-sc](https://github.com/daniel-sc)
 ### Removed
