@@ -6,7 +6,6 @@ namespace JsonMachineTest;
 
 use Iterator;
 use IteratorAggregate;
-use JsonMachine\ItemsOptions;
 use JsonMachine\RecursiveItems;
 
 /**
@@ -132,7 +131,11 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testToArrayThrowsMeaningfulErrorWhenIteratorIsAlreadyOpen()
     {
-        $generator = function () {yield 'one' => 1; yield 'two' => 2; yield 'three' => 3; };
+        $generator = function () {
+            yield 'one' => 1;
+            yield 'two' => 2;
+            yield 'three' => 3;
+        };
         $iterator = new RecursiveItems(toIteratorAggregate($generator()));
 
         $iterator->rewind();
@@ -147,10 +150,12 @@ function toIteratorAggregate(Iterator $iterator): IteratorAggregate
 {
     return new class($iterator) implements IteratorAggregate {
         private $iterator;
+
         public function __construct(Iterator $iterator)
         {
             $this->iterator = $iterator;
         }
+
         public function getIterator(): \Traversable
         {
             return $this->iterator;

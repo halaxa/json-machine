@@ -8,7 +8,6 @@ use Iterator;
 use IteratorAggregate;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
-use LogicException;
 
 /**
  * Entry-point facade for recursive iteration.
@@ -156,8 +155,10 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
      * It moves the internal cursor to it so subsequent calls to self::current() returns the same value.
      *
      * @param $key
+     *
      * @return mixed
-     * @throws JsonMachineException When the key is not found on this level.
+     *
+     * @throws JsonMachineException when the key is not found on this level
      */
     public function advanceToKey($key)
     {
@@ -181,14 +182,14 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
      * Recursively materializes this iterator level to array.
      * Moves its internal pointer to the end.
      *
-     * @return array
+     * @throws JsonMachineException
      */
     public function toArray(): array
     {
         try {
             $this->rewind();
         } catch (\Exception $e) {
-            if (false !== strpos($e->getMessage(), 'generator')){
+            if (false !== strpos($e->getMessage(), 'generator')) {
                 throw new JsonMachineException(
                     'Method toArray() can only be called before any items in the collection have been accessed.'
                 );

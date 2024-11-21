@@ -33,8 +33,6 @@ class NestedIteratorTest extends TestCase
         }
     }
 
-
-
     public function testGetChildrenReturnsCorrectItems()
     {
         $generator = function () {yield from [1, new \ArrayIterator([2]), 3]; };

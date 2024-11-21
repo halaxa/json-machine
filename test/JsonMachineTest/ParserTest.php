@@ -645,14 +645,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetPositionWorksInsideRecursion()
     {
         $parser = new Parser(
-            new Tokens(new \ArrayIterator(["[[11,12]]"])),
-            "",
+            new Tokens(new \ArrayIterator(['[[11,12]]'])),
+            '',
             null,
             true
         );
 
         foreach ($parser as $item) {
-            /** @var $item Parser */
+            /* @var $item Parser */
             $this->assertSame(0, $item->getPosition());
         }
     }

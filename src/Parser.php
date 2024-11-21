@@ -434,7 +434,7 @@ class Parser implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * Returns JSON bytes read so far
+     * Returns JSON bytes read so far.
      *
      * @return int
      *

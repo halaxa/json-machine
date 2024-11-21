@@ -25,8 +25,6 @@ trait FacadeTrait
     }
 
     /**
-     * @param iterable $bytesIterator
-     *
      * @throws InvalidArgumentException
      */
     private static function createParser(iterable $bytesIterator, ItemsOptions $options, bool $recursive): Parser

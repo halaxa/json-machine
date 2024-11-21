@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace JsonMachine;
 
 use Generator;
-use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\Exception\PathNotFoundException;
 
 class Tokens implements \IteratorAggregate, PositionAware
 {
@@ -36,7 +34,6 @@ class Tokens implements \IteratorAggregate, PositionAware
 
         return $this->generator;
     }
-
 
     private function createGenerator(): Generator
     {
