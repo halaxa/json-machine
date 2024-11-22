@@ -16,13 +16,7 @@ class SyntaxErrorExceptionTest extends TestCase
     {
         $exception = new SyntaxErrorException('msg 42', 24);
 
-        $assertMethod = 'assertContains';
-        /* @phpstan-ignore function.alreadyNarrowedType */
-        if (method_exists($this, 'assertStringContainsString')) {
-            $assertMethod = 'assertStringContainsString';
-        }
-
-        $this->$assertMethod('msg 42', $exception->getMessage());
-        $this->$assertMethod('24', $exception->getMessage());
+        $this->assertStringContainsString('msg 42', $exception->getMessage());
+        $this->assertStringContainsString('24', $exception->getMessage());
     }
 }
