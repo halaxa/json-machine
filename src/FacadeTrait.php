@@ -6,6 +6,7 @@ namespace JsonMachine;
 
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use LogicException;
 
 trait FacadeTrait
 {
@@ -46,11 +47,15 @@ trait FacadeTrait
     }
 
     /**
-     * @throws Exception\JsonMachineException
+     * Returns JSON bytes read so far.
      */
     public function getPosition()
     {
-        return $this->parser->getPosition();
+        if ($this->parser instanceof PositionAware) {
+            return $this->parser->getPosition();
+        }
+
+        throw new LogicException('getPosition() may only be called on PositionAware');
     }
 
     /**

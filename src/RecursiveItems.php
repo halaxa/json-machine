@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+use Exception;
+use Generator;
 use Iterator;
 use IteratorAggregate;
 use JsonMachine\Exception\InvalidArgumentException;
@@ -22,7 +24,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     /** @var ItemsOptions */
     private $options;
 
-    /** @var Iterator */
+    /** @var Generator|Iterator */
     private $parserIterator;
 
     public function __construct(IteratorAggregate $parser, ?ItemsOptions $options = null)
@@ -131,7 +133,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
 
     public function rewind(): void
     {
-        $this->parserIterator = $this->parser->getIterator();
+        $this->parserIterator = toIterator($this->parser->getIterator());
         $this->parserIterator->rewind();
     }
 
@@ -187,8 +189,9 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
     public function toArray(): array
     {
         try {
+            /** @throws Exception */
             $this->rewind();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (false !== strpos($e->getMessage(), 'generator')) {
                 throw new JsonMachineException(
                     'Method toArray() can only be called before any items in the collection have been accessed.'

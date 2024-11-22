@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
-use Error;
 use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
@@ -14,6 +13,7 @@ use JsonMachine\Parser;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
 use JsonMachine\TokensWithDebugging;
+use LogicException;
 use Traversable;
 
 /**
@@ -558,7 +558,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser(new \ArrayObject());
 
-        $this->expectException(Error::class);
+        $this->expectException(LogicException::class);
         $parser->getPosition();
     }
 

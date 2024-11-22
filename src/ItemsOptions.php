@@ -56,10 +56,8 @@ class ItemsOptions extends \ArrayObject
     private function opt_pointer($pointer)
     {
         if (is_array($pointer)) {
-            /** @phpstan-ignore expr.resultUnused */
             (function (string ...$p) {})(...$pointer);
         } else {
-            /** @phpstan-ignore expr.resultUnused */
             (function (string $p) {})($pointer);
         }
 

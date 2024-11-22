@@ -15,6 +15,8 @@ return $config->setRules([
     'visibility_required' => false,
     'php_unit_test_class_requires_covers' => true,
     'declare_strict_types' => true,
+    'phpdoc_to_comment' => false, // todo remove when we move to GeneratorAggregate
+
 ])
     ->setFinder($finder)
 ;

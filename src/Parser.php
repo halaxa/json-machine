@@ -15,6 +15,7 @@ use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\ItemDecoder;
 use JsonMachine\JsonDecoder\StringOnlyDecoder;
+use LogicException;
 use Traversable;
 
 class Parser implements \IteratorAggregate, PositionAware
@@ -314,18 +315,6 @@ class Parser implements \IteratorAggregate, PositionAware
         $this->currentPath = null;
     }
 
-    /**
-     * @return Generator
-     */
-    private function remainingTokens()
-    {
-        $iterator = $this->tokensIterator;
-        while ($iterator->valid()) {
-            yield $iterator->current();
-            $iterator->next();
-        }
-    }
-
     public function ensureIterationComplete(): void
     {
         $generator = $this->getIterator();
@@ -429,20 +418,20 @@ class Parser implements \IteratorAggregate, PositionAware
     {
         throw new $exception(
             $msg." '".$token."'",
-            $this->tokens instanceof PositionAware ? $this->tokens->getPosition() : ''
+            $this->getPosition()
         );
     }
 
     /**
      * Returns JSON bytes read so far.
-     *
-     * @return int
-     *
-     * @throws JsonMachineException
      */
     public function getPosition()
     {
-        return $this->tokens->getPosition();
+        if ($this->tokens instanceof PositionAware) {
+            return $this->tokens->getPosition();
+        }
+
+        throw new LogicException('getPosition() may only be called on PositionAware');
     }
 
     private static function jsonPointerToPath(string $jsonPointer): array

@@ -68,8 +68,6 @@ final class Items implements \IteratorAggregate, PositionAware
 
     /**
      * @return \Generator
-     *
-     * @throws Exception\PathNotFoundException
      */
     #[\ReturnTypeWillChange]
     public function getIterator()

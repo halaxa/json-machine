@@ -35,7 +35,8 @@
     },
     "autoload": {
         "psr-4": {"JsonMachine\\": "src/"},
-        "exclude-from-classmap": ["src/autoloader.php"]
+        "exclude-from-classmap": ["src/autoloader.php"],
+        "files": ["src/functions.php"]
     },
     "autoload-dev": {
         "psr-4": {"JsonMachineTest\\": "test/JsonMachineTest"}
