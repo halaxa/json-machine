@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+Nothing yet
+
+<br>
+
+## 1.1.5 - 2024-11-22
 ### Added
 - Support for PHP 8.4
 - Exception on misspelled option name suggests a correct one. 
