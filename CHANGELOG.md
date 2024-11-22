@@ -20,6 +20,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <br>
 
+## 1.1.5 - 2024-11-22
+### Added
+- Support for PHP 8.4
+- Exception on misspelled option name suggests a correct one. 
+### Fixed
+- Wrong key when combining list and scalar value pointers (#110). Thanks [@daniel-sc](https://github.com/daniel-sc)
+### Removed
+- Removed support for PHP 7.0, 7.1
+<br>
+
 ## 1.1.4 - 2023-11-28
 - Minor fixes and added some tests.
 ### Added
