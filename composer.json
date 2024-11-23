@@ -26,7 +26,7 @@
     "require-dev": {
         "ext-json": "*",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^8.0"
     },
     "suggest": {
