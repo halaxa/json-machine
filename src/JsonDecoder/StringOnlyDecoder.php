@@ -9,6 +9,11 @@ class StringOnlyDecoder implements ItemDecoder
     /** @var ItemDecoder */
     private $innerDecoder;
 
+    /**
+     * @var self
+     */
+    private static $instance;
+
     public function __construct(ItemDecoder $innerDecoder)
     {
         $this->innerDecoder = $innerDecoder;
@@ -21,5 +26,14 @@ class StringOnlyDecoder implements ItemDecoder
         }
 
         return new ValidResult($jsonValue);
+    }
+
+    public static function instance(ItemDecoder $innerDecoder): self
+    {
+        if ( ! self::$instance) {
+            self::$instance = new self($innerDecoder);
+        }
+
+        return self::$instance;
     }
 }

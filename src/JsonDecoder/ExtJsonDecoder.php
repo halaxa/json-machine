@@ -21,6 +21,11 @@ class ExtJsonDecoder implements ItemDecoder
      */
     private $options;
 
+    /**
+     * @var self
+     */
+    private static $instance;
+
     public function __construct($assoc = false, $depth = 512, $options = 0)
     {
         $this->assoc = $assoc;
@@ -36,5 +41,14 @@ class ExtJsonDecoder implements ItemDecoder
         }
 
         return new ValidResult($decoded);
+    }
+
+    public static function instance(): self
+    {
+        if ( ! self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 }

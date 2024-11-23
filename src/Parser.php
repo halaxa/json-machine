@@ -67,7 +67,7 @@ class Parser implements \IteratorAggregate, PositionAware
     private $recursive;
 
     /** @var array */
-    private static $allBytes;
+    private static $tokenTypes;
 
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
@@ -97,10 +97,15 @@ class Parser implements \IteratorAggregate, PositionAware
             throw new InvalidArgumentException('$tokens must be either an instance of Iterator or IteratorAggregate.');
         }
 
-        $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
-        if ($recursive) {
-            $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
+        if ($jsonDecoder instanceof StringOnlyDecoder) {
+            $this->jsonDecoder = $jsonDecoder;
+        } else {
+            $this->jsonDecoder = $jsonDecoder ?: new ExtJsonDecoder();
+            if ($recursive) {
+                $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
+            }
         }
+
         $this->recursive = $recursive;
     }
 
@@ -127,11 +132,11 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function createGenerator(): Generator
     {
-        if ( ! self::$allBytes) {
-            self::$allBytes = $this->tokenTypes();
+        if ( ! self::$tokenTypes) {
+            self::$tokenTypes = $this->tokenTypes();
         }
 
-        $tokenTypes = self::$allBytes;
+        $tokenTypes = self::$tokenTypes;
 
         $iteratorStruct = null;
         $currentPath = &$this->currentPath;
@@ -333,9 +338,6 @@ class Parser implements \IteratorAggregate, PositionAware
         $generator = $this->getIterator();
 
         while ($generator->valid()) {
-//            var_dump(is_object($generator->current()) ? get_class($generator->current()) : $generator->current());
-//            $generator->key();
-//            $generator->current();
             $generator->next();
         }
     }
