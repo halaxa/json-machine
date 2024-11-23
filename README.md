@@ -320,25 +320,51 @@ foreach ($fruits as $key => $value) {
 ```
 
 <a name="recursive"></a>
-### Recursive iteration (BETA)
-Recursive iteration can be enabled via `recursive` option set to `true`.
-Every JSON iterable that JSON Machine encounters will then be yielded as an instance of `NestedIterator`.
-No JSON array or object will be materialized and kept in memory.
-The only PHP values you get materialized will be scalar values.
-Let's see an example with many, many users with many, many friends
+### Recursive iteration
+Use `RecursiveItems` instead of `Items`.
+When `RecursiveItems` encounters a list or dict in the JSON, it returns a new instance of `RecursiveItems`
+which can then be iterated over and the cycle repeats.
+Thus, it never returns a PHP array or object, but only either scalar values or `RecursiveItems`.
+No JSON vector will ever be fully loaded into memory at once.
+This feature is advantageous when the JSON has a complex structure
+that is difficult or even impossible to iterate over with just `Items` and JSON pointers.
+
+Let's see an example with many, many users with many, many friends:
+```json
+[
+  {
+    "username": "user",
+    "e-mail": "user@example.com",
+    "friends": [
+      {
+        "username": "friend1",
+        "e-mail": "friend1@example.com"
+      },
+      {
+        "username": "friend2",
+        "e-mail": "friend2@example.com"
+      }
+    ]
+  }
+]
+```
 
 ```php
 <?php
 
-use JsonMachine\Items;
+use JsonMachine\RecursiveItems
 
-$users = Items::fromFile('users.json', ['recursive' => true]);
-foreach ($users as $user) { // $user instanceof Traversable, not an array/object
-    foreach ($user as $userField => $userValue) {
-        if ($userField === 'friends') {
-            foreach ($userValue as $friend) { // $userValue instanceof Traversable, not an array/object
-                foreach ($friend as $friendField => $friendValue) { // $friend instanceof Traversable, not an array/object
-                    // do whatever you want here
+$users = RecursiveItems::fromFile('users.json');
+foreach ($users as $user) {
+    /** @var $user RecursiveItems */
+    foreach ($user as $field => $value) {
+        if ($field === 'friends') {
+            /** @var $value RecursiveItems */
+            foreach ($value as $friend) {
+                /** @var $friend RecursiveItems */
+                foreach ($friend as $friendField => $friendValue) {
+                    $friendField == 'username';
+                    $friendValue == 'friend1';
                 }
             }
         }
@@ -350,6 +376,42 @@ foreach ($users as $user) { // $user instanceof Traversable, not an array/object
 > and advance to a next value (i.e. next `user`), you will not be able to iterate it later.
 > JSON Machine must iterate it the background to be able to read next value.
 > Such an attempt will result in closed generator exception.
+
+#### Convenience methods of `RecursiveItems`
+- `toArray(): array`
+If you are sure that a certain instance of RecursiveItems is pointing to a memory-manageable data structure
+(for example, $friend), you can call `$friend->toArray()`, and the item will materialize into a PHP array.
+
+- `advanceToKey(int|string $key): scalar|RecursiveItems`
+When searching for a specific key in a collection (for example, `$user["friends"]`),
+you do not need to use a loop and a condition to search for it.
+Instead, you can simply call `$user->advanceToKey("friends")`.
+It will iterate for you and return the value at this key.
+
+The previous example could thus be simplified as follows:
+```php
+<?php
+
+use JsonMachine\RecursiveItems
+
+$users = RecursiveItems::fromFile('users.json');
+foreach ($users as $user) {
+    /** @var $user RecursiveItems */
+    foreach ($user->advanceToKey('friends') as $friend) {
+        /** @var $friend RecursiveItems */
+        $friendArray = $friend->toArray();
+        $friendArray['username'] == 'friend1';
+    }
+}
+```
+
+#### Also `RecursiveItems implements \RecursiveIterator`
+So you can use for example PHP's builtin tools to work over `\RecursiveIterator` like those:
+
+- [RecursiveCallbackFilterIterator](https://www.php.net/manual/en/class.recursivecallbackfilteriterator.php) 
+- [RecursiveFilterIterator](https://www.php.net/manual/en/class.recursivefilteriterator.php) 
+- [RecursiveRegexIterator](https://www.php.net/manual/en/class.recursiveregexiterator.php) 
+- [RecursiveTreeIterator](https://www.php.net/manual/en/class.recursivetreeiterator.php)
 
 <a name="json-pointer"></a>
 ### What is JSON Pointer anyway?
@@ -378,7 +440,6 @@ Some examples:
 Options may change how a JSON is parsed. Array of options is the second parameter of all `Items::from*` functions.
 Available options are:
 - `pointer` - A JSON Pointer string that tells which part of the document you want to iterate.
-- `recursive` - Bool. Any JSON array/object the parser hits will not be decoded but served lazily as a `Traversable`. Default `false`.
 - `decoder` - An instance of `ItemDecoder` interface.
 - `debug` - `true` or `false` to enable or disable the debug mode. When the debug mode is enabled, data such as line,
 column and position in the document are available during parsing or in exceptions. Keeping debug disabled adds slight

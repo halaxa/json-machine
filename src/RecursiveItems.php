@@ -156,9 +156,9 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
      * Finds the desired key on this level and returns its value.
      * It moves the internal cursor to it so subsequent calls to self::current() returns the same value.
      *
-     * @param $key
+     * @param string|int $key
      *
-     * @return mixed
+     * @return scalar|self
      *
      * @throws JsonMachineException when the key is not found on this level
      */
