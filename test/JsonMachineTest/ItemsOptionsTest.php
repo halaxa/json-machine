@@ -53,7 +53,6 @@ class ItemsOptionsTest extends TestCase
             'pointer' => '',
             'decoder' => new ExtJsonDecoder(),
             'debug' => false,
-            'recursive' => false,
         ];
     }
 
