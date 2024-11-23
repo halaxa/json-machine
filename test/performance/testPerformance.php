@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
+use JsonMachine\FileChunks;
 use JsonMachine\Items;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
+use JsonMachine\Parser;
+use JsonMachine\RecursiveItems;
+use JsonMachine\Tokens;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
@@ -27,6 +32,19 @@ if ( ! function_exists('opcache_get_status')) {
 ini_set('memory_limit', '-1'); // for json_decode use case
 
 $decoders = [
+    'RecursiveItems::fromFile()' => function ($file) {
+        return RecursiveItems::fromFile($file);
+    },
+    'Parser recursive' => function ($file) {
+        return new Parser(
+            new Tokens(
+                new FileChunks($file)
+            ),
+            '',
+            new ExtJsonDecoder(),
+            true
+        );
+    },
     'Items::fromFile()' => function ($file) {
         return Items::fromFile($file);
     },
@@ -69,6 +87,7 @@ function createBigJsonFile()
     $f = fopen($tmpJson, 'w');
     $separator = '';
     fputs($f, '[');
+//    for ($i = 0; $i < 1; ++$i) {
     for ($i = 0; $i < 6000; ++$i) {
         fputs($f, $separator);
         fputs($f, file_get_contents(__DIR__.'/twitter_example_'.($i % 2).'.json'));

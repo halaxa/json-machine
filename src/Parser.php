@@ -66,6 +66,9 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var bool */
     private $recursive;
 
+    /** @var array */
+    private static $allBytes;
+
     /**
      * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
      * @param ?ItemDecoder $jsonDecoder
@@ -74,7 +77,16 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     public function __construct(Traversable $tokens, $jsonPointer = '', ?ItemDecoder $jsonDecoder = null, $recursive = false)
     {
-        $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
+        if ($jsonPointer) {
+            $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();
+            $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
+            $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
+            $this->paths = $this->buildPaths($this->jsonPointers);
+        } else {
+            $this->hasSingleJsonPointer = true;
+            $this->jsonPointers = ['' => ''];
+            $this->paths = ['' => []];
+        }
 
         $this->tokens = $tokens;
         if ($tokens instanceof IteratorAggregate) {
@@ -89,9 +101,6 @@ class Parser implements \IteratorAggregate, PositionAware
         if ($recursive) {
             $this->jsonDecoder = new StringOnlyDecoder($this->jsonDecoder);
         }
-        $this->hasSingleJsonPointer = (count($jsonPointers) === 1);
-        $this->jsonPointers = array_combine($jsonPointers, $jsonPointers);
-        $this->paths = $this->buildPaths($this->jsonPointers);
         $this->recursive = $recursive;
     }
 
@@ -118,7 +127,11 @@ class Parser implements \IteratorAggregate, PositionAware
      */
     private function createGenerator(): Generator
     {
-        $tokenTypes = $this->tokenTypes();
+        if ( ! self::$allBytes) {
+            self::$allBytes = $this->tokenTypes();
+        }
+
+        $tokenTypes = self::$allBytes;
 
         $iteratorStruct = null;
         $currentPath = &$this->currentPath;
@@ -320,8 +333,9 @@ class Parser implements \IteratorAggregate, PositionAware
         $generator = $this->getIterator();
 
         while ($generator->valid()) {
-            $generator->key();
-            $generator->current();
+//            var_dump(is_object($generator->current()) ? get_class($generator->current()) : $generator->current());
+//            $generator->key();
+//            $generator->current();
             $generator->next();
         }
     }
