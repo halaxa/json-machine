@@ -634,8 +634,7 @@ but you forgot to specify a JSON Pointer. See [Parsing a subtree](#parsing-a-sub
 ### "That didn't help"
 The other reason may be, that one of the items you iterate is itself so huge it cannot be decoded at once.
 For example, you iterate over users and one of them has thousands of "friend" objects in it.
-The most efficient solution is to set `recursive` option to `true`.
-See [Recursive iteration](#recursive).
+The most efficient solution is to use [Recursive iteration](#recursive).
 
 <a name="step3"></a>
 ### "I am still out of luck"
