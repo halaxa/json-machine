@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+Nothing yet
+
+<br>
+
+## 1.2.0 - 2024-11-24
 ### Added
 - Recursive iteration via new facade `RecursiveItems`. See **Recursive iteration** in README.
 
