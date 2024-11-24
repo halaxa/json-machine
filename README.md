@@ -52,10 +52,12 @@ for PHP >=7.2. See [TL;DR](#tl-dr). No dependencies in production except optiona
 
 use \JsonMachine\Items;
 
-// this often causes Allowed Memory Size Exhausted
+// this often causes Allowed Memory Size Exhausted,
+// because it loads all the items in the JSON into memory
 - $users = json_decode(file_get_contents('500MB-users.json'));
 
-// this usually takes few kB of memory no matter the file size
+// this has very small memory footprint no matter the file size
+// because it loads items into memory one by one
 + $users = Items::fromFile('500MB-users.json');
 
 foreach ($users as $id => $user) {
@@ -68,9 +70,10 @@ Random access like `$users[42]` is not yet possible.
 Use above-mentioned `foreach` and find the item or use [JSON Pointer](#parsing-a-subtree).
 
 Count the items via [`iterator_count($users)`](https://www.php.net/manual/en/function.iterator-count.php).
-Remember it will still have to internally iterate the whole thing to get the count and thus will take about the same time.
+Remember it will still have to internally iterate the whole thing to get the count and thus will take about the same time
+as iterating it and counting by hand.
 
-Requires `ext-json` if used out of the box. See [Decoders](#decoders).
+Requires `ext-json` if used out of the box but doesn't if a custom decoder is used. See [Decoders](#decoders).
 
 Follow [CHANGELOG](CHANGELOG.md).
 
