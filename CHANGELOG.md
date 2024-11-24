@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## master
 ### Added
-- Recursive iteration via new facade `RecursiveItems`.
+- Recursive iteration via new facade `RecursiveItems`. See **Recursive iteration** in README.
 
 <br>
 

@@ -9,6 +9,9 @@ for PHP >=7.2. See [TL;DR](#tl-dr). No dependencies in production except optiona
 [![Monthly Downloads](https://img.shields.io/packagist/dt/halaxa/json-machine?color=%23f28d1a)](https://packagist.org/packages/halaxa/json-machine)
 
 ---
+NEW in version `1.2.0` - [Recursive iteration](#recursive)
+
+---
 
 * [TL;DR](#tl-dr)
 * [Introduction](#introduction)
@@ -383,13 +386,18 @@ foreach ($users as $user) {
 #### Convenience methods of `RecursiveItems`
 - `toArray(): array`
 If you are sure that a certain instance of RecursiveItems is pointing to a memory-manageable data structure
-(for example, $friend), you can call `$friend->toArray()`, and the item will materialize into a PHP array.
+(for example, $friend), you can call `$friend->toArray()`, and the item will materialize into a plain PHP array.
 
 - `advanceToKey(int|string $key): scalar|RecursiveItems`
-When searching for a specific key in a collection (for example, `$user["friends"]`),
+When searching for a specific key in a collection (for example, `'friends'` in `$user`),
 you do not need to use a loop and a condition to search for it.
 Instead, you can simply call `$user->advanceToKey("friends")`.
-It will iterate for you and return the value at this key.
+It will iterate for you and return the value at this key. Calls can be chained.
+It also supports **array like syntax** for advancing to and getting following indices.
+So `$user['friends']` would be an alias for `$user->advanceToKey('friends')`. Calls can be chained.
+Keep in min that it's just an alias - **you won't be able to random-access previous indices**
+after using this directly on `RecursiveItems`. It's just a syntax sugar.
+Use `toArray()` if you need random access to indices on a record/item.
 
 The previous example could thus be simplified as follows:
 ```php
@@ -400,12 +408,22 @@ use JsonMachine\RecursiveItems
 $users = RecursiveItems::fromFile('users.json');
 foreach ($users as $user) {
     /** @var $user RecursiveItems */
-    foreach ($user->advanceToKey('friends') as $friend) {
+    foreach ($user['friends'] as $friend) { // or $user->advanceToKey('friends')
         /** @var $friend RecursiveItems */
         $friendArray = $friend->toArray();
-        $friendArray['username'] == 'friend1';
+        $friendArray['username'] === 'friend1';
     }
 }
+```
+Chaining allows you to do something like this:
+```php
+<?php
+
+use JsonMachine\RecursiveItems
+
+$users = RecursiveItems::fromFile('users.json');
+$users[0]['friends'][1]['username'] === 'friend2';
+
 ```
 
 #### Also `RecursiveItems implements \RecursiveIterator`

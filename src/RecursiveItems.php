@@ -8,13 +8,15 @@ use Exception;
 use Generator;
 use Iterator;
 use IteratorAggregate;
+use JsonMachine\Exception\BadMethodCallException;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Exception\JsonMachineException;
+use JsonMachine\Exception\OutOfBoundsException;
 
 /**
  * Entry-point facade for recursive iteration.
  */
-final class RecursiveItems implements \RecursiveIterator, PositionAware
+final class RecursiveItems implements \RecursiveIterator, PositionAware, \ArrayAccess
 {
     use FacadeTrait;
 
@@ -100,7 +102,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         if ($current instanceof IteratorAggregate) {
             return new self($current, $this->options);
         } elseif ( ! is_scalar($current)) {
-            throw new JsonMachineException(
+            throw new InvalidArgumentException(
                 sprintf(
                     '%s only accepts scalar or IteratorAggregate values. %s given.',
                     self::class,
@@ -160,21 +162,21 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
      *
      * @return scalar|self
      *
-     * @throws JsonMachineException when the key is not found on this level
+     * @throws OutOfBoundsException when the key is not found on this level
      */
     public function advanceToKey($key)
     {
         if ( ! $this->parserIterator) {
             $this->rewind();
         }
-        $iterator = $this->parserIterator;
+        $iterator = $this;
 
         while ($key !== $iterator->key() && $iterator->valid()) {
             $iterator->next();
         }
 
         if ($key !== $iterator->key()) {
-            throw new JsonMachineException("Key '$key' was not found.");
+            throw new OutOfBoundsException("Key '$key' was not found.");
         }
 
         return $iterator->current();
@@ -213,5 +215,47 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware
         }
 
         return $array;
+    }
+
+    public function offsetExists($offset): bool
+    {
+        try {
+            $this->advanceToKey($offset);
+
+            return true;
+        } catch (JsonMachineException $e) {
+            return false;
+        }
+    }
+
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        return $this->advanceToKey($offset);
+    }
+
+    /**
+     * @param $offset
+     * @param $value
+     *
+     * @throws BadMethodCallException
+     *
+     * @deprecated
+     */
+    public function offsetSet($offset, $value): void
+    {
+        throw new BadMethodCallException('Unsupported: Cannot set a value on a JSON stream');
+    }
+
+    /**
+     * @param $offset
+     *
+     * @throws BadMethodCallException
+     *
+     * @deprecated
+     */
+    public function offsetUnset($offset): void
+    {
+        throw new BadMethodCallException('Unsupported: Cannot unset a value from a JSON stream');
     }
 }

@@ -70,7 +70,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(null, $result[2]);
     }
 
-    public function testAdvanceToKeyWorks()
+    public function testAdvanceToKeyWorksOnScalars()
     {
         $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
         $iterator = new RecursiveItems(toIteratorAggregate($generator()));
@@ -81,6 +81,24 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $iterator->advanceToKey('three'));
     }
 
+    public function testArrayAccessIsASyntaxSugarToAdvanceToKey()
+    {
+        $generator = function () {
+            yield 'one' => 1;
+            yield 'two' => 2;
+            yield 'three' => 3;
+        };
+        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+
+        $this->assertTrue(isset($iterator['two']));
+        $this->assertTrue(isset($iterator['two']));
+
+        $this->assertSame(2, $iterator['two']);
+        $this->assertSame(3, $iterator['three']);
+
+        $this->assertFalse(isset($iterator['four']));
+    }
+
     public function testAdvanceToKeyThrows()
     {
         $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
@@ -88,6 +106,47 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
         $this->expectExceptionMessage('not found');
         $iterator->advanceToKey('four');
+    }
+
+    public function testAdvanceToKeyCanBeChained()
+    {
+        $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
+        $iterator = new RecursiveItems(
+            toIteratorAggregate($generator(
+                toIteratorAggregate($generator(
+                    toIteratorAggregate(new \ArrayIterator(['42']))
+                ))
+            ))
+        );
+
+        $this->assertSame(
+            '42',
+            $iterator
+                ->advanceToKey('i')
+                ->advanceToKey('i')
+                ->advanceToKey(0)
+        );
+    }
+
+    public function testAdvanceToKeyArraySyntaxCanBeChained()
+    {
+        $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
+        $iterator = new RecursiveItems(
+            toIteratorAggregate($generator(
+                toIteratorAggregate($generator(
+                    toIteratorAggregate(new \ArrayIterator(['42']))
+                ))
+            ))
+        );
+
+        $this->assertSame('42', $iterator['i']['i'][0]);
+    }
+
+    public function testAdvanceToKeyArraySyntaxCanBeChainedE2E()
+    {
+        $iterator = RecursiveItems::fromString('[[[42]]]');
+
+        $this->assertSame(42, $iterator[0][0][0]);
     }
 
     public function testToArray()
