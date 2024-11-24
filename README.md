@@ -327,16 +327,18 @@ foreach ($fruits as $key => $value) {
 
 <a name="recursive"></a>
 ### Recursive iteration
-Use `RecursiveItems` instead of `Items`.
-When `RecursiveItems` encounters a list or dict in the JSON, it returns a new instance of `RecursiveItems`
+Use `RecursiveItems` instead of `Items` when the JSON structure is difficult or even impossible to handle with `Items`
+and JSON pointers or the individual items you iterate are too big to handle.
+On the other hand it's notably slower than `Items`, so bear that in mind.
+
+When `RecursiveItems` encounters a list or dict in the JSON, it returns a new instance of itself
 which can then be iterated over and the cycle repeats.
 Thus, it never returns a PHP array or object, but only either scalar values or `RecursiveItems`.
-No JSON vector will ever be fully loaded into memory at once.
-This feature is advantageous when the JSON has a complex structure
-that is difficult or even impossible to iterate over with just `Items` and JSON pointers.
+No JSON dict nor list will ever be fully loaded into memory at once.
 
 Let's see an example with many, many users with many, many friends:
 ```json
+// users.json
 [
   {
     "username": "user",
@@ -380,7 +382,7 @@ foreach ($users as $user) {
 
 > If you break an iteration of such lazy deeper-level (i.e. you skip some `"friends"` via `break`)
 > and advance to a next value (i.e. next `user`), you will not be able to iterate it later.
-> JSON Machine must iterate it the background to be able to read next value.
+> JSON Machine must iterate it in the background to be able to read next value.
 > Such an attempt will result in closed generator exception.
 
 #### Convenience methods of `RecursiveItems`
@@ -395,7 +397,7 @@ Instead, you can simply call `$user->advanceToKey("friends")`.
 It will iterate for you and return the value at this key. Calls can be chained.
 It also supports **array like syntax** for advancing to and getting following indices.
 So `$user['friends']` would be an alias for `$user->advanceToKey('friends')`. Calls can be chained.
-Keep in min that it's just an alias - **you won't be able to random-access previous indices**
+Keep in mind that it's just an alias - **you won't be able to random-access previous indices**
 after using this directly on `RecursiveItems`. It's just a syntax sugar.
 Use `toArray()` if you need random access to indices on a record/item.
 
