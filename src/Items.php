@@ -56,11 +56,9 @@ final class Items implements \IteratorAggregate, PositionAware
     }
 
     /**
-     * @param iterable $iterable
-     *
      * @throws Exception\InvalidArgumentException
      */
-    public static function fromIterable($iterable, array $options = []): self
+    public static function fromIterable(iterable $iterable, array $options = []): self
     {
         return new self(new GeneratorAggregateWrapper($iterable), $options);
     }

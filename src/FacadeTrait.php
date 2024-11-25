@@ -73,8 +73,5 @@ trait FacadeTrait
      */
     abstract public static function fromStream($stream, array $options = []): self;
 
-    /**
-     * @param iterable $iterable
-     */
-    abstract public static function fromIterable($iterable, array $options = []): self;
+    abstract public static function fromIterable(iterable $iterable, array $options = []): self;
 }

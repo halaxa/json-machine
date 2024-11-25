@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachineTest;
 
-use Iterator;
 use IteratorAggregate;
-use JsonMachine\GeneratorAggregate;
 use JsonMachine\GeneratorAggregateWrapper;
 use JsonMachine\RecursiveItems;
 
