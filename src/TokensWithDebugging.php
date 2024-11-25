@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace JsonMachine;
 
 /**
- * @implements \IteratorAggregate<int, string>
+ * @implements GeneratorAggregate<int, string>
  */
-class TokensWithDebugging implements \IteratorAggregate, PositionAware
+class TokensWithDebugging implements GeneratorAggregate, PositionAware
 {
-    /** @var iterable<int, string> */
+    /** @var GeneratorAggregate */
     private $jsonChunks;
 
     /** @var int */
@@ -21,19 +21,12 @@ class TokensWithDebugging implements \IteratorAggregate, PositionAware
     /** @var int */
     private $column = 0;
 
-    /**
-     * @param iterable<int, string> $jsonChunks
-     */
-    public function __construct($jsonChunks)
+    public function __construct(GeneratorAggregate $jsonChunks)
     {
         $this->jsonChunks = $jsonChunks;
     }
 
-    /**
-     * @return \Generator
-     */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Generator
     {
         // Treat UTF-8 BOM bytes as whitespace
         ${"\xEF"} = ${"\xBB"} = ${"\xBF"} = 0;

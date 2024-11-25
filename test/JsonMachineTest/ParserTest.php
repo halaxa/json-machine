@@ -8,6 +8,7 @@ use JsonMachine\Exception\JsonMachineException;
 use JsonMachine\Exception\PathNotFoundException;
 use JsonMachine\Exception\SyntaxErrorException;
 use JsonMachine\Exception\UnexpectedEndSyntaxErrorException;
+use JsonMachine\GeneratorAggregateWrapper;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\Parser;
 use JsonMachine\StringChunks;
@@ -388,7 +389,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     private function createParser($json, $jsonPointer = '')
     {
-        return new Parser(new Tokens(new \ArrayIterator([$json])), $jsonPointer, new ExtJsonDecoder(true));
+        return new Parser(new Tokens(new GeneratorAggregateWrapper([$json])), $jsonPointer, new ExtJsonDecoder(true));
     }
 
     public function testDefaultDecodingStructureIsObject()
@@ -533,7 +534,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPositionReturnsCorrectPositionWithDebugEnabled()
     {
-        $parser = new Parser(new TokensWithDebugging(['[   1, "two", false ]']));
+        $parser = new Parser(new TokensWithDebugging(new GeneratorAggregateWrapper(['[   1, "two", false ]'])));
         $expectedPosition = [5, 12, 19];
 
         $this->assertSame(0, $parser->getPosition());
@@ -545,7 +546,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPositionReturns0WithDebugDisabled()
     {
-        $parser = new Parser(new Tokens(['[   1, "two", false ]']));
+        $parser = new Parser(new Tokens(new GeneratorAggregateWrapper(['[   1, "two", false ]'])));
 
         $this->assertSame(0, $parser->getPosition());
         foreach ($parser as $index => $item) {
@@ -564,7 +565,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowsMeaningfulErrorOnIncorrectTokens()
     {
-        $parser = new Parser(new Tokens(['[$P]']));
+        $parser = new Parser(new Tokens(new GeneratorAggregateWrapper(['[$P]'])));
 
         $this->expectException(SyntaxErrorException::class);
 
@@ -574,7 +575,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testRecursiveIteration()
     {
-        $array = new Parser(new Tokens(['[{"numbers": [42]}]']), '', null, true);
+        $array = new Parser(new Tokens(new GeneratorAggregateWrapper(['[{"numbers": [42]}]'])), '', null, true);
 
         foreach ($array as $object) {
             $this->assertInstanceOf(Traversable::class, $object);
@@ -595,7 +596,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $valuesToVisit = [41, 42, 'text', 43];
         $valuesVisited = [];
 
-        $array = new Parser(new Tokens(['[{"numbers": [41, 42], "string": ["text"], "more numbers": [43]}]']), '', null, true);
+        $array = new Parser(new Tokens(new GeneratorAggregateWrapper(['[{"numbers": [41, 42], "string": ["text"], "more numbers": [43]}]'])), '', null, true);
 
         foreach ($array as $object) {
             $this->assertInstanceOf(Traversable::class, $object);
@@ -617,7 +618,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser(string $json)
     {
-        $iterator = new Parser(new Tokens([$json]), '', null, true);
+        $iterator = new Parser(new Tokens(new GeneratorAggregateWrapper([$json])), '', null, true);
         $array = [];
 
         foreach ($iterator as $item) {
@@ -645,7 +646,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testGetPositionWorksInsideRecursion()
     {
         $parser = new Parser(
-            new Tokens(new \ArrayIterator(['[[11,12]]'])),
+            new Tokens(new GeneratorAggregateWrapper(['[[11,12]]'])),
             '',
             null,
             true

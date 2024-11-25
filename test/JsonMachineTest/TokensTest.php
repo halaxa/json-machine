@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JsonMachineTest;
 
 use JsonMachine\FileChunks;
+use JsonMachine\GeneratorAggregateWrapper;
 use JsonMachine\StreamChunks;
 use JsonMachine\StringChunks;
 use JsonMachine\Tokens;
@@ -31,7 +32,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $data = ['0'];
         $expected = ['0'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($data))));
 
         $stream = fopen('data://text/plain,{"value":0}', 'r');
         $expected = ['{', '"value"', ':', '0', '}'];
@@ -45,7 +46,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $data = ['{}[],:null,"string" false:', 'true,1,100000,1.555{-56]"","\\""'];
         $expected = ['{', '}', '[', ']', ',', ':', 'null', ',', '"string"', 'false', ':', 'true', ',', '1', ',', '100000', ',', '1.555', '{', '-56', ']', '""', ',', '"\\""'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($data))));
     }
 
     /**
@@ -55,7 +56,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $data = ["\xEF\xBB\xBF".'{}'];
         $expected = ['{', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($data))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($data))));
     }
 
     /**
@@ -63,7 +64,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
      */
     public function testCorrectlyParsesTwoBackslashesAtTheEndOfAString($tokensClass)
     {
-        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $tokensClass(new \ArrayIterator(['"test\\\\":']))));
+        $this->assertEquals(['"test\\\\"', ':'], iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper(['"test\\\\":']))));
     }
 
     /**
@@ -73,7 +74,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $json = '"test\"test":';
         $expected = ['"test\"test"', ':'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator([$json]))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper([$json]))));
     }
 
     /**
@@ -83,7 +84,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value"', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($chunks))));
     }
 
     /**
@@ -93,7 +94,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value\\', '""}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($chunks))));
     }
 
     /**
@@ -103,7 +104,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     {
         $chunks = ['{"path": {"key":"value\\"', '"}}'];
         $expected = ['{', '"path"', ':', '{', '"key"', ':', '"value\""', '}', '}'];
-        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new \ArrayIterator($chunks))));
+        $this->assertEquals($expected, iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($chunks))));
     }
 
     /**
@@ -144,7 +145,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
         foreach (range(1, strlen($json)) as $chunkLength) {
             $chunks = str_split($json, $chunkLength);
-            $result = iterator_to_array(new $tokensClass($chunks));
+            $result = iterator_to_array(new $tokensClass(new GeneratorAggregateWrapper($chunks)));
 
             $this->assertSame($expected, $result);
         }
@@ -191,7 +192,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPositionWthDebugging()
     {
-        $tokens = new TokensWithDebugging(['[   1, "two", false ]']);
+        $tokens = new TokensWithDebugging(new GeneratorAggregateWrapper(['[   1, "two", false ]']));
         $expectedPosition = [1, 5, 6, 12, 13, 19, 21];
 
         $this->assertSame(0, $tokens->getPosition());
@@ -203,7 +204,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPositionNoDebugging()
     {
-        $tokens = new Tokens(['[   1, "two", false ]']);
+        $tokens = new Tokens(new GeneratorAggregateWrapper(['[   1, "two", false ]']));
 
         $this->assertSame(0, $tokens->getPosition());
         foreach ($tokens as $index => $item) {

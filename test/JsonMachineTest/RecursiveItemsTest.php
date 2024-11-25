@@ -6,6 +6,8 @@ namespace JsonMachineTest;
 
 use Iterator;
 use IteratorAggregate;
+use JsonMachine\GeneratorAggregate;
+use JsonMachine\GeneratorAggregateWrapper;
 use JsonMachine\RecursiveItems;
 
 /**
@@ -73,7 +75,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     public function testAdvanceToKeyWorksOnScalars()
     {
         $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $iterator = new RecursiveItems(toGeneratorAggregate($generator()));
 
         $this->assertSame(1, $iterator->advanceToKey('one'));
         $this->assertSame(1, $iterator->advanceToKey('one'));
@@ -88,7 +90,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
             yield 'two' => 2;
             yield 'three' => 3;
         };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $iterator = new RecursiveItems(toGeneratorAggregate($generator()));
 
         $this->assertTrue(isset($iterator['two']));
         $this->assertTrue(isset($iterator['two']));
@@ -102,7 +104,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     public function testAdvanceToKeyThrows()
     {
         $generator = function () {yield from ['one' => 1, 'two' => 2, 'three' => 3]; };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $iterator = new RecursiveItems(toGeneratorAggregate($generator()));
 
         $this->expectExceptionMessage('not found');
         $iterator->advanceToKey('four');
@@ -112,9 +114,9 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     {
         $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
         $iterator = new RecursiveItems(
-            toIteratorAggregate($generator(
-                toIteratorAggregate($generator(
-                    toIteratorAggregate(new \ArrayIterator(['42']))
+            toGeneratorAggregate($generator(
+                toGeneratorAggregate($generator(
+                    toGeneratorAggregate(new \ArrayIterator(['42']))
                 ))
             ))
         );
@@ -132,9 +134,9 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     {
         $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
         $iterator = new RecursiveItems(
-            toIteratorAggregate($generator(
-                toIteratorAggregate($generator(
-                    toIteratorAggregate(new \ArrayIterator(['42']))
+            toGeneratorAggregate($generator(
+                toGeneratorAggregate($generator(
+                    toGeneratorAggregate(new \ArrayIterator(['42']))
                 ))
             ))
         );
@@ -153,9 +155,9 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     {
         $generator = function ($iterable) {yield from ['one' => 1, 'two' => 2, 'i' => $iterable, 'three' => 3]; };
         $iterator = new RecursiveItems(
-            toIteratorAggregate($generator(
-                toIteratorAggregate($generator(
-                    toIteratorAggregate(new \ArrayIterator(['42']))
+            toGeneratorAggregate($generator(
+                toGeneratorAggregate($generator(
+                    toGeneratorAggregate(['42'])
                 ))
             ))
         );
@@ -177,8 +179,8 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
     public function testHasChildrenFollowsIterators()
     {
-        $generator = function () {yield from [1, toIteratorAggregate(new \ArrayIterator([])), 3]; };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $generator = function () {yield from [1, toGeneratorAggregate(new \ArrayIterator([])), 3]; };
+        $iterator = new RecursiveItems(toGeneratorAggregate($generator()));
 
         $result = [];
         foreach ($iterator as $item) {
@@ -195,7 +197,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
             yield 'two' => 2;
             yield 'three' => 3;
         };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $iterator = new RecursiveItems(toGeneratorAggregate($generator()));
 
         $iterator->rewind();
         $iterator->next();
@@ -205,19 +207,7 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-function toIteratorAggregate(Iterator $iterator): IteratorAggregate
+function toGeneratorAggregate(iterable $iterable): IteratorAggregate
 {
-    return new class($iterator) implements IteratorAggregate {
-        private $iterator;
-
-        public function __construct(Iterator $iterator)
-        {
-            $this->iterator = $iterator;
-        }
-
-        public function getIterator(): \Traversable
-        {
-            return $this->iterator;
-        }
-    };
+    return new GeneratorAggregateWrapper($iterable);
 }

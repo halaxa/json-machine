@@ -28,7 +28,7 @@ trait FacadeTrait
     /**
      * @throws InvalidArgumentException
      */
-    private static function createParser(iterable $bytesIterator, ItemsOptions $options, bool $recursive): Parser
+    private static function createParser(GeneratorAggregate $bytesIterator, ItemsOptions $options, bool $recursive): Parser
     {
         if ($options['debug']) {
             $tokensClass = TokensWithDebugging::class;

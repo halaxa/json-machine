@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
+use Generator;
 use JsonMachine\Exception\InvalidArgumentException;
 
 /**
@@ -14,11 +15,9 @@ final class Items implements \IteratorAggregate, PositionAware
     use FacadeTrait;
 
     /**
-     * @param iterable $bytesIterator
-     *
      * @throws InvalidArgumentException
      */
-    public function __construct($bytesIterator, array $options = [])
+    public function __construct(GeneratorAggregate $bytesIterator, array $options = [])
     {
         $options = new ItemsOptions($options);
         $this->debugEnabled = $options['debug'];
@@ -63,14 +62,10 @@ final class Items implements \IteratorAggregate, PositionAware
      */
     public static function fromIterable($iterable, array $options = []): self
     {
-        return new self($iterable, $options);
+        return new self(new GeneratorAggregateWrapper($iterable), $options);
     }
 
-    /**
-     * @return \Generator
-     */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         return $this->parser->getIterator();
     }

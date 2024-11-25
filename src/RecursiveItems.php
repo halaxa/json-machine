@@ -82,12 +82,12 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware, \ArrayA
     /**
      * @throws InvalidArgumentException
      */
-    public static function fromIterable($iterable, array $options = []): self
+    public static function fromIterable(iterable $iterable, array $options = []): self
     {
         $options = new ItemsOptions($options);
 
         return new self(
-            self::createParser($iterable, $options, true),
+            self::createParser(new GeneratorAggregateWrapper($iterable), $options, true),
             $options
         );
     }

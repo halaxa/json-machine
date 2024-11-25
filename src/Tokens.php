@@ -6,27 +6,23 @@ namespace JsonMachine;
 
 use Generator;
 
-class Tokens implements \IteratorAggregate, PositionAware
+/**
+ * @implements GeneratorAggregate<int, string>
+ */
+class Tokens implements GeneratorAggregate, PositionAware
 {
-    /** @var iterable */
+    /** @var GeneratorAggregate */
     private $jsonChunks;
 
     /** @var Generator */
     private $generator;
 
-    /**
-     * @param iterable<string> $jsonChunks
-     */
-    public function __construct($jsonChunks)
+    public function __construct(GeneratorAggregate $jsonChunks)
     {
         $this->jsonChunks = $jsonChunks;
     }
 
-    /**
-     * @return Generator
-     */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Generator
     {
         if ( ! $this->generator) {
             $this->generator = $this->createGenerator();
