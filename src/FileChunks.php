@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace JsonMachine;
 
 /**
- * @implements \IteratorAggregate<int, string>
+ * @implements GeneratorAggregate<int, string>
  */
-class FileChunks implements \IteratorAggregate
+class FileChunks implements GeneratorAggregate
 {
     /** @var string */
     private $fileName;
@@ -15,23 +15,16 @@ class FileChunks implements \IteratorAggregate
     /** @var int */
     private $chunkSize;
 
-    /**
-     * @param string $fileName
-     * @param int    $chunkSize
-     */
-    public function __construct($fileName, $chunkSize = 1024 * 8)
+    public function __construct(string $fileName, int $chunkSize = 1024 * 8)
     {
         $this->fileName = $fileName;
         $this->chunkSize = $chunkSize;
     }
 
     /**
-     * @return \Generator
-     *
      * @throws Exception\InvalidArgumentException
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Generator
     {
         $fileHandle = fopen($this->fileName, 'r');
         try {

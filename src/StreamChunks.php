@@ -7,9 +7,9 @@ namespace JsonMachine;
 use JsonMachine\Exception\InvalidArgumentException;
 
 /**
- * @implements \IteratorAggregate<int, string>
+ * @implements GeneratorAggregate<int, string>
  */
-class StreamChunks implements \IteratorAggregate
+class StreamChunks implements GeneratorAggregate
 {
     /** @var resource */
     private $stream;
@@ -19,11 +19,10 @@ class StreamChunks implements \IteratorAggregate
 
     /**
      * @param resource $stream
-     * @param int      $chunkSize
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($stream, $chunkSize = 1024 * 8)
+    public function __construct($stream, int $chunkSize = 1024 * 8)
     {
         if ( ! is_resource($stream) || get_resource_type($stream) !== 'stream') {
             throw new InvalidArgumentException('Argument $stream must be a valid stream resource.');
@@ -32,11 +31,7 @@ class StreamChunks implements \IteratorAggregate
         $this->chunkSize = $chunkSize;
     }
 
-    /**
-     * @return \Generator
-     */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Generator
     {
         while ('' !== ($chunk = fread($this->stream, $this->chunkSize))) {
             yield $chunk;
