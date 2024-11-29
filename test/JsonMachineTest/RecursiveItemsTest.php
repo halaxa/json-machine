@@ -6,6 +6,7 @@ namespace JsonMachineTest;
 
 use Iterator;
 use IteratorAggregate;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\RecursiveItems;
 
 /**
@@ -188,20 +189,12 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([false, true, false], $result);
     }
 
-    public function testToArrayThrowsMeaningfulErrorWhenIteratorIsAlreadyOpen()
+    public function testIssue117ItemsCanBeIteratedMoreThanOnce()
     {
-        $generator = function () {
-            yield 'one' => 1;
-            yield 'two' => 2;
-            yield 'three' => 3;
-        };
-        $iterator = new RecursiveItems(toIteratorAggregate($generator()));
+        $rows = RecursiveItems::fromFile(__DIR__.'/ItemsTest.json', ['decoder' => new ExtJsonDecoder(true)]);
 
-        $iterator->rewind();
-        $iterator->next();
-
-        $this->expectExceptionMessage('toArray()');
-        $iterator->toArray();
+        $this->assertSame(1, iterator_count($rows));
+        $this->assertSame(1, iterator_count($rows));
     }
 }
 

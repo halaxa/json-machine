@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JsonMachineTest;
 
 use JsonMachine\Items;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\PassThruDecoder;
 
 /**
@@ -145,5 +146,12 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
         $items = Items::fromIterable(['{"results":', '[1,2,3]}'], ['pointer' => ['/results']]);
 
         $this->assertSame(3, iterator_count($items));
+    }
+
+    public function testIssue117ItemsCanBeIteratedMoreThanOnce()
+    {
+        $rows = Items::fromFile(__DIR__.'/ItemsTest.json', ['decoder' => new ExtJsonDecoder(true)]);
+        $this->assertSame(1, iterator_count($rows));
+        $this->assertSame(1, iterator_count($rows));
     }
 }

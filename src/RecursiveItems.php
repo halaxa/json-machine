@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace JsonMachine;
 
-use Exception;
 use Generator;
 use Iterator;
 use IteratorAggregate;
@@ -136,7 +135,6 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware, \ArrayA
     public function rewind(): void
     {
         $this->parserIterator = toIterator($this->parser->getIterator());
-        $this->parserIterator->rewind();
     }
 
     public function hasChildren(): bool
@@ -185,21 +183,10 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware, \ArrayA
     /**
      * Recursively materializes this iterator level to array.
      * Moves its internal pointer to the end.
-     *
-     * @throws JsonMachineException
      */
     public function toArray(): array
     {
-        try {
-            /** @throws Exception */
-            $this->rewind();
-        } catch (Exception $e) {
-            if (false !== strpos($e->getMessage(), 'generator')) {
-                throw new JsonMachineException(
-                    'Method toArray() can only be called before any items in the collection have been accessed.'
-                );
-            }
-        }
+        $this->rewind();
 
         return self::toArrayRecursive($this);
     }
