@@ -53,6 +53,19 @@ class AutoloadingTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($autoloaded);
     }
 
+    public function testLoadsFilesInComposerJson()
+    {
+        $DIR = __DIR__;
+        $phpCode = <<<PHP
+            spl_autoload_register(require '$DIR' . '/../../src/autoloader.php');
+            echo function_exists('toIterator') ? 'OK' : 'FAIL';
+PHP;
+        $cmd = 'php -r ' . escapeshellarg($phpCode);
+        $output = shell_exec($cmd);
+
+        $this->assertStringContainsString('OK', $output);
+    }
+
     private function createAutoloadableClass(): string
     {
         $dummyFile = __DIR__.'/../../src/AutoloadStub.php';
