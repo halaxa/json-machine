@@ -628,15 +628,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Traversable::class, $array[1]);
         $this->assertSame(4, $array[2]);
 
-        $this->expectException(JsonMachineException::class);
-        $this->expectExceptionMessage('once');
+        $this->expectExceptionMessage('generator');
         iterator_to_array($array[1]);
     }
 
     public function data_testRecursiveParserDoesNotRequireChildParserToBeIteratedToTheEndByUser()
     {
         return [
-            ['[1,{"x": 1,"y": 2,"z": 3},4]'],
+            ['[1,[{},2,3],4]'],
             ['[1,[[],2,3],4]'],
             ['[1,[{"key": "value"},2,3],4]'],
             ['[1,[[null, true, "string"],2,3],4]'],

@@ -39,6 +39,9 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var Traversable */
     private $tokens;
 
+    /** @var Iterator<int, string> */
+    private $tokensIterator;
+
     /** @var Generator */
     private $generator;
 
@@ -86,6 +89,13 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         $this->tokens = $tokens;
+        if ($tokens instanceof IteratorAggregate) {
+            $this->tokensIterator = $tokens->getIterator();
+        } elseif ($tokens instanceof Iterator) {
+            $this->tokensIterator = $tokens;
+        } else {
+            throw new InvalidArgumentException('$tokens must be either an instance of Iterator or IteratorAggregate.');
+        }
 
         if ($jsonDecoder instanceof StringOnlyDecoder) {
             $this->jsonDecoder = $jsonDecoder;
@@ -109,11 +119,9 @@ class Parser implements \IteratorAggregate, PositionAware
     #[\ReturnTypeWillChange]
     public function getIterator(): Generator
     {
-        if ($this->generator && $this->tokens instanceof ResumableTokensProxy) {
-            throw new JsonMachineException('Nested RecursiveTokens cannot be iterated more than once.');
+        if ( ! $this->generator) {
+            $this->generator = $this->createGenerator();
         }
-
-        $this->generator = $this->createGenerator();
 
         return $this->generator;
     }
@@ -148,10 +156,10 @@ class Parser implements \IteratorAggregate, PositionAware
         $jsonPointerPath = [];
         $iteratorLevel = 0;
 
-        /** @var Iterator */
-        $tokensIterator = $this->resolveTokensIterator();
+        // local variables for faster name lookups
+        $tokens = $this->tokensIterator;
 
-        foreach ($tokensIterator as $token) {
+        foreach ($tokens as $token) {
             if ($currentPathChanged) {
                 $currentPathChanged = false;
                 $jsonPointerPath = $this->getMatchingJsonPointerPath();
@@ -188,7 +196,7 @@ class Parser implements \IteratorAggregate, PositionAware
             ) {
                 if ($this->recursive && ($token == '{' || $token == '[')) {
                     $jsonValue = new self(
-                        new ResumableTokensProxy($this->tokens, $tokensIterator),
+                        new ResumableIteratorAggregateProxy($this->tokens), // could single shared instance work?
                         '',
                         $this->jsonDecoder,
                         true
@@ -327,12 +335,10 @@ class Parser implements \IteratorAggregate, PositionAware
 
     public function ensureIterationComplete(): void
     {
-        if ( ! $this->generator) {
-            $this->getIterator();
-        }
+        $generator = $this->getIterator();
 
-        while ($this->generator->valid()) {
-            $this->generator->next();
+        while ($generator->valid()) {
+            $generator->next();
         }
     }
 
@@ -488,21 +494,5 @@ class Parser implements \IteratorAggregate, PositionAware
         }
 
         return is_int($pathToken) && $pointerToken === '-';
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    private function resolveTokensIterator()
-    {
-        if ($this->tokens instanceof IteratorAggregate) {
-            $tokensIterator = $this->tokens->getIterator();
-        } elseif ($this->tokens instanceof Iterator) {
-            $tokensIterator = $this->tokens;
-        } else {
-            throw new InvalidArgumentException('$tokens must be either an instance of Iterator or IteratorAggregate.');
-        }
-
-        return $tokensIterator;
     }
 }
