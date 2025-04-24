@@ -60,7 +60,7 @@ class AutoloadingTest extends \PHPUnit_Framework_TestCase
             spl_autoload_register(require '$DIR' . '/../../src/autoloader.php');
             echo function_exists('toIterator') ? 'OK' : 'FAIL';
 PHP;
-        $cmd = 'php -r ' . escapeshellarg($phpCode);
+        $cmd = 'php -r '.escapeshellarg($phpCode);
         $output = shell_exec($cmd);
 
         $this->assertStringContainsString('OK', $output);
