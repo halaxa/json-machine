@@ -101,7 +101,7 @@ final class RecursiveItems implements \RecursiveIterator, PositionAware, \ArrayA
         $current = $this->parserIterator->current();
         if ($current instanceof IteratorAggregate) {
             return new self($current, $this->options);
-        } elseif ( ! is_scalar($current)) {
+        } elseif ( ! is_scalar($current) && ! ($current === null)) {
             throw new InvalidArgumentException(
                 sprintf(
                     '%s only accepts scalar or IteratorAggregate values. %s given.',

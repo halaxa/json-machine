@@ -6,6 +6,7 @@ namespace JsonMachineTest;
 
 use Iterator;
 use IteratorAggregate;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\RecursiveItems;
 
 /**
@@ -202,6 +203,30 @@ class RecursiveItemsTest extends \PHPUnit_Framework_TestCase
 
         $this->expectExceptionMessage('toArray()');
         $iterator->toArray();
+    }
+
+    public function testNullValueInJsonReturnsNullInPhpIssue119()
+    {
+        $users = RecursiveItems::fromString('
+            [
+              {
+                "username": "user",
+                "e-mail": "user@example.com",
+                "friends": [
+                  {
+                    "username": "friend1",
+                    "e-mail": "friend1@example.com"
+                  },
+                  {
+                    "username": "friend2",
+                    "e-mail": null
+                  }
+                ]
+              }
+            ]
+        ', ['decoder' => new ExtJsonDecoder(true)]);
+
+        $this->assertNull($users[0]['friends'][1]['e-mail']);
     }
 }
 
