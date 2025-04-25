@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+Nothing yet
+
+<br>
+
+## 1.2.1 - 2025-04-25
 ### Fixed
 - File autoloading without composer (#122). Thanks [@bahco](https://github.com/bahco)
 - Crash on `null` value in `RecursiveItems` (#119). Thanks [@bark92](https://github.com/bark92)
