@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Changed
+- Leaner release package (#124). Thanks [@bahco](https://github.com/robotomarvin)
 
 <br>
 
