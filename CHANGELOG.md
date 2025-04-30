@@ -14,7 +14,7 @@ Nothing yet
 
 ## 1.2.2 - 2025-04-30
 ### Changed
-- Leaner release package (#124). Thanks [@bahco](https://github.com/robotomarvin)
+- Leaner release package (#124). Thanks [@robotomarvin](https://github.com/robotomarvin)
 
 <br>
 
