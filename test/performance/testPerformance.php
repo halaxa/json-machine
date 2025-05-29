@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use JsonMachine\FileChunks;
 use JsonMachine\Items;
-use JsonMachine\JsonDecoder\ExtJsonDecoder;
-use JsonMachine\Parser;
 use JsonMachine\RecursiveItems;
 use JsonMachine\Tokens;
 
@@ -32,30 +30,19 @@ if ( ! function_exists('opcache_get_status')) {
 ini_set('memory_limit', '-1'); // for json_decode use case
 
 $decoders = [
-    'RecursiveItems::fromFile()' => function ($file) {
-        return RecursiveItems::fromFile($file);
-    },
-    'Parser recursive' => function ($file) {
-        return new Parser(
-            new Tokens(
-                new FileChunks($file)
-            ),
-            '',
-            new ExtJsonDecoder(),
-            true
+    'Tokens' => function ($file) {
+        return new Tokens(
+            new FileChunks($file)
         );
     },
-    'Items::fromFile()' => function ($file) {
+    'Items' => function ($file) {
         return Items::fromFile($file);
     },
-    'Items::fromString()' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')));
-    },
-    'Items::fromFile() - debug' => function ($file) {
+    'Items - debug' => function ($file) {
         return Items::fromFile($file, ['debug' => true]);
     },
-    'Items::fromString() - debug' => function ($file) {
-        return Items::fromString(stream_get_contents(fopen($file, 'r')), ['debug' => true]);
+    'RecursiveItems' => function ($file) {
+        return RecursiveItems::fromFile($file);
     },
     'json_decode()' => function ($file) {
         return json_decode(stream_get_contents(fopen($file, 'r')), true);
@@ -77,7 +64,7 @@ foreach ($decoders as $name => $decoder) {
         $textResult = round($fileSizeMb / $time, 2).' MB/s';
     }
 
-    echo str_pad($name.': ', 37, '.')." $textResult".PHP_EOL;
+    echo str_pad($name.': ', 25, '.')." $textResult".PHP_EOL;
 }
 @unlink($tmpJsonFileName);
 

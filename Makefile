@@ -3,6 +3,7 @@
 
 LATEST_PHP := 8.0 3.1.1
 COVERAGE_PHP := 7.4 3.1.1
+PHP_8_3 := 8.3 3.3.2
 
 define PHP_VERSIONS
 "7.2 3.1.1"\
@@ -33,7 +34,7 @@ build: composer-update cs-check phpstan tests-all ## Run all necessary stuff bef
 
 
 tests: ## Run tests on recent PHP version. Pass args to phpunit via ARGS=""
-	@$(call DOCKER_RUN,$(COVERAGE_PHP),composer tests -- $(ARGS))
+	@$(call DOCKER_RUN,$(PHP_8_3),composer tests -- $(ARGS))
 
 
 tests-coverage: ## Runs tests and creates ./clover.xml. Pass args to phpunit via ARGS=""
@@ -63,7 +64,7 @@ cs-fix: ## Fix code style
 
 
 performance-tests: ## Run performance tests
-	@$(call DOCKER_RUN,$(LATEST_PHP),composer performance-tests)
+	@$(call DOCKER_RUN,$(PHP_8_3),composer performance-tests)
 
 
 composer-update: ## Validate composer.json contents
