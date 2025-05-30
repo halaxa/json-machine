@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+- Tokenizer completely rewritten to use regular expressions for partial tokenization.
+Got rid of per-byte processing in PHP code.
+Standard parsing speed boost (non-recursive, non-debug) about + 50 %. Further improvements on the way.
 
 <br>
 
