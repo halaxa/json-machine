@@ -161,7 +161,6 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
             'key_one' => 1,
         ], $result);
 
-
         $pointer = Items::fromString($data, ['pointer' => '/key_two']);
         $result = iterator_to_array($pointer);
         $this->assertSame([
