@@ -146,4 +146,26 @@ class ItemsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(3, iterator_count($items));
     }
+
+    public function testIssue125()
+    {
+        $data = '{
+            "code": "some value",
+            "key_one": 1,
+            "key_two": [1]
+        }';
+
+        $pointer = Items::fromString($data, ['pointer' => '/key_one']);
+        $result = iterator_to_array($pointer);
+        $this->assertSame([
+            'key_one' => 1,
+        ], $result);
+
+
+        $pointer = Items::fromString($data, ['pointer' => '/key_two']);
+        $result = iterator_to_array($pointer);
+        $this->assertSame([
+            0 => 1,
+        ], $result);
+    }
 }
