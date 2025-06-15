@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+### Fixed
+- The key of a scalar value after a compound value is lost (#125). Thanks [@smiletoeverybody](https://github.com/smiletoeverybody)
 
 <br>
 

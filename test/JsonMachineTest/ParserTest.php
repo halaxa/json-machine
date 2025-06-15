@@ -263,7 +263,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     public function testScalarResult()
     {
         $result = $this->createParser('{"result":{"items": [1,2,3],"count": 3}}', '/result/count');
-        $this->assertSame([3], iterator_to_array($result));
+        $this->assertSame(['count' => 3], iterator_to_array($result));
     }
 
     public function testScalarResultInArray()
@@ -655,5 +655,47 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             /* @var $item Parser */
             $this->assertSame(0, $item->getPosition());
         }
+    }
+
+    /**
+     * @dataProvider data_testIssue125
+     */
+    public function testIssue125TheKeyOfAScalarValueAfterACompoundValueIsLost($tokens)
+    {
+        $toAssert = [
+            'keytwo' => 12,
+            'keythree' => 13,
+        ];
+
+        foreach ($toAssert as $key => $value) {
+            $items = new Parser(
+                new \ArrayIterator($tokens),
+                "/$key"
+            );
+            $result = iterator_to_array($items);
+            $this->assertSame([
+                $key => $value,
+            ], $result);
+        }
+    }
+
+    public function data_testIssue125()
+    {
+        return [
+            'after array' => [[
+                '{',
+                    '"keyone"', ':', '[', '11', ']', ',',
+                    '"keytwo"', ':', '12', ',',
+                    '"keythree"', ':', '13',
+                '}',
+            ]],
+            'after object' => [[
+                '{',
+                    '"keyone"', ':', '{', '"key"', ':', '11', '}', ',',
+                    '"keytwo"', ':', '12', ',',
+                    '"keythree"', ':', '13',
+                '}',
+            ]],
+        ];
     }
 }

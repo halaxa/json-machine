@@ -266,6 +266,9 @@ class Parser implements \IteratorAggregate, PositionAware
                     // no break
                 case ']':
                     --$currentLevel;
+                    if ($currentLevel < $iteratorLevel) {
+                        $iteratorStruct = null;
+                    }
                     $inObject = $stack[$currentLevel] == '{';
                     // no break
                 default:
