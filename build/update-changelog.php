@@ -11,13 +11,42 @@ if (false !== strpos($changelogContents, $version)) {
     exit(1);
 }
 
-$releaseDate = date('Y-m-d');
-$changelogMatch = '## master';
-$changelogReplace = "$changelogMatch
+$changelogContents = addReleaseHeading($changelogContents, $version);
+$changelogContents = linkifyUsernames($changelogContents);
+$changelogContents = linkifyIssues($changelogContents);
+
+file_put_contents($changelogPath, $changelogContents);
+
+
+
+function addReleaseHeading(string $changelogContents, $version): string
+{
+    $releaseDate = date('Y-m-d');
+    $changelogMatch = '## master';
+    $changelogReplace = "$changelogMatch
 Nothing yet
 
 <br>
 
 ## $version - $releaseDate";
 
-file_put_contents($changelogPath, str_replace($changelogMatch, $changelogReplace, $changelogContents));
+    return str_replace($changelogMatch, $changelogReplace, $changelogContents);
+}
+
+function linkifyUsernames(string $changelogContents): string
+{
+    return preg_replace(
+        '/([^\[]\s*)@([a-zA-Z-]+)(\s*[^\]])/',
+        '$1[@$2](https://github.com/$2)$3',
+        $changelogContents
+    );
+}
+
+function linkifyIssues(string $changelogContents): string
+{
+    return preg_replace(
+        '/([^\[]\s*)#(\d+)(\s*[^\]])/',
+        '$1[#$2](https://github.com/halaxa/json-machine/issues/$2)$3',
+        $changelogContents
+    );
+}
