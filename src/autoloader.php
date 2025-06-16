@@ -41,11 +41,11 @@ class Autoloading
     }
 }
 
+// @codeCoverageIgnoreStart
 $files = json_decode(file_get_contents(__DIR__.'/../composer.json'), true)['autoload']['files'];
 foreach ($files as $file) {
     require_once __DIR__.'/../'.$file;
 }
 
-// @codeCoverageIgnoreStart
 return [Autoloading::class, 'autoloader'];
 // @codeCoverageIgnoreEnd
