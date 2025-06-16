@@ -11,7 +11,7 @@ use JsonMachine\ResumableIteratorAggregateProxy;
  */
 class ResumableIteratorAggregateProxyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testName()
+    public function testDoesNotPassTheCallToRewindToInnerIterator()
     {
         $iteratorAggregate = new class() implements \IteratorAggregate {
             private $generator;
