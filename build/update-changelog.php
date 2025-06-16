@@ -17,8 +17,6 @@ $changelogContents = linkifyIssues($changelogContents);
 
 file_put_contents($changelogPath, $changelogContents);
 
-
-
 function addReleaseHeading(string $changelogContents, $version): string
 {
     $releaseDate = date('Y-m-d');
