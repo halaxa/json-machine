@@ -87,7 +87,7 @@ class Tokens implements \IteratorAggregate, PositionAware
     {
         $i = strlen($token);
         $slashes = 0;
-        while (--$i >= 0 && isset($token[$i]) && $token[$i] === '\\') {
+        while (--$i >= 0 && $token[$i] === '\\') {
             ++$slashes;
         }
 
