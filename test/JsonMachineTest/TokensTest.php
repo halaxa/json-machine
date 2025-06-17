@@ -218,10 +218,18 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(0, $tokens->getPosition());
     }
 
+    public function testOneCharString()
+    {
+        $tokens = new Tokens(['["o"]']);
+        $result = iterator_to_array($tokens, false);
+
+        $this->assertSame(['[', '"o"', ']'], $result);
+    }
+
     public function jsonFilesWithDifferentLineEndings()
     {
         return [
-//            'cr new lines' => [__DIR__.'/formatted-cr.json'],
+            'cr new lines' => [__DIR__.'/formatted-cr.json'],
             'lf new lines' => [__DIR__.'/formatted-lf.json'],
             'crlf new lines' => [__DIR__.'/formatted-crlf.json'],
         ];
