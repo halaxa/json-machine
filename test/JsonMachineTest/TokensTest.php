@@ -19,7 +19,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
     public function bothDebugModes()
     {
         return [
-//            'debug enabled' => [TokensWithDebugging::class],
+            'debug enabled' => [TokensWithDebugging::class],
             'debug disabled' => [Tokens::class],
         ];
     }

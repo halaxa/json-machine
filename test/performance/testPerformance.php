@@ -75,7 +75,7 @@ function createBigJsonFile()
     $separator = '';
     fputs($f, '[');
 //    for ($i = 0; $i < 1; ++$i) {
-    for ($i = 0; $i < 6000; ++$i) {
+    for ($i = 0; $i < 3000; ++$i) {
         fputs($f, $separator);
         fputs($f, file_get_contents(__DIR__.'/twitter_example_'.($i % 2).'.json'));
         $separator = ",\n\n";

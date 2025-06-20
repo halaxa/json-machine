@@ -37,13 +37,7 @@ class Tokens implements \IteratorAggregate, PositionAware
 
     private function createGenerator(): Generator
     {
-        $regex = '/
-            [{}\[\],:]
-            #| true|false|null
-            #| [\deE.+-]+
-            #| (t|tr|tru|f|fa|fal|fals|n|nu|nul)$
-            | [^\xEF\xBB\xBF\s{}\[\],:]+    # todo make matching logic positive as in comments above and solve 2 failing tests
-        /x';
+        $regex = '/ [{}\[\],:] | [^\xEF\xBB\xBF\s{}\[\],:]+ /x';
 
         $inString = 0;
         $carry = '';
@@ -58,13 +52,15 @@ class Tokens implements \IteratorAggregate, PositionAware
                     if ($this->stringIsEscaping($chunkItems[$i])) {
                         $carry .= $chunkItems[$i].'"';
                     } else {
-                        yield '"'.$carry.$chunkItems[$i].'"';
+                        yield "\"$carry$chunkItems[$i]\"";
                         $carry = '';
                         $inString = 0;
                     }
                 } else {
                     preg_match_all($regex, $chunkItems[$i], $matches);
-                    yield from $matches[0];
+                    foreach ($matches[0] as $match) {
+                        yield $match;
+                    }
                     $inString = 1;
                 }
             }
@@ -74,7 +70,9 @@ class Tokens implements \IteratorAggregate, PositionAware
             } else {
                 preg_match_all($regex, $chunkItems[$i], $matches);
                 $carry = array_pop($matches[0]);
-                yield from $matches[0];
+                foreach ($matches[0] as $match) {
+                    yield $match;
+                }
             }
         }
 
