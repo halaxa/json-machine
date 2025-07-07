@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
+Nothing yet
+
+<br>
+
+## 1.2.5 - 2025-07-07
 - Slight performance optimization of the tokenizing process (about +7 % speed gain) 
 
 <br>
