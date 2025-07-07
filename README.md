@@ -88,7 +88,7 @@ based on generators developed for unpredictably long JSON streams or documents. 
 - Constant memory footprint for unpredictably large JSON documents.
 - Ease of use. Just iterate JSON of any size with `foreach`. No events and callbacks.
 - Efficient iteration on any subtree of the document, specified by [JSON Pointer](#json-pointer)
-- Speed. Performance critical code contains no unnecessary function calls, no regular expressions
+- Speed. Performance critical code is optimized for speed with JIT in mind,
 and uses native `json_decode` to decode JSON document items by default. See [Decoders](#decoders).
 - Parses not only streams but any iterable that produces JSON chunks.
 - Thoroughly tested. More than 200 tests and 1000 assertions.
