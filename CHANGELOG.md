@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <br>
 
 ## master
-Nothing yet
+- Support for PHP 8.5
 
 <br>
 
