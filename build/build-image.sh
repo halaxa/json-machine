@@ -32,12 +32,14 @@ printf "
         libtool \
         make \
         bash \
-        linux-headers \
-    && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
-    && pecl install xdebug-$XDEBUG_VERSION \
-        && docker-php-ext-enable xdebug \
-        && docker-php-ext-enable opcache \
-    && wget https://getcomposer.org/download/2.8.1/composer.phar -O /usr/local/bin/composer \
+        linux-headers
+    RUN if [ ! -z \"$XDEBUG_VERSION\" ]; then \
+        wget http://pear.php.net/go-pear.phar && php go-pear.phar \
+        && pecl install xdebug-$XDEBUG_VERSION \
+        && docker-php-ext-enable xdebug; \
+      fi
+    RUN php -i | grep -q opcache || docker-php-ext-enable opcache
+    RUN wget https://getcomposer.org/download/2.9.2/composer.phar -O /usr/local/bin/composer \
         && chmod +x /usr/local/bin/composer
 " | docker build --quiet --tag "$CONTAINER_NAME" - > /dev/null
 

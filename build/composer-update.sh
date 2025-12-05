@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 set -x
-composer --quiet update
+composer --quiet update || composer update
