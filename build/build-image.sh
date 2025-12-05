@@ -19,13 +19,20 @@ docker ps --all --format "{{.Names}}" | grep "$CONTAINER_NAME" && docker rm -f "
 
 >&2 echo "Building $CONTAINER_NAME from $FROM_IMAGE"
 
+# Use pecl for PHP < 8.1, pie for PHP >= 8.1
+if [ "$(printf '%s\n' "8.1" "$PHP_MINOR" | sort -V | head -n1)" = "8.1" ]; then
+    PIE_COPY="COPY --from=ghcr.io/php/pie:bin /pie /usr/bin/pie"
+    XDEBUG_INSTALL="pie install xdebug/xdebug:$XDEBUG_VERSION"
+else
+    PIE_COPY=""
+    XDEBUG_INSTALL="pecl install xdebug-$XDEBUG_VERSION && docker-php-ext-enable xdebug"
+fi
+
 printf "
     FROM $FROM_IMAGE
-    RUN apk update && apk upgrade
-    # https://stackoverflow.com/questions/76507083/pecl-install-no-releases-available#comment136513209_76651916
-    RUN rm /etc/ssl/certs/ca-cert-DST_Root_CA_X3.pem || true \
-      && cat /etc/ssl/certs/*.pem > /etc/ssl/certs/ca-certificates.crt \
-      && cat /etc/ssl/certs/*.pem > /etc/ssl/cert.pem
+
+    $PIE_COPY
+
     RUN apk add \
         autoconf \
         g++ \
@@ -33,11 +40,8 @@ printf "
         make \
         bash \
         linux-headers \
-    && wget http://pear.php.net/go-pear.phar && php go-pear.phar \
-    && pecl install xdebug-$XDEBUG_VERSION \
-        && docker-php-ext-enable xdebug \
-        && docker-php-ext-enable opcache \
-    && wget https://getcomposer.org/download/2.8.1/composer.phar -O /usr/local/bin/composer \
+    && $XDEBUG_INSTALL \
+    && wget https://getcomposer.org/download/2.8.12/composer.phar -O /usr/local/bin/composer \
         && chmod +x /usr/local/bin/composer
 " | docker build --quiet --tag "$CONTAINER_NAME" - > /dev/null
 
