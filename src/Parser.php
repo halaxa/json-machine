@@ -112,6 +112,11 @@ class Parser implements \IteratorAggregate, PositionAware
         $this->recursive = $recursive;
     }
 
+    /**
+     * @param array<string, string> $jsonPointers
+     *
+     * @return array<string, array<int, string>>
+     */
     private function buildPaths(array $jsonPointers): array
     {
         return array_map(function ($jsonPointer) {
@@ -142,8 +147,8 @@ class Parser implements \IteratorAggregate, PositionAware
         $tokenTypes = self::$tokenTypes;
 
         $iteratorStruct = null;
+        $this->currentPath = [];
         $currentPath = &$this->currentPath;
-        $currentPath = [];
         $currentPathWildcard = [];
         $pointersFound = [];
         $currentLevel = -1;
