@@ -26,13 +26,18 @@ class ExtJsonDecoder implements ItemDecoder
      */
     private static $instance;
 
-    public function __construct($assoc = false, $depth = 512, $options = 0)
+    public function __construct(bool $assoc = false, int $depth = 512, int $options = 0)
     {
         $this->assoc = $assoc;
         $this->depth = $depth;
         $this->options = $options;
     }
 
+    /**
+     * @param mixed $jsonValue
+     *
+     * @return InvalidResult|ValidResult
+     */
     public function decode($jsonValue)
     {
         $decoded = json_decode($jsonValue, $this->assoc, $this->depth, $this->options);

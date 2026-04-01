@@ -6,7 +6,10 @@ namespace JsonMachine\JsonDecoder;
 
 class DecodingError
 {
+    /** @var string */
     private $malformedJson;
+
+    /** @var string */
     private $errorMessage;
 
     /**

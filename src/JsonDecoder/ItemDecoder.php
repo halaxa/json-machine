@@ -9,6 +9,8 @@ interface ItemDecoder
     /**
      * Decodes composite or scalar JSON values which are directly yielded to the user.
      *
+     * @param mixed $jsonValue
+     *
      * @return InvalidResult|ValidResult
      */
     public function decode($jsonValue);

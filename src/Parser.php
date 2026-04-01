@@ -18,6 +18,9 @@ use JsonMachine\JsonDecoder\StringOnlyDecoder;
 use LogicException;
 use Traversable;
 
+/**
+ * @implements \IteratorAggregate<mixed, mixed>
+ */
 class Parser implements \IteratorAggregate, PositionAware
 {
     const SCALAR_CONST = 1;
@@ -36,7 +39,7 @@ class Parser implements \IteratorAggregate, PositionAware
     const AFTER_ARRAY_VALUE = self::COMMA | self::ARRAY_END;
     const AFTER_OBJECT_VALUE = self::COMMA | self::OBJECT_END;
 
-    /** @var Traversable */
+    /** @var Traversable<mixed> */
     private $tokens;
 
     /** @var Iterator<int, string> */
@@ -51,13 +54,13 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var string|null */
     private $matchedJsonPointer;
 
-    /** @var array */
+    /** @var array<string, array<int, string>> */
     private $paths;
 
-    /** @var array|null */
+    /** @var array<int, string|int>|null */
     private $currentPath;
 
-    /** @var array */
+    /** @var array<string, string> */
     private $jsonPointers;
 
     /** @var bool */
@@ -66,16 +69,16 @@ class Parser implements \IteratorAggregate, PositionAware
     /** @var bool */
     private $recursive;
 
-    /** @var array */
+    /** @var array<string, int> */
     private static $tokenTypes;
 
     /**
-     * @param array|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
+     * @param array<string>|string $jsonPointer Follows json pointer RFC https://tools.ietf.org/html/rfc6901
      * @param ?ItemDecoder $jsonDecoder
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Traversable $tokens, $jsonPointer = '', ?ItemDecoder $jsonDecoder = null, $recursive = false)
+    public function __construct(Traversable $tokens, $jsonPointer = '', ?ItemDecoder $jsonDecoder = null, bool $recursive = false)
     {
         if ($jsonPointer) {
             $jsonPointers = (new ValidJsonPointers((array) $jsonPointer))->toArray();

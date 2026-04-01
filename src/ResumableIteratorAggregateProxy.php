@@ -12,12 +12,17 @@ use LogicException;
  * Allows to resume iteration of the inner IteratorAggregate via foreach, which would be otherwise impossible as
  * foreach implicitly calls reset(). This Iterator does not pass the reset() call to the inner Iterator thus enabling
  * to follow up on a previous iteation.
+ *
+ * @implements IteratorAggregate<mixed, mixed>
  */
 class ResumableIteratorAggregateProxy implements IteratorAggregate, PositionAware
 {
-    /** @var IteratorAggregate */
+    /** @var IteratorAggregate<mixed, mixed> */
     private $iteratorAggregate;
 
+    /**
+     * @param \Traversable<mixed> $iteratorAggregate
+     */
     public function __construct(\Traversable $iteratorAggregate)
     {
         // todo remove when the whole system moves to GeneratorAggregate
@@ -37,6 +42,12 @@ class ResumableIteratorAggregateProxy implements IteratorAggregate, PositionAwar
         }
     }
 
+    /**
+     * @param string $name
+     * @param mixed[] $arguments
+     *
+     * @return mixed
+     */
     public function __call($name, $arguments)
     {
         return $this->iteratorAggregate->$name(...$arguments);

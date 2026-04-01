@@ -6,9 +6,12 @@ namespace JsonMachine;
 
 use Generator;
 
+/**
+ * @implements \IteratorAggregate<int, string>
+ */
 class Tokens implements \IteratorAggregate, PositionAware
 {
-    /** @var iterable */
+    /** @var iterable<mixed, string> */
     private $jsonChunks;
 
     /** @var Generator */

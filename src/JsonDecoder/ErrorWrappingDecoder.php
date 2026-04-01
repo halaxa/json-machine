@@ -16,6 +16,11 @@ class ErrorWrappingDecoder implements ItemDecoder
         $this->innerDecoder = $innerDecoder;
     }
 
+    /**
+     * @param mixed $jsonValue
+     *
+     * @return InvalidResult|ValidResult
+     */
     public function decode($jsonValue)
     {
         $result = $this->innerDecoder->decode($jsonValue);

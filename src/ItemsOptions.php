@@ -8,11 +8,17 @@ use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use JsonMachine\JsonDecoder\ItemDecoder;
 
+/**
+ * @extends \ArrayObject<string, mixed>
+ */
 class ItemsOptions extends \ArrayObject
 {
+    /** @var array<string, mixed> */
     private $options = [];
 
     /**
+     * @param array<string, mixed> $options
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(array $options = [])
@@ -22,15 +28,20 @@ class ItemsOptions extends \ArrayObject
         parent::__construct($this->options);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return $this->options;
     }
 
     /**
+     * @param array<string, mixed> $options
+     *
      * @throws InvalidArgumentException
      */
-    private function validateOptions(array $options)
+    private function validateOptions(array $options): void
     {
         $mergedOptions = array_merge(self::defaultOptions(), $options);
 
@@ -53,27 +64,39 @@ class ItemsOptions extends \ArrayObject
         }
     }
 
+    /**
+     * @param string|string[] $pointer
+     *
+     * @return string|string[]
+     */
     private function opt_pointer($pointer)
     {
         if (is_array($pointer)) {
-            (function (string ...$p) {})(...$pointer);
+            self::enforceStrings(...$pointer);
         } else {
-            (function (string $p) {})($pointer);
+            self::enforceStrings($pointer);
         }
 
         return $pointer;
     }
 
-    private function opt_decoder(?ItemDecoder $decoder = null)
+    private static function enforceStrings(string ...$p): void
+    {
+    }
+
+    private function opt_decoder(?ItemDecoder $decoder = null): ?ItemDecoder
     {
         return $decoder;
     }
 
-    private function opt_debug(bool $debug)
+    private function opt_debug(bool $debug): bool
     {
         return $debug;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function defaultOptions(): array
     {
         return [
@@ -90,7 +113,7 @@ class ItemsOptions extends \ArrayObject
      *
      * Finds the best suggestion (for 8-bit encoding).
      *
-     * @param  (\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionClass|\ReflectionProperty|string)[]  $possibilities
+     * @param  (\ReflectionFunctionAbstract|\ReflectionParameter|\ReflectionClass<object>|\ReflectionProperty|string)[]  $possibilities
      *
      * @internal
      */

@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * @param Traversable<mixed> $traversable
+ * @return Iterator<mixed>
+ */
 function toIterator(Traversable $traversable): Iterator
 {
     if ($traversable instanceof IteratorAggregate) {

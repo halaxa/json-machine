@@ -19,6 +19,11 @@ class StringOnlyDecoder implements ItemDecoder
         $this->innerDecoder = $innerDecoder;
     }
 
+    /**
+     * @param mixed $jsonValue
+     *
+     * @return InvalidResult|ValidResult
+     */
     public function decode($jsonValue)
     {
         if (is_string($jsonValue)) {
