@@ -1,9 +1,9 @@
 .DEFAULT_GOAL := help
 .PHONY: *
 
-LATEST_PHP := 8.0 3.1.1
-COVERAGE_PHP := 7.4 3.1.1
-PHP_8_3 := 8.3 3.3.2
+LATEST_PHP := 8.0.30 3.4.7
+COVERAGE_PHP := 7.4.33 3.1.5
+PHP_8_3 := 8.3.30 3.4.7
 
 define PHP_VERSIONS
 "7.2.34 3.1.5"\
