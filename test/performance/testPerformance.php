@@ -10,20 +10,20 @@ use JsonMachine\Tokens;
 require_once __DIR__.'/../../vendor/autoload.php';
 
 if ( ! ini_get('xdebug.mode')) {
-    echo "Xdebug disabled\n";
+    echo "✓ Xdebug disabled\n";
 } else {
-    echo "Xdebug enabled\n";
+    echo "✗ Xdebug enabled\n";
 }
 
 if ( ! function_exists('opcache_get_status')) {
-    echo "Opcache disabled\n";
-    echo "JIT disabled\n";
+    echo "✗ Opcache disabled\n";
+    echo "✗ JIT disabled\n";
 } else {
-    echo "Opcache enabled\n";
+    echo "✓ Opcache enabled\n";
     if (opcache_get_status()['jit']['enabled']) {
-        echo "JIT enabled\n";
+        echo "✓ JIT enabled\n";
     } else {
-        echo "JIT disabled\n";
+        echo "✗ JIT disabled\n";
     }
 }
 
@@ -31,21 +31,21 @@ ini_set('memory_limit', '-1'); // for json_decode use case
 
 $decoders = [
     'Tokens' => function ($file) {
-        return new Tokens(
+        foreach (new Tokens(
             new FileChunks($file)
-        );
+        ) as $k => $v) {}
     },
     'Items' => function ($file) {
-        return Items::fromFile($file);
+        foreach (Items::fromFile($file) as $k => $v) {}
     },
     'Items - debug' => function ($file) {
-        return Items::fromFile($file, ['debug' => true]);
+        foreach (Items::fromFile($file, ['debug' => true]) as $k => $v) {}
     },
     'RecursiveItems' => function ($file) {
-        return RecursiveItems::fromFile($file);
+        foreach (RecursiveItems::fromFile($file) as $k => $v) {}
     },
     'json_decode()' => function ($file) {
-        return json_decode(stream_get_contents(fopen($file, 'r')), true);
+        json_decode(stream_get_contents(fopen($file, 'r')), true);
     },
 ];
 
@@ -55,15 +55,9 @@ echo 'File size: '.round($fileSizeMb, 2),' MB'.PHP_EOL;
 foreach ($decoders as $name => $decoder) {
     $start = microtime(true);
     $result = $decoder($tmpJsonFileName);
-    if ( ! $result instanceof \Traversable && ! is_array($result)) {
-        $textResult = 'Decoding error';
-    } else {
-        foreach ($result as $key => $item) {
-        }
-        $time = microtime(true) - $start;
-        $textResult = round($fileSizeMb / $time, 2).' MB/s';
-    }
+    $time = microtime(true) - $start;
 
+    $textResult = round($fileSizeMb / $time, 2).' MB/s';
     echo str_pad($name.': ', 25, '.')." $textResult".PHP_EOL;
 }
 @unlink($tmpJsonFileName);
@@ -72,12 +66,10 @@ function createBigJsonFile()
 {
     $tmpJson = tempnam(sys_get_temp_dir(), 'json_');
     $f = fopen($tmpJson, 'w');
-    $separator = '';
     fputs($f, '[');
     for ($i = 0; $i < 3000; ++$i) {
-        fputs($f, $separator);
+        fputs($f, $i > 0 ? ",\n\n" : '');
         fputs($f, file_get_contents(__DIR__.'/twitter_example_'.($i % 2).'.json'));
-        $separator = ",\n\n";
     }
     fputs($f, ']');
     fclose($f);
