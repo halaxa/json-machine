@@ -9,40 +9,50 @@ use JsonMachine\Tokens;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
+$ansiRed   = "\033[31m";
+$ansiGreen = "\033[32m";
+$ansiEnd   = "\033[0m";
+$ok = "{$ansiGreen}✓$ansiEnd";
+$err = "{$ansiRed}✗$ansiEnd";
+
 if ( ! ini_get('xdebug.mode')) {
-    echo "✓ Xdebug disabled\n";
+    echo "$ok Xdebug: disabled\n";
 } else {
-    echo "✗ Xdebug enabled\n";
+    echo "$err Xdebug: enabled\n";
 }
 
 if ( ! function_exists('opcache_get_status')) {
-    echo "✗ Opcache disabled\n";
-    echo "✗ JIT disabled\n";
+    echo "$err Opcache: disabled\n";
+    echo "$err JIT: disabled\n";
 } else {
-    echo "✓ Opcache enabled\n";
+    echo "$ok Opcache: enabled\n";
     if (opcache_get_status()['jit']['enabled']) {
-        echo "✓ JIT enabled\n";
+        echo "$ok JIT: enabled\n";
     } else {
-        echo "✗ JIT disabled\n";
+        echo "$err JIT: disabled\n";
     }
 }
 
 ini_set('memory_limit', '-1'); // for json_decode use case
 
-$decoders = [
+$tests = [
     'Tokens' => function ($file) {
         foreach (new Tokens(
             new FileChunks($file)
-        ) as $k => $v) {}
+        ) as $k => $v) {
+        }
     },
     'Items' => function ($file) {
-        foreach (Items::fromFile($file) as $k => $v) {}
+        foreach (Items::fromFile($file) as $k => $v) {
+        }
     },
     'Items - debug' => function ($file) {
-        foreach (Items::fromFile($file, ['debug' => true]) as $k => $v) {}
+        foreach (Items::fromFile($file, ['debug' => true]) as $k => $v) {
+        }
     },
     'RecursiveItems' => function ($file) {
-        foreach (RecursiveItems::fromFile($file) as $k => $v) {}
+        foreach (RecursiveItems::fromFile($file) as $k => $v) {
+        }
     },
     'json_decode()' => function ($file) {
         json_decode(stream_get_contents(fopen($file, 'r')), true);
@@ -52,13 +62,13 @@ $decoders = [
 $tmpJsonFileName = createBigJsonFile();
 $fileSizeMb = (filesize($tmpJsonFileName) / 1024 / 1024);
 echo 'File size: '.round($fileSizeMb, 2),' MB'.PHP_EOL;
-foreach ($decoders as $name => $decoder) {
+foreach ($tests as $testName => $testFn) {
     $start = microtime(true);
-    $result = $decoder($tmpJsonFileName);
+    $result = $testFn($tmpJsonFileName);
     $time = microtime(true) - $start;
 
     $textResult = round($fileSizeMb / $time, 2).' MB/s';
-    echo str_pad($name.': ', 25, '.')." $textResult".PHP_EOL;
+    echo str_pad($testName.': ', 25, '.')." $textResult".PHP_EOL;
 }
 @unlink($tmpJsonFileName);
 
