@@ -9,9 +9,9 @@ use JsonMachine\Tokens;
 
 require_once __DIR__.'/../../vendor/autoload.php';
 
-$ansiRed   = "\033[31m";
+$ansiRed = "\033[31m";
 $ansiGreen = "\033[32m";
-$ansiEnd   = "\033[0m";
+$ansiEnd = "\033[0m";
 $ok = "{$ansiGreen}✓$ansiEnd";
 $err = "{$ansiRed}✗$ansiEnd";
 
@@ -64,7 +64,7 @@ $fileSizeMb = (filesize($tmpJsonFileName) / 1024 / 1024);
 echo 'File size: '.round($fileSizeMb, 2),' MB'.PHP_EOL;
 foreach ($tests as $testName => $testFn) {
     $start = microtime(true);
-    $result = $testFn($tmpJsonFileName);
+    $testFn($tmpJsonFileName);
     $time = microtime(true) - $start;
 
     $textResult = round($fileSizeMb / $time, 2).' MB/s';
