@@ -48,7 +48,7 @@ class ExtJsonDecoderTest extends PHPUnit_Framework_TestCase
         $depthDecoder = new ExtJsonDecoder(true, 1);
         $depthResult = $depthDecoder->decode($json);
         $this->assertFalse($depthResult->isOk());
-        $this->assertSame('Maximum stack depth exceeded', $depthResult->getErrorMessage());
+        $this->assertStringStartsWith('Maximum stack depth exceeded', $depthResult->getErrorMessage()); // PHP 8.6 appends " near location L:C"
     }
 
     public function testPassesPassesBigIntOptionToJsonDecode()

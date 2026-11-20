@@ -21,7 +21,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "7.2 - 8.5"
+        "php": "7.2 - 8.6"
     },
     "require-dev": {
         "ext-json": "*",
