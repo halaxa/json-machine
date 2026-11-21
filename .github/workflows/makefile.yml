@@ -24,7 +24,7 @@ jobs:
       run: make build
 
     - name: Code coverage report
-      run: make tests-coverage
+      run: make tests-coverage XDEBUG=1
 
     - name: Send coverage report to codecov
       uses: codecov/codecov-action@v2
