@@ -22,7 +22,8 @@ echo "
     RUN php -i | grep -q opcache || docker-php-ext-enable opcache
 
     RUN php -m | grep -qi '^mbstring$' || ( \
-        apk add --no-cache --virtual .mbstring-build-deps oniguruma-dev \
+        apk add --no-cache oniguruma \
+        && apk add --no-cache --virtual .mbstring-build-deps oniguruma-dev \
         && docker-php-ext-install mbstring \
         && apk del .mbstring-build-deps \
     )
