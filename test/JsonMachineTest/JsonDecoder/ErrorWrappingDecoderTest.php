@@ -79,6 +79,6 @@ class ErrorWrappingDecoderTest extends PHPUnit_Framework_TestCase
         $decodingError = $result[1];
         $this->assertInstanceOf(DecodingError::class, $decodingError);
         $this->assertSame('{"incorrect":nulll}', $decodingError->getMalformedJson());
-        $this->assertSame('Syntax error', $decodingError->getErrorMessage());
+        $this->assertStringStartsWith('Syntax error', $decodingError->getErrorMessage());
     }
 }

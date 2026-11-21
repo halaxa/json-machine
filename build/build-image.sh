@@ -32,6 +32,7 @@ printf "
         && docker-php-ext-enable xdebug; \
       fi
     RUN php -i | grep -q opcache || docker-php-ext-enable opcache
+    RUN php -m | grep -qi '^mbstring$' || (apk add oniguruma-dev && docker-php-ext-install mbstring)
     RUN wget https://getcomposer.org/download/2.9.2/composer.phar -O /usr/local/bin/composer \
         && chmod +x /usr/local/bin/composer
 " | docker build --quiet --tag "$CONTAINER_NAME" - > /dev/null
